@@ -1,7 +1,7 @@
 {
   "name": "modexpagina",
   "private": true,
-  "homepage": "https://Codester6000.github.io/page/ModexPage/build",
+  "homepage": "https://Codester6000.github.io/page/ModexPage/dist",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
