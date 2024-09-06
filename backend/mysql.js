@@ -1,5 +1,6 @@
 import {pool} from './database/connectionMySQL.js'
-
+import { convertArrayToCSV } from 'convert-array-to-csv';
+import fs from "fs"
 //TODO usar offset para recibir todos los productos
 const getElit = async () => {
 
@@ -28,9 +29,8 @@ const getElit = async () => {
         const resultado = await response.json()
         listaProductos.push(resultado.resultado)
         const total_productos = resultado.paginador.total
-        console.log(total_productos)
         offset += 100
-
+        // hacemos peticiones hasta consumir todos los productos de elit
         while (offset < total_productos){
             const response = await fetch(`https://clientes.elit.com.ar/v1/api/productos?limit=100&offset=${offset}`, requestOptions)
             if (response.status == 200){
@@ -46,11 +46,7 @@ const getElit = async () => {
                 }
             }
     }
-            
-            
-            
-            
-            
+
     return listaProductos
     }
 
@@ -60,10 +56,10 @@ const putProduct = async (producto) => {
     const precio_sugerido = parseInt(parseInt((parseFloat(parseFloat(producto.iva)/100+1) * parseFloat(producto.precio)) * parseFloat(producto.cotizacion))*1.15)
     const dimensiones = `Largo : ${producto.dimensiones.largo}, ancho: ${producto.dimensiones.ancho}, alto: ${producto.dimensiones.alto}`
     try {
-        const result = await pool.query('INSERT INTO tabla_elit ( id_elit, codigo_alfa, codigo_producto, nombre, marca, categoria, sub_categoria, precio_usd, iva, precio_usd_iva, garantia_meses, link, uri, imagenes, dimensiones, gamer)' 
+        const result = await pool.query('INSERT INTO tabla_elit ( id_elit, codigo_alfa, codigo_producto, nombre, marca, categoria, sub_categoria, precio_usd, iva, precio_usd_iva, garantia_meses, link, uri, imagenes, dimensiones, gamer,peso)' 
             
             
-            + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',[producto.id,producto.codigo_alfa,producto.codigo_producto,producto.nombre,producto.marca,producto.categoria,producto.sub_categoria,producto.precio,producto.iva, precio_sugerido,parseInt(producto.garantia),producto.link,producto.uri,producto.imagenes[0],dimensiones,1]);
+            + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',[producto.id,producto.codigo_alfa,producto.codigo_producto,producto.nombre,producto.marca,producto.categoria,producto.sub_categoria,producto.precio,producto.iva, precio_sugerido,parseInt(producto.garantia),producto.link,producto.uri,producto.imagenes[0],dimensiones,1,producto.peso]);
         console.log(result)
     } catch (error) {
         console.error(error);
@@ -88,6 +84,7 @@ const cargarProductosAtabla = (listaProductos)=>{
     });
 }
 
+
+
 // llamamos las funciones necesarias para cargar las tablas
 const productosElit = await getElit()
-cargarProductosAtabla(productosElit)

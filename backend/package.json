@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/MatiSalinas/modexPage#readme",
   "dependencies": {
+    "convert-array-to-csv": "^2.0.0",
     "express": "^4.19.2",
     "mysql2": "^3.11.0"
   }
