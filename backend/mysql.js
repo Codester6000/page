@@ -1,6 +1,5 @@
-import {pool} from './database/connectionMySQL.js'
-import { convertArrayToCSV } from 'convert-array-to-csv';
-import fs from "fs"
+import { db, conectarDB } from './database/connectionMySQL.js'
+conectarDB()
 //TODO usar offset para recibir todos los productos
 const getElit = async () => {
 
@@ -53,13 +52,10 @@ const getElit = async () => {
 
 //TODO Normalizar la tabla 
 const putProduct = async (producto) => {
-    const precio_sugerido = parseInt(parseInt((parseFloat(parseFloat(producto.iva)/100+1) * parseFloat(producto.precio)) * parseFloat(producto.cotizacion))*1.15)
+    console.log(producto)
     const dimensiones = `Largo : ${producto.dimensiones.largo}, ancho: ${producto.dimensiones.ancho}, alto: ${producto.dimensiones.alto}`
     try {
-        const result = await pool.query('INSERT INTO tabla_elit ( id_elit, codigo_alfa, codigo_producto, nombre, marca, categoria, sub_categoria, precio_usd, iva, precio_usd_iva, garantia_meses, link, uri, imagenes, dimensiones, gamer,peso)' 
-            
-            
-            + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',[producto.id,producto.codigo_alfa,producto.codigo_producto,producto.nombre,producto.marca,producto.categoria,producto.sub_categoria,producto.precio,producto.iva, precio_sugerido,parseInt(producto.garantia),producto.link,producto.uri,producto.imagenes[0],dimensiones,1,producto.peso]);
+        const result = await db.execute('INSERT INTO tabla_elit ( id_elit, codigo_alfa, codigo_producto, nombre, marca, categoria, sub_categoria, precio_usd, iva, precio_usd_iva, garantia_meses, link, uri, imagenes, dimensiones, gamer) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )',[producto.id,producto.codigo_alfa,producto.codigo_producto,producto.nombre,producto.marca,producto.categoria,producto.sub_categoria,producto.pvp_usd,producto.iva,producto.pvp_usd,producto.garantia,producto.link,producto.uri,producto.imagenes,dimensiones,producto.gamer])
         console.log(result)
     } catch (error) {
         console.error(error);
@@ -67,7 +63,7 @@ const putProduct = async (producto) => {
 }
 const getProducts = async () => {
     try{
-        const [result] = await pool.query("SELECT * FROM tabla_elit")
+        const [result] = await db.execute("SELECT * FROM tabla_elit")
         console.table(result)
     }catch(error){
         console.error(error); 
@@ -88,3 +84,4 @@ const cargarProductosAtabla = (listaProductos)=>{
 
 // llamamos las funciones necesarias para cargar las tablas
 const productosElit = await getElit()
+cargarProductosAtabla(productosElit)
