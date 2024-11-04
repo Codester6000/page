@@ -1,0 +1,102 @@
+body {
+    margin: 0;
+    padding: 0%;
+}
+
+header {
+    background-color: #FF7d21;
+    padding-right: 20px;
+    /* padding: 10px; */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    height: 100px;
+}
+
+.logo{
+    max-block-size: 50px;
+    /* margin: 2%; */
+    filter: invert(100%);
+    margin: 25px;
+}
+
+
+.perfil{
+    height: 40px;
+    width: 150px;
+    border-radius: 15px;
+    color: white;
+    font-size: large;
+}
+
+.fav , .carro {
+    height: 40px;
+    width: 40px;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.iconperfil, .iconfav, .iconcarro{
+    max-width: 20px;
+    max-height: 20px;
+}
+
+button img {
+    height: 50px;
+}
+
+.buscar{
+    border-top-left-radius: 20px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 20px;
+    padding-left: 15px;
+    width: 55%;
+    height: 35px;
+    margin-right: -25px;
+    font-size: larger;
+
+}
+
+.lupa{
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    height: 40px;
+    width: 30px;
+    font-size: large;
+    margin-left: -10px;
+}
+
+.contenedor{
+    background-color: #c2c2c2;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    height: 300px;
+}
+
+footer{
+    background-color: #FF7d21;
+    padding-right: 20px;
+    color: white;
+    /* padding: 10px; */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    height: 120px;
+}
+
+.ubi, .wsp, .email, .face, .insta {
+    max-block-size: 20px;
+    /* margin: 2%; */
+    filter: invert(100%);
+    margin-right: 2%
+}
+
