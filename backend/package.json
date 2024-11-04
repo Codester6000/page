@@ -1,0 +1,26 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend para el sistema de modex",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MatiSalinas/modexPage.git"
+  },
+  "author": "Modex",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MatiSalinas/modexPage/issues"
+  },
+  "homepage": "https://github.com/MatiSalinas/modexPage#readme",
+  "dependencies": {
+    "convert-array-to-csv": "^2.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mysql2": "^3.11.3"
+  }
+}

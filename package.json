@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "react-responsive-carousel": "^3.2.23"
+    "mysql2": "^3.11.0"
   }
 }
