@@ -1,6 +1,7 @@
 import { db, conectarDB } from './database/connectionMySQL.js'
 conectarDB()
 //TODO usar offset para recibir todos los productos
+
 const getElit = async () => {
 
     const myHeaders = new Headers();
@@ -51,15 +52,33 @@ const getElit = async () => {
 
 
 //TODO Normalizar la tabla 
-const putProduct = async (producto) => {
-    console.log(producto)
-    const dimensiones = `Largo : ${producto.dimensiones.largo}, ancho: ${producto.dimensiones.ancho}, alto: ${producto.dimensiones.alto}`
-    try {
-        const result = await db.execute('INSERT INTO tabla_elit ( id_elit, codigo_alfa, codigo_producto, nombre, marca, categoria, sub_categoria, precio_usd, iva, precio_usd_iva, garantia_meses, link, uri, imagenes, dimensiones, gamer) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )',[producto.id,producto.codigo_alfa,producto.codigo_producto,producto.nombre,producto.marca,producto.categoria,producto.sub_categoria,producto.pvp_usd,producto.iva,producto.pvp_usd,producto.garantia,producto.link,producto.uri,producto.imagenes,dimensiones,producto.gamer])
-        console.log(result)
-    } catch (error) {
-        console.error(error);
-    }
+const cargarDatos = async (producto) => {
+    const params = [
+        producto.nombre || null,
+        producto.stock_total || 0,
+        Number(producto.garantia) || 0,
+        producto.descripcion || "   ",
+        producto.dimensiones?.largo || 0.0,
+        producto.dimensiones?.alto || 0.0,
+        producto.dimensiones?.ancho || 0.0,
+        producto.peso || 0.0,
+        producto.codigo_alfa || null,
+        producto.marca || null,
+        producto.categoria || null,
+        producto.sub_categoria || null,
+        "elit",  // siempre será "elit"
+        producto.precio || null,
+        producto.pvp_usd || null,
+        producto.iva || null,
+        producto.pvp_ars || null,
+        producto.pvp_ars || null,  // Puede que tengas un error aquí, si esto es redundante
+        producto.imagenes && producto.imagenes[0] ? producto.imagenes[0] : "  "
+    ];
+
+    // Ejecutamos la consulta SQL
+    const [result] = await db.execute("CALL schemamodex.cargarDatosProducto(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", params);
+
+    console.log(result);
 }
 const getProducts = async () => {
     try{
@@ -75,7 +94,8 @@ const getProducts = async () => {
 const cargarProductosAtabla = (listaProductos)=>{
     listaProductos.forEach(paginaProducto => {
         paginaProducto.forEach(producto => {
-            putProduct(producto)
+
+        cargarDatos(producto)
         });
     });
 }
