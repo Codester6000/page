@@ -3,12 +3,14 @@ import {db} from "./database/connectionMySQL.js"
 import { body,query,validationResult} from "express-validator"
 export const productosRouter = express.Router()
 
-const validarQuerys = () => {
-query("categoria").isAlpha()
-query("precio_gt").isFloat({min:0})
-query("precio_lt").isFloat({min:0})
-}
-productosRouter.get("/",async (req, res) => {
+const validarQuerys = () => [
+query("categoria").isAlpha().optional(),
+query("precio_gt").isFloat({min:0}).optional(),
+query("precio_lt").isFloat({min:0}).optional(),
+query("nombre").isAlpha().notEmpty().optional(),
+]
+
+productosRouter.get("/",validarQuerys(),async (req, res) => {
     let sql = `SELECT pr.nombre,pr.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
 ,GROUP_CONCAT(i.url_imagen SEPARATOR ', ') AS url_imagenes,
 p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,
@@ -49,14 +51,20 @@ let sqlParteFinal = ` group by pr.id_producto, p.precio_dolar, p.precio_dolar_iv
     const precio_lt = req.query.precio_lt;
     if (precio_lt != undefined){
         filtros.push("p.precio_pesos_iva < ?")
+        console.log(precio_lt)
         parametros.push(precio_lt)
     }
-
+    const nombre = req.query.nombre;
+    if (nombre != undefined){
+        filtros.push('pr.nombre LIKE CONCAT("%", ?, "%")')
+        parametros.push(nombre)
+    }
     if (filtros.length > 0) {
         sql += ` AND ${filtros.join(" AND ")}`;
       }
 
       sql += sqlParteFinal
+      console.log(sql)
 
     const [resultado,fields] = await db.execute(sql,parametros)
     console.log(resultado);
