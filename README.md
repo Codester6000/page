@@ -34,5 +34,16 @@ La base de datos se puede recrear a partir de los archivos que estan en la carpe
 >|| ARMADOR COMPONENTES ||  
 > || SCRIPT PARA CSV -> cargarDatosProducto() ||
 
+
+
+
+Se pueden hacer GET y GET ID en /productos
+
+existen 4 querys
+nombre -> busca por nombre
+categoria -> ....
+precio_lt -> devuelve los productos con precio menor a
+precio_gt -> precios mayores a
+
   #FrontEnd
 Aca deberia laburar ramon, poner sus archivos en la carpeta frontEnd para poder mergear bien las tablas
