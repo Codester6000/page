@@ -12,7 +12,7 @@ query("nombre").isAlpha().notEmpty().optional(),
 
 productosRouter.get("/",validarQuerys(),async (req, res) => {
     let sql = `SELECT pr.nombre,pr.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
-,GROUP_CONCAT(i.url_imagen SEPARATOR ', ') AS url_imagenes,
+,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
 p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,
 d.alto,d.ancho,d.largo,pro.nombre_proveedor
 FROM productos pr 
@@ -76,7 +76,7 @@ export default productosRouter;
 productosRouter.get("/:id", async (req, res) => {
     const id = req.params.id
     const [resultado, fields] = await db.execute(`SELECT pr.nombre,pr.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
-,GROUP_CONCAT(i.url_imagen SEPARATOR ', ') AS url_imagenes,
+,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
 p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,
 d.alto,d.ancho,d.largo,pro.nombre_proveedor
 FROM productos pr 
