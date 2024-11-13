@@ -1,16 +1,16 @@
 import express from "express";
 import {db} from "./database/connectionMySQL.js"
 import { body,query,validationResult} from "express-validator"
+import { validarQuerysProducto } from "./middleware/validaciones.js";
 export const productosRouter = express.Router()
 
-const validarQuerys = () => [
-query("categoria").isAlpha().optional(),
-query("precio_gt").isFloat({min:0}).optional(),
-query("precio_lt").isFloat({min:0}).optional(),
-query("nombre").isAlpha().notEmpty().optional(),
-]
 
-productosRouter.get("/",validarQuerys(),async (req, res) => {
+productosRouter.get("/",validarQuerysProducto(),async (req, res) => {
+    const validacion = validationResult(req);
+  if (!validacion.isEmpty()) {
+    res.status(400).send({ errores: validacion.array() });
+    return;
+  }
     let sql = `SELECT pr.nombre,pr.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
 ,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
 p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,
@@ -64,14 +64,11 @@ let sqlParteFinal = ` group by pr.id_producto, p.precio_dolar, p.precio_dolar_iv
       }
 
       sql += sqlParteFinal
-      console.log(sql)
 
     const [resultado,fields] = await db.execute(sql,parametros)
-    console.log(resultado);
     return res.status(200).send({data:resultado})
 
 })  
-export default productosRouter;
 
 productosRouter.get("/:id", async (req, res) => {
     const id = req.params.id
@@ -94,8 +91,10 @@ WHERE
         SELECT MIN(precio_dolar) 
         FROM precios 
         WHERE id_producto = pr.id_producto
-    ) AND pr.id_producto = ?
-group by pr.id_producto, p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,d.alto,d.ancho,d.largo,pro.nombre_proveedor;`,[id])
-
+        ) AND pr.id_producto = ?
+        group by pr.id_producto, p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,d.alto,d.ancho,d.largo,pro.nombre_proveedor;`,[id])
+        
 res.status(200).send({datos: resultado})
 })
+
+export default productosRouter;
