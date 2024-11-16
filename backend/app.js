@@ -1,6 +1,6 @@
 import express, { json } from "express"
 import cors from 'cors'
-import {armadoRouter} from './database.js'
+import armadorRouter from './armador.js'
 import { conectarDB } from "./database/connectionMySQL.js"
 import productosRouter from "./productos.js"
 const PUERTO = 3000
@@ -11,6 +11,7 @@ app.use(cors())
 app.use(express.json())
 //interpretar json en el body
 app.use('/productos',productosRouter)
+app.use("/armador",armadorRouter)
 app.get("/", (req, res) => {
     res.send("hola mundo")
 })
