@@ -47,3 +47,14 @@ precio_gt -> precios mayores a
 
   #FrontEnd
 Aca deberia laburar ramon, poner sus archivos en la carpeta frontEnd para poder mergear bien las tablas
+
+ Hola, acá Ramón.
+ Para el Front usamos las Libreria Mui `https://mui.com` y Swiper `https://swiperjs.com` para facilitar
+ el trabajo con los componentes visibles como por ejemplo:
+- Carusel: usando Swiper su creación y configuración fue mas rapida y eficiente.
+- Cards: Mui nos facilita un diseño de card que luego de modificarlo a lo que necesitabamos
+nos permitio un exelente integro en el proyecto.
+ Estas librerias tambien nos ayudan a lograr que la pagina responda correctamente ante diferentes pantallas
+aunque no son una solucion magica, aun tienen alguinos errores a la hora de hacer o quitar zoom,
+dimensiones especificas de pantallas, entre otros errores menores que algunos ya fueron solucionados
+y/o estan en proceso de solucion mediante css.
