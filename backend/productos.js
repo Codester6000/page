@@ -1,7 +1,7 @@
 import express from "express";
 import {db} from "./database/connectionMySQL.js"
 import { body,query,validationResult} from "express-validator"
-import { validarQuerysProducto } from "./middleware/validaciones.js";
+import { validarQuerysProducto,validarBodyProducto } from "./middleware/validaciones.js";
 export const productosRouter = express.Router()
 
 
@@ -97,4 +97,64 @@ WHERE
 res.status(200).send({datos: resultado})
 })
 
+productosRouter.post("/", validarBodyProducto(),async(req, res) => {
+    const errores = validationResult(req);
+    if (!errores.isEmpty()) {
+        return res.status(400).json({ errores: errores.array() });
+    }
+
+    const {
+        nombre,
+        stock,
+        garantia_meses,
+        detalle,
+        largo,
+        alto,
+        ancho,
+        peso,
+        codigo_fabricante,
+        marca,
+        categoria,
+        sub_categoria,
+        proveedor,
+        precio_dolar,
+        precio_dolar_iva,
+        iva,
+        precio_pesos,
+        precio_pesos_iva,
+        url_imagen,
+    } = req.body;
+
+    try {
+        const resultado = await db.execute(
+            `CALL cargarDatosProducto(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                nombre,
+                stock,
+                garantia_meses,
+                detalle,
+                largo,
+                alto,
+                ancho,
+                peso,
+                codigo_fabricante,
+                marca,
+                categoria,
+                sub_categoria,
+                proveedor,
+                precio_dolar,
+                precio_dolar_iva,
+                iva,
+                precio_pesos,
+                precio_pesos_iva,
+                url_imagen,
+            ]
+        );
+
+        res.status(201).json({ mensaje: "Producto cargado exitosamente", resultado });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error al cargar el producto" });
+    }
+})
 export default productosRouter;
