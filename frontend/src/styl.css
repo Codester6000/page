@@ -1,14 +1,10 @@
-
-
-/* Elimina márgenes y relleno de html y body */
 html, body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    overflow-x: hidden; /* Esto también evita el scroll horizontal no deseado */
+    overflow-x: hidden; 
 }
 
-/* Asegura que todos los elementos usen el mismo box-sizing */
 *,
 *::before,
 *::after {

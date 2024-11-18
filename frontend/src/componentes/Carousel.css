@@ -3,7 +3,7 @@ body {
 }
 
 .custom-swiper {
-    margin-top: 60px; /* Ajusta este valor según la altura de tu navbar */
+    margin-top: 60px; 
 }
 
 .swiperR {
@@ -12,12 +12,12 @@ body {
     position: relative;
 }
 
-/* Estilo de las imágenes del carrusel */
+
 .imgCR {
     height: 350px;
     width: 100%;
     object-fit: cover;
-    position: relative; /* Necesario para el overlay */
+    position: relative; 
 }
 
 /* Degradado a los costados */
@@ -27,21 +27,23 @@ body {
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 20%; /* Ajusta el tamaño del degradado */
-    z-index: 2; /* Asegura que el degradado esté encima de la imagen */
+    width: 20%;
+    z-index: 2; 
 }
 
 .swiper-slide::before {
     left: 0;
     background: linear-gradient(to right, rgb(253, 253, 253), transparent);
+    /* background: linear-gradient(to right, rgb(255, 125, 33), transparent); */
 }
 
 .swiper-slide::after {
     right: 0;
     background: linear-gradient(to left, rgb(253, 253, 253), transparent);
+    /* background: linear-gradient(to left, rgb(255, 125, 33), transparent); */
 }
 
-/* Para pantallas más grandes */
+
 @media (min-width: 1024px) {
     .imgCR {
         height: 440px;
@@ -52,12 +54,12 @@ body {
 
 .swiper-button-next,
 .swiper-button-prev {
-    background-color: #a111ad;
+    background-color: #ffffff;
     height: 70px;
     width: 50px;
     margin-top: -35px;
     --swiper-navigation-size: 30px;
-    --swiper-navigation-color: white;
+    --swiper-navigation-color: rgb(255, 115, 0);
 
     opacity: 0;
     transition: opacity 0.3s;
