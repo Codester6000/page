@@ -17,6 +17,9 @@ import MenuNavbar from "./componentes/MenuNavbar";
 // npm install @mui/material @mui/styled-engine-sc styled-components
 // npm install @mui/icons-material
 
+// Nota para mejora de front:
+// Deberia de poner las cosas a mostrar dentro de una card content para así lograr los margenes a los costados deseados en base a la pagina de mercado libre
+
 
 function App() {
 
