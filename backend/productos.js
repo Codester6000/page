@@ -66,7 +66,7 @@ let sqlParteFinal = ` group by pr.id_producto, p.precio_dolar, p.precio_dolar_iv
       sql += sqlParteFinal
 
     const [resultado,fields] = await db.execute(sql,parametros)
-    return res.status(200).send({data:resultado})
+    return res.status(200).send({productos:resultado})
 
 })  
 

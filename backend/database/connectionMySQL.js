@@ -11,7 +11,7 @@ export async function conectarDB()
             port:3306,
             database:'schemamodex',
             user:'root',
-            password:'root123'
+            password:'61711634RGB_'
         }
     )
     
