@@ -4,15 +4,17 @@ En este proyecto tenemos que crear un mostrador de productos, poder filtrarlos p
 # Backend
 La base de datos se puede recrear a partir de los archivos que estan en la carpeta backend
 ## Instrucciones 
--Abrir archivo modelo de la carpeta database en mysql workbench, Databases  -> Forward Engineering, siguiente hasta completar
--cd backend
-> npm i 
+- Abrir archivo modelo de la carpeta database en mysql workbench, Databases  -> Forward Engineering, siguiente hasta completar   
+- cd backend   
+> npm i
+   
 > node cargarProductosElit.js
-cerramos el proceso
--en workbench ejecutamos los store procedure InsertarCategoriasYrelaciones
-Listo ya podemos usar la API
 
-## rutas para la api
+cerramos el proceso        
+-en workbench ejecutamos los store procedure InsertarCategoriasYrelaciones   
+Listo ya podemos usar la API   
+
+## rutas para la api   
 Se pueden hacer GET y GET por id , POST en /productos
 
 existen 4 querys
