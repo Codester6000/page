@@ -3,6 +3,29 @@ En este proyecto tenemos que crear un mostrador de productos, poder filtrarlos p
 
 # Backend
 La base de datos se puede recrear a partir de los archivos que estan en la carpeta backend
+## Instrucciones 
+-Abrir archivo modelo de la carpeta database en mysql workbench, Databases  -> Forward Engineering, siguiente hasta completar
+-cd backend
+> npm i 
+> node cargarProductosElit.js
+cerramos el proceso
+-en workbench ejecutamos los store procedure InsertarCategoriasYrelaciones
+Listo ya podemos usar la API
+
+## rutas para la api
+Se pueden hacer GET y GET por id , POST en /productos
+
+existen 4 querys
+nombre -> busca por nombre
+categoria -> ....
+precio_lt -> devuelve los productos con precio menor a
+precio_gt -> precios mayores a
+
+GET a /armador
+
+POST y GET a /usarios
+POST a /auth/login
+
 ## Store procedures 
 > reemplazar "<>" por valores
 
@@ -34,16 +57,6 @@ La base de datos se puede recrear a partir de los archivos que estan en la carpe
 >|| ARMADOR COMPONENTES ||  
 > || SCRIPT PARA CSV -> cargarDatosProducto() ||
 
-
-
-
-Se pueden hacer GET y GET ID en /productos
-
-existen 4 querys
-nombre -> busca por nombre
-categoria -> ....
-precio_lt -> devuelve los productos con precio menor a
-precio_gt -> precios mayores a
 
   #FrontEnd
 Aca deberia laburar ramon, poner sus archivos en la carpeta frontEnd para poder mergear bien las tablas
