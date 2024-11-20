@@ -1,0 +1,42 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden; 
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+
+.cont-web {
+    width: auto;
+    background-color: chartreuse;
+}
+
+.cont-doble{
+
+    display: flex;
+
+}
+
+.carusel {
+    background-color: blue;
+}
+
+.barra-lateral{
+    background-color: bisque;
+    width: 30%;
+}
+
+.mostrar-prod{
+    background-color: azure;
+    width: 70%;
+    object-fit: cover;
+    overflow: hidden;
+    padding: 10px;
+    padding-right: 50px;
+}

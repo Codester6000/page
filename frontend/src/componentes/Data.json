@@ -1,0 +1,72 @@
+[
+    {
+        "id": 1,
+        "nombre": "Procesador Intel i9-13900K",
+        "descripcion": "Procesador de alto rendimiento para juegos y tareas profesionales.",
+        "precio": 599.99,
+        "img": "https://example.com/img/i9-13900k.jpg"
+    },
+    {
+        "id": 2,
+        "nombre": "Tarjeta Gráfica NVIDIA GeForce RTX 4080",
+        "descripcion": "Tarjeta gráfica de última generación para juegos 4K y VR.",
+        "precio": 1199.99,
+        "img": "https://example.com/img/rtx-4080.jpg"
+    },
+    {
+        "id": 3,
+        "nombre": "Placa Base ASUS ROG Strix Z690-E",
+        "descripcion": "Placa base con soporte para procesadores Intel de 12ª generación.",
+        "precio": 329.99,
+        "img": "https://example.com/img/asus-z690.jpg"
+    },
+    {
+        "id": 4,
+        "nombre": "Memoria RAM Corsair Vengeance LPX 16GB",
+        "descripcion": "Módulo de memoria RAM DDR4 de 16GB para alto rendimiento.",
+        "precio": 79.99,
+        "img": "https://example.com/img/corsair-ram.jpg"
+    },
+    {
+        "id": 5,
+        "nombre": "Disco Duro SSD Samsung 970 EVO Plus 1TB",
+        "descripcion": "Disco SSD de 1TB con velocidades de lectura/escritura ultrarrápidas.",
+        "precio": 139.99,
+        "img": "https://example.com/img/samsung-ssd.jpg"
+    },
+    {
+        "id": 6,
+        "nombre": "Fuente de Alimentación EVGA SuperNOVA 850W",
+        "descripcion": "Fuente de alimentación de 850W con eficiencia 80+ Gold.",
+        "precio": 149.99,
+        "img": "https://example.com/img/evga-psu.jpg"
+    },
+    {
+        "id": 7,
+        "nombre": "Caja Fractal Design Meshify C",
+        "descripcion": "Caja ATX con excelente flujo de aire y diseño moderno.",
+        "precio": 89.99,
+        "img": "https://example.com/img/fractal-case.jpg"
+    },
+    {
+        "id": 8,
+        "nombre": "Refrigeración Líquida Corsair iCUE H150i Elite Capellix",
+        "descripcion": "Sistema de refrigeración líquida con 360mm de radiador y ventiladores RGB.",
+        "precio": 179.99,
+        "img": "https://example.com/img/corsair-cooler.jpg"
+    },
+    {
+        "id": 9,
+        "nombre": "Monitor LG UltraGear 27GN950-B",
+        "descripcion": "Monitor 4K de 27 pulgadas con tasa de refresco de 144Hz.",
+        "precio": 749.99,
+        "img": "https://example.com/img/lg-monitor.jpg"
+    },
+    {
+        "id": 10,
+        "nombre": "Teclado Mecánico Razer Huntsman Elite",
+        "descripcion": "Teclado mecánico con switches ópticos para un rendimiento rápido.",
+        "precio": 199.99,
+        "img": "https://example.com/img/razer-keyboard.jpg"
+    }
+]

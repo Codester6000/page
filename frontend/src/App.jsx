@@ -1,5 +1,25 @@
+import Navbar from "./componentes/Navbar"
+import InstagramIcon from '@mui/icons-material/Instagram';
+// import { CustomizedInputBase } from "./componentes/Barra"
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/swiper-bundle.css';
 
-import "./stylo.css"
+
+import "./styl.css"
+import Carousel from "./componentes/Carousel";
+import ProductCard from "./componentes/ProductCard";
+import MenuNavbar from "./componentes/MenuNavbar";
+
+// IMPORTANTE HACER 
+// npm install @mui/joy @emotion/react @emotion/styled
+// npm install swiper     
+// npm install @mui/lab   
+// npm install @mui/material @mui/styled-engine-sc styled-components
+// npm install @mui/icons-material
+
+// Nota para mejora de front:
+// Deberia de poner las cosas a mostrar dentro de una card content para así lograr los margenes a los costados deseados en base a la pagina de mercado libre
+
 
 function App() {
 
@@ -7,22 +27,23 @@ function App() {
     <>
       <body>
         <header>
-          <img src="modex.png" alt="modex" className="logo" />
-          <input type="text" placeholder="   Buscar Productos   "  className="buscar" /><button className="lupa">🔍︎</button>
-          <button className="perfil" style={{ background: "#a111ad"}} ><img className="iconperfil" src="perfil.png" alt="user" style={{filter: "invert(100%)"}}  /> Ingresar</button>
-          <button className="fav" style={{ background: "#a111ad"}} ><img className="iconfav"  src="fav.png" alt="corazon" style={{filter: "invert(100%)"}} /></button>
-          <button className="carro" style={{ background: "#a111ad"}} ><img  className="iconcarro" src="carrito.png" alt="carrito" style={{filter: "invert(100%)"}} /></button>
-
+          <Navbar></Navbar>
         </header>
-        
-        <footer>
-          <div></div>
-          <div>
-            <div className="cosas" ><img src="ubi.png" alt="ubicacion" className="ubi" /> Av. San Nicolás de Bari 743, F5300 La Rioja<img className="wsp" src="wsp.png" alt="whatsapp" />3804353826</div>
-            <div> <img className="email" src="email.webp" alt="email" /> modexserviciotecnico@gmail.com </div>
-            <div> <img src="instagram.png" alt="insta" className="insta" /> <img className="face" src="face.png" alt="face" /> modex.lr</div>
+        <div className="cont-web" >
+          <div className="carusel" >
+            <Carousel></Carousel>
           </div>
-          <div></div>
+          <div className="cont-doble">
+            <div className="barra-lateral"></div>
+            <div className="mostrar-prod"><ProductCard></ProductCard></div>
+          </div>
+        </div>
+        <footer style={{backgroundColor: "#FF7d21", height: "100px"}}>
+          <div style={{color: "#fff", display: "flex", justifyContent: "center" , flexDirection: "column", alignItems: "center"}}>
+            <div> Av. San Nicolás de Bari 743, F5300 La Rioja 3804353826</div>
+            <div> modexserviciotecnico@gmail.com </div>
+            <div> <InstagramIcon/> modex.lr</div>
+          </div>
         </footer>
       </body>
       <div className="">

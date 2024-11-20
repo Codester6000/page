@@ -1,0 +1,81 @@
+body {
+    margin: 0;
+}
+
+.custom-swiper {
+    margin-top: 60px; 
+}
+
+.swiperR {
+    width: 100%;
+    max-width: 1600px;
+    position: relative;
+}
+
+
+.imgCR {
+    height: 350px;
+    width: 100%;
+    object-fit: cover;
+    position: relative; 
+}
+
+/* Degradado a los costados */
+.swiper-slide::before,
+.swiper-slide::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 15%;
+    z-index: 2; 
+}
+
+.swiper-slide::before {
+    left: 0;
+    background: linear-gradient(to right, rgb(253, 253, 253), transparent);
+    /* background: linear-gradient(to right, rgb(255, 125, 33), transparent); */
+}
+
+.swiper-slide::after {
+    right: 0;
+    background: linear-gradient(to left, rgb(253, 253, 253), transparent);
+    /* background: linear-gradient(to left, rgb(255, 125, 33), transparent); */
+}
+
+
+@media (min-width: 1024px) {
+    .imgCR {
+        height: 440px;
+        width: 100%;
+        object-fit: cover;
+    }
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+    background-color: #ffffff;
+    height: 70px;
+    width: 50px;
+    margin-top: -35px;
+    --swiper-navigation-size: 30px;
+    --swiper-navigation-color: rgb(255, 115, 0);
+
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+:hover .swiper-button-next,
+:hover .swiper-button-prev {
+ opacity: 1;
+}
+
+.swiper-button-next {
+    border-radius: 35px 0 0 35px;
+    right: -5px;
+}
+
+.swiper-button-prev {
+    border-radius: 0 35px 35px 0;
+    left: -5px;
+}
