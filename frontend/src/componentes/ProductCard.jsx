@@ -29,8 +29,8 @@ export default function ProductCard() {
                             </AspectRatio>
                             <CardContent orientation="horizontal">
                                 <div >
-                                    <Typography level="h4">{resultado.nombre}</Typography>
-                                    <Typography  >{resultado.descripcion}</Typography>
+                                    <Typography level="h4" sx={{overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2}}>{resultado.nombre}</Typography>
+                                    <Typography sx={{overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2}} >{resultado.descripcion}</Typography>
                                     <Typography level='h3' sx={{fontWeight: 'xl' ,mt: 0.8 }}>${resultado.precio}</Typography>
                                     <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>
                                         <Button variant="contained" size="large" startIcon={<AddShoppingCartIcon></AddShoppingCartIcon>} sx={{ ml: 2, my: 2, backgroundColor: "#a111ad", height: 45, borderRadius: "20px", fontSize: '0.75rem', objectFit: "contain" }}>Añadir al Carro</Button>
