@@ -2,6 +2,7 @@ import express from "express";
 import {db} from "./database/connectionMySQL.js"
 import { body,query,validationResult} from "express-validator"
 import { validarQuerysProducto,validarBodyProducto } from "./middleware/validaciones.js";
+import passport from "passport";
 export const productosRouter = express.Router()
 
 
@@ -69,7 +70,7 @@ let sqlParteFinal = ` group by pr.id_producto, p.precio_dolar, p.precio_dolar_iv
 
 })  
 
-productosRouter.get("/:id", async (req, res) => {
+productosRouter.get("/:id",async (req, res) => {
     const id = req.params.id
     const [resultado, fields] = await db.execute(`SELECT pr.nombre,pr.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
 ,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
@@ -95,7 +96,7 @@ WHERE
 res.status(200).send({datos: resultado})
 })
 
-productosRouter.post("/", validarBodyProducto(),async(req, res) => {
+productosRouter.post("/", passport.authenticate("jwt",{session:false}),validarBodyProducto(),async(req, res) => {
     const errores = validationResult(req);
     if (!errores.isEmpty()) {
         return res.status(400).json({ errores: errores.array() });

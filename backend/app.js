@@ -4,18 +4,21 @@ import armadorRouter from './armador.js'
 import { conectarDB } from "./database/connectionMySQL.js"
 import productosRouter from "./productos.js"
 import usuarioRouter from "./usuarios.js"
-import authRouter from "./auth.js"
-const PUERTO = 3000
+import authRouter, { authConfig } from "./auth.js"
 
+const PUERTO = 3000
 const app = express()
+app.use("/auth",authRouter)
 conectarDB()
 app.use(cors())
 app.use(express.json())
+
+authConfig()
 //interpretar json en el body
 app.use('/productos',productosRouter)
 app.use("/armador",armadorRouter)
 app.use("/usuarios",usuarioRouter)
-app.use("/auth",authRouter)
+
 app.get("/", (req, res) => {
     res.send("hola mundo")
 })

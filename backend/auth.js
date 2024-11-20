@@ -3,7 +3,34 @@ import { body, validationResult } from "express-validator";
 import { db } from "./database/connectionMySQL.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import { ExtractJwt, Strategy } from "passport-jwt";
+import passport from "passport";
 const router = express.Router();
+
+export function authConfig() {
+    //opciones configuracion jwt
+    const jwtOptions = {
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+        secretOrKey: process.env.JWT_SECRET,
+    };
+    
+    //creo estrategias jwt
+
+    passport.use(
+        new Strategy(jwtOptions, async(payload, next)=>{
+            console.log(payload)
+            const [usuarios] = await db.execute(
+                "SELECT username FROM usuarios WHERE username = ?",
+                [payload.username]
+            );
+            if (usuarios.length > 0){
+                next(null, usuarios[0])
+            }else{
+                next(null, false)
+            }
+        })
+    )
+}
 
 router.post("/login",body("username").isAlphanumeric().notEmpty().isLength({max:25}),
 body("password").isStrongPassword({
@@ -20,7 +47,7 @@ body("password").isStrongPassword({
     }
 
     const {username,password} = req.body
-
+    
     const [usuarios] = await db.execute("SELECT * FROM usuarios WHERE username = ?",[username])
 
     if(usuarios === 0) {
@@ -34,7 +61,7 @@ body("password").isStrongPassword({
     }
     //crear jwt
     const payload = {username, mensaje:"hola mundo",dato:123}
-    const token = jwt.sign(payload,"ALGOSECRETO",{expiresIn:"2h"})
+    const token = jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:"2h"})
     //enviar jwt
     res.send({token})
 })
