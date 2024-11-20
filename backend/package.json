@@ -18,10 +18,14 @@
   },
   "homepage": "https://github.com/MatiSalinas/modexPage#readme",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "convert-array-to-csv": "^2.0.0",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-validator": "^7.2.0",
-    "mysql2": "^3.11.3"
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.11.3",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1"
   }
 }
