@@ -49,7 +49,7 @@ body("password").isStrongPassword({
     const {username,password} = req.body
     
     const [usuarios] = await db.execute("SELECT * FROM usuarios WHERE username = ?",[username])
-
+    
     if(usuarios == 0) {
         res.status(400).send({error:"Usuario o contraseña incorrecta"})
         return
@@ -62,7 +62,7 @@ body("password").isStrongPassword({
     }
     
     //crear jwt
-    const payload = {username, mensaje:"hola mundo",dato:123}
+    const payload = {username, rol:usuarios[0].id_rol,dato:123}
     const token = jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:"2h"})
     //enviar jwt
     res.send({token})
