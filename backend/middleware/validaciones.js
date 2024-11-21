@@ -38,3 +38,26 @@ export const validarBodyProducto = () => [
     body("precio_pesos_iva").isDecimal({ decimal_digits: "0,2" }).withMessage("El precio en pesos con IVA debe ser un decimal con hasta 2 dígitos decimales"),
     body("url_imagen").isURL().withMessage("La URL de la imagen debe ser válida"),
 ]
+
+export const validarBodyRegister = () => [
+    body("username").isAlphanumeric().notEmpty().isLength({max:25}).withMessage("usuario muy largo"),
+    body("password").isStrongPassword({
+    minLength:8,
+    minNumbers:1,
+    minUppercase:1,
+    minLowercase:1,
+    minSymbols:0
+}).withMessage("La contraseña debe contener 8 caracteres, 1 mayuscula , 1 minuscula, y 1 numero"),
+    body("fechaNacimiento").isISO8601().withMessage("Fecha invalida")
+]
+
+export const validarBodyLogin = () => [
+    body("username").isAlphanumeric().notEmpty().isLength({max:25}).withMessage("usuario muy largo"),
+    body("password").isStrongPassword({
+    minLength:8,
+    minNumbers:1,
+    minUppercase:1,
+    minLowercase:1,
+    minSymbols:0
+}).withMessage("La contraseña debe contener 8 caracteres, 1 mayuscula , 1 minuscula, y 1 numero"),
+]
