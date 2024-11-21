@@ -7,11 +7,11 @@ export async function conectarDB()
 {
     db = await mysql.createConnection(
         {
-            host: 'localhost',
+            host: process.env.DB_HOST,
             port:3306,
-            database:'schemamodex',
-            user:'root',
-            password:'61711634RGB_'
+            database:process.env.DB_NAME,
+            user:process.env.DB_USER,
+            password:process.env.DB_PASS
         }
     )
     
