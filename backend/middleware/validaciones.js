@@ -2,9 +2,11 @@ import { query,body} from "express-validator"
 
 export const validarQuerysProducto = () => [
     query("categoria").isAlphanumeric().notEmpty().withMessage("La categoría debe ser alfabética.").optional(),
-    query("precio_gt").isFloat({min:0}).optional(),
-    query("precio_lt").isFloat({min:0}).optional(),
+    query("precio_gt").isFloat({min:0}).optional().withMessage("precrio_gt no puede ser negativo"),
+    query("precio_lt").isFloat({min:0}).optional().withMessage("precrio_lt no puede ser negativo"),
     query("nombre").isAlpha().notEmpty().optional(),
+    query("offset").isInt({min:0}).withMessage("offset es obligatorio y no puede ser negativo"),
+    query("limit").isInt({min:1,max:100}).withMessage("limit es obligatorio y tiene que estar entre 1-100"),
     ];
 
 

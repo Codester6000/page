@@ -50,7 +50,7 @@ body("password").isStrongPassword({
     
     const [usuarios] = await db.execute("SELECT * FROM usuarios WHERE username = ?",[username])
 
-    if(usuarios === 0) {
+    if(usuarios == 0) {
         res.status(400).send({error:"Usuario o contraseña incorrecta"})
         return
     }
@@ -58,7 +58,9 @@ body("password").isStrongPassword({
     const passwrodCompared = await bcrypt.compare(password, usuarios[0].password)
     if(!passwrodCompared){
         res.status(400).send({error:"Usuario o contraseña incorrecta"})
+        return
     }
+    
     //crear jwt
     const payload = {username, mensaje:"hola mundo",dato:123}
     const token = jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:"2h"})
