@@ -22,9 +22,13 @@ body("password").isStrongPassword({
         res.status(400).send({errores:errores.array()})
     }
 
-    const { username, password} = req.body;
+    const { username, password,email} = req.body;
+    const [usuarioRepetido] = await db.execute("SELECT * FROM usuarios WHERE username = ?;",[username])
+    if (usuarioRepetido != 0){
+        return res.status(400).send("Ya existe un usuario registrado con ese username")
+    }
     const passwordHashed = await bcrypt.hash(password,10) 
-    const [result ] = await db.execute("INSERT INTO usuarios (username, password) VALUES (?,?)",[username,passwordHashed])
+    const [result ] = await db.execute("INSERT INTO usuarios (username, password,email) VALUES (?,?,?)",[username,passwordHashed,email])
     res.status(200).send({result})
 })
 
