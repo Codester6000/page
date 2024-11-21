@@ -6,12 +6,14 @@ import passport from "passport";
 export const productosRouter = express.Router()
 
 
-productosRouter.get("/",validarQuerysProducto(),async (req, res) => {
+productosRouter.get("/",passport.authenticate("jwt",{session:false}),validarQuerysProducto(),async (req, res) => {
     const validacion = validationResult(req);
   if (!validacion.isEmpty()) {
     res.status(400).send({ errores: validacion.array() });
     return;
   }
+  const [totalProductos] = await db.execute("SELECT COUNT(*) AS total_productos FROM productos")
+  console.log(totalProductos[0].total_productos)
     let sql = `SELECT pr.nombre,pr.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
 ,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
 p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,
@@ -32,9 +34,7 @@ WHERE
         WHERE id_producto = pr.id_producto
     ) `
 
-    
-
-let sqlParteFinal = ` group by pr.id_producto, p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor;`
+let sqlParteFinal = ` group by pr.id_producto, p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor`
     const filtros = []
     const parametros = []
 
@@ -59,14 +59,29 @@ let sqlParteFinal = ` group by pr.id_producto, p.precio_dolar, p.precio_dolar_iv
         filtros.push('pr.nombre LIKE CONCAT("%", ?, "%")')
         parametros.push(nombre)
     }
+    let limit = req.query.limit;
+
+    const offset = req.query.offset;
+    if (offset != undefined){
+        parametros.push(offset)
+    }else{
+        parametros.push(0)
+    }
+    if (Number(offset) > Number(totalProductos[0].total_productos)- 1){
+        return res.status(400).send("El offset no puede ser mayor al total de productos")
+    }
+    parametros.push(limit)
+
+    
     if (filtros.length > 0) {
         sql += ` AND ${filtros.join(" AND ")}`;
       }
 
       sql += sqlParteFinal
-
+      sql += " LIMIT ? , ?;"
+    
     const [resultado,fields] = await db.execute(sql,parametros)
-    return res.status(200).send({productos:resultado})
+    return res.status(200).send({productos:resultado, cantidadProductos:totalProductos[0].total_productos})
 
 })  
 
