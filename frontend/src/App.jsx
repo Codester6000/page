@@ -9,6 +9,7 @@ import "./styl.css"
 import Carousel from "./componentes/Carousel";
 import ProductCard from "./componentes/ProductCard";
 import MenuNavbar from "./componentes/MenuNavbar";
+import Login from "./componentes/Login"
 
 // IMPORTANTE HACER 
 // npm install @mui/joy @emotion/react @emotion/styled
@@ -38,6 +39,7 @@ function App() {
             <div className="mostrar-prod"><ProductCard></ProductCard></div>
           </div>
         </div>
+        <Login></Login>
         <footer style={{backgroundColor: "#FF7d21", height: "100px"}}>
           <div style={{color: "#fff", display: "flex", justifyContent: "center" , flexDirection: "column", alignItems: "center"}}>
             <div> Av. San Nicolás de Bari 743, F5300 La Rioja 3804353826</div>
