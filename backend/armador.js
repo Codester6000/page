@@ -12,7 +12,7 @@ armadorRouter.get("/", validarQueryArmador(), async (req, res) => {
         return;
     }
 
-    const [procesadores] = await db.execute(`SELECT pr.nombre, pr.stock, pr.peso, pr.garantia_meses, pr.codigo_fabricante,
+    const [procesadores] = await db.execute(`SELECT pr.nombre, p.stock, pr.peso, pr.garantia_meses, pr.codigo_fabricante,
        GROUP_CONCAT(DISTINCT c.nombre_categoria SEPARATOR ', ') AS categorias,
        GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
        p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva,
@@ -36,11 +36,11 @@ WHERE
         INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
         WHERE c2.nombre_categoria = "procesadores"
     )
-GROUP BY pr.id_producto, p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva, pr.alto, pr.ancho, pr.largo, pro.nombre_proveedor;
+GROUP BY pr.id_producto, p.stock,p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva, pr.alto, pr.ancho, pr.largo, pro.nombre_proveedor;
 `)
 
 
-    const [motherboards] = await db.execute(`SELECT pr.nombre, pr.stock, pr.peso, pr.garantia_meses, pr.codigo_fabricante,
+    const [motherboards] = await db.execute(`SELECT pr.nombre, p.stock, pr.peso, pr.garantia_meses, pr.codigo_fabricante,
 GROUP_CONCAT(DISTINCT c.nombre_categoria SEPARATOR ', ') AS categorias,
 GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
 p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva,
@@ -64,11 +64,11 @@ WHERE
         INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
         WHERE c2.nombre_categoria = "motherboards"
     )
-GROUP BY pr.id_producto, p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva, pr.alto, pr.ancho, pr.largo, pro.nombre_proveedor;
+GROUP BY pr.id_producto, p.stock,p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva, pr.alto, pr.ancho, pr.largo, pro.nombre_proveedor;
 `)
 
 
-    const [memorias] = await db.execute(`SELECT pr.nombre, pr.stock, pr.peso, pr.garantia_meses, pr.codigo_fabricante,
+    const [memorias] = await db.execute(`SELECT pr.nombre, p.stock, pr.peso, pr.garantia_meses, pr.codigo_fabricante,
 GROUP_CONCAT(DISTINCT c.nombre_categoria SEPARATOR ', ') AS categorias,
 GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
 p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva,
@@ -92,11 +92,11 @@ WHERE
         INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
         WHERE c2.nombre_categoria = "memorias pc"
     )
-GROUP BY pr.id_producto, p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva, pr.alto, pr.ancho, pr.largo, pro.nombre_proveedor;
+GROUP BY pr.id_producto, p.stock,p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva, pr.alto, pr.ancho, pr.largo, pro.nombre_proveedor;
 `)
 
 
-    const [fuentes] = await db.execute(`SELECT pr.nombre,pr.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias,
+    const [fuentes] = await db.execute(`SELECT pr.nombre,p.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias,
     GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
     p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,
     pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor
@@ -115,9 +115,9 @@ GROUP BY pr.id_producto, p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pes
                     FROM precios 
                     WHERE id_producto = pr.id_producto
                     ) AND c.nombre_categoria = "fuentes"
-                    group by pr.id_producto, p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor;`)
+                    group by pr.id_producto, p.precio_dolar, p.stock,p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor;`)
 
-    const [gabinetes] = await db.execute(`SELECT pr.nombre,pr.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
+    const [gabinetes] = await db.execute(`SELECT pr.nombre,p.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
         ,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
         p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,
         pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor
@@ -136,9 +136,9 @@ GROUP BY pr.id_producto, p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pes
                 FROM precios 
                 WHERE id_producto = pr.id_producto
                 ) AND c.nombre_categoria = "gabinetes"
-                group by pr.id_producto, p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor;`)
+                group by pr.id_producto, p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor;`)
     const [almacenamiento] = await db.execute(`
-        SELECT pr.nombre, pr.stock, pr.peso, pr.garantia_meses, pr.codigo_fabricante,
+        SELECT pr.nombre, p.stock, pr.peso, pr.garantia_meses, pr.codigo_fabricante,
         GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias,
         GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
         p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva,
@@ -157,7 +157,7 @@ GROUP BY pr.id_producto, p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pes
                 WHERE id_producto = pr.id_producto
             )
             AND c.nombre_categoria IN ("discos internos", "discos internos ssd")
-        GROUP BY pr.id_producto, p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva, pr.alto, pr.ancho, pr.largo, pro.nombre_proveedor;
+        GROUP BY pr.id_producto, p.precio_dolar, p.stock,p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva, pr.alto, pr.ancho, pr.largo, pro.nombre_proveedor;
                                 `);
 
 

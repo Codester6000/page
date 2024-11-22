@@ -1,7 +1,6 @@
 import { db, conectarDB } from './database/connectionMySQL.js'
 conectarDB()
-//TODO usar offset para recibir todos los productos
-
+console.log('aaaaa')
 const getElit = async () => {
 
     const myHeaders = new Headers();

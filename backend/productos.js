@@ -14,7 +14,7 @@ productosRouter.get("/",passport.authenticate("jwt",{session:false}),validarQuer
   }
   const [totalProductos] = await db.execute("SELECT COUNT(*) AS total_productos FROM productos")
   console.log(totalProductos[0].total_productos)
-    let sql = `SELECT pr.nombre,pr.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
+    let sql = `SELECT pr.nombre,p.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
 ,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
 p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,
 pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor
@@ -31,10 +31,10 @@ WHERE
     p.precio_dolar = (
         SELECT MIN(precio_dolar) 
         FROM precios 
-        WHERE id_producto = pr.id_producto
+        WHERE id_producto = pr.id_producto AND p.stock > 0
     ) `
 
-let sqlParteFinal = ` group by pr.id_producto, p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor`
+let sqlParteFinal = ` group by pr.id_producto, p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor`
     const filtros = []
     const parametros = []
 
@@ -87,7 +87,7 @@ let sqlParteFinal = ` group by pr.id_producto, p.precio_dolar, p.precio_dolar_iv
 
 productosRouter.get("/:id",async (req, res) => {
     const id = req.params.id
-    const [resultado, fields] = await db.execute(`SELECT pr.nombre,pr.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
+    const [resultado, fields] = await db.execute(`SELECT pr.nombre,p.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
 ,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
 p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,
 pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor
@@ -106,7 +106,7 @@ WHERE
         FROM precios 
         WHERE id_producto = pr.id_producto
         ) AND pr.id_producto = ?
-        group by pr.id_producto, p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor;`,[id])
+        group by pr.id_producto, p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor;`,[id])
         
 res.status(200).send({datos: resultado})
 })
