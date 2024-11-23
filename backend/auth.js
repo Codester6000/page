@@ -62,7 +62,7 @@ body("password").isStrongPassword({
     }
     
     //crear jwt
-    const payload = {username, rol:usuarios[0].id_rol,dato:123}
+    const payload = {username, rol:usuarios[0].id_rol,userId:usuarios[0].id_usuario}
     const token = jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:"2h"})
     //enviar jwt
     res.send({token})
