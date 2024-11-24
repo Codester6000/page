@@ -4,7 +4,7 @@ export const validarQuerysProducto = () => [
     query("categoria").isString().notEmpty().withMessage("La categoría debe ser alfabética.").optional(),
     query("precio_gt").isFloat({min:0}).optional().withMessage("precrio_gt no puede ser negativo"),
     query("precio_lt").isFloat({min:0}).optional().withMessage("precrio_lt no puede ser negativo"),
-    query("nombre").isAlpha().notEmpty().optional(),
+    query("nombre").isString().notEmpty().optional(),
     query("offset").isInt({min:0}).withMessage("offset es obligatorio y no puede ser negativo"),
     query("limit").isInt({min:1,max:100}).withMessage("limit es obligatorio y tiene que estar entre 1-100"),
     ];

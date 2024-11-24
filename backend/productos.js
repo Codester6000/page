@@ -59,6 +59,30 @@ let sqlParteFinal = ` group by pr.id_producto, p.stock,p.precio_dolar, p.precio_
         filtros.push('pr.nombre LIKE CONCAT("%", ?, "%")')
         parametros.push(nombre)
     }
+    let sqlCuenta = `SELECT count(DISTINCT pr.id_producto) AS cuenta
+    FROM productos pr 
+    INNER JOIN precios p 
+    ON pr.id_producto = p.id_producto 
+    INNER JOIN productos_categorias pc 
+    ON pr.id_producto = pc.id_producto 
+    INNER JOIN categorias c ON pc.id_categoria = c.id_categoria
+    INNER JOIN productos_imagenes pi ON pi.id_producto = pr.id_producto
+    INNER JOIN imagenes i ON pi.id_imagen = i.id_imagen
+    INNER JOIN proveedores pro ON pro.id_proveedor = p.id_proveedor
+    WHERE 
+    p.precio_dolar = (
+        SELECT MIN(precio_dolar) 
+        FROM precios 
+        WHERE id_producto = pr.id_producto AND p.stock > 0
+        ) `
+    
+        if (filtros.length > 0) {
+            sql += ` AND ${filtros.join(" AND ")}`;
+            sqlCuenta += ` AND ${filtros.join(" AND ")}`;
+        }
+        
+        const [cuenta,fields2] = await db.execute(sqlCuenta,parametros)
+        console.log(cuenta[0].cuenta)
     let limit = req.query.limit;
 
     const offset = req.query.offset;
@@ -71,17 +95,14 @@ let sqlParteFinal = ` group by pr.id_producto, p.stock,p.precio_dolar, p.precio_
         return res.status(400).send("El offset no puede ser mayor al total de productos")
     }
     parametros.push(limit)
-
     
-    if (filtros.length > 0) {
-        sql += ` AND ${filtros.join(" AND ")}`;
-      }
-
-      sql += sqlParteFinal
-      sql += " LIMIT ? , ?;"
+        
+        sql += sqlParteFinal
+        
+        sql += " LIMIT ? , ?;"
     
     const [resultado,fields] = await db.execute(sql,parametros)
-    return res.status(200).send({productos:resultado, cantidadProductos:totalProductos[0].total_productos})
+    return res.status(200).send({productos:resultado, cantidadProductos:cuenta[0].cuenta})
 
 })  
 
