@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState,useEffect } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 const AuthContext = createContext();
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -11,7 +11,18 @@ export const useAuth = () => {
 
 // Componente principal
 export const AuthProvider = ({ children }) => {
-  const [sesion, setSesion] = useState(null);
+  const [sesion, setSesion] = useState(()=>{
+    const storedSesion = localStorage.getItem('sesion');
+    return storedSesion ? JSON.parse(storedSesion) : null;
+  });
+
+  useEffect(()=>{
+    if (sesion) {
+      localStorage.setItem('sesion',JSON.stringify(sesion))
+    }else{
+      localStorage.removeItem('sesion')
+    }
+  },[sesion]);
 
   const login = async (username, password, ok, error) => {
     const response = await fetch("http://localhost:3000/auth/login", {
