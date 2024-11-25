@@ -17,20 +17,25 @@ export function authConfig() {
     //creo estrategias jwt
 
     passport.use(
-        new Strategy(jwtOptions, async(payload, next)=>{
-            console.log(payload)
-            const [usuarios] = await db.execute(
-                "SELECT username FROM usuarios WHERE username = ?",
-                [payload.username]
-            );
-            if (usuarios.length > 0){
-                next(null, usuarios[0])
-            }else{
-                next(null, false)
-            }
+        new Strategy(jwtOptions, async (payload, next) => {
+            next(null, payload);
         })
-    )
+    );
 }
+
+export const validarJwt = passport.authenticate("jwt", {
+    session: false,
+    });
+
+export const validarRol = (rol) => (req, res, next) => {
+    console.log(req.user.rol)
+    if (req.user.rol !== rol) {
+        return res
+        .status(400)
+        .send({ mensaje: "No esta autorizado para realizar esta accion" });
+    }
+    next();
+};
 
 router.post("/login",body("username").isAlphanumeric().notEmpty().isLength({max:25}),
 body("password").isStrongPassword({
@@ -55,7 +60,11 @@ body("password").isStrongPassword({
         return
     }
     //verificar usuario y contraseña
-    const passwrodCompared = await bcrypt.compare(password, usuarios[0].password)
+    const passwrodCompared = await bcrypt.compare(
+        password,
+        usuarios[0].
+        password);
+
     if(!passwrodCompared){
         res.status(400).send({error:"Usuario o contraseña incorrecta"})
         return
