@@ -65,6 +65,6 @@ body("password").isStrongPassword({
     const payload = {username, rol:usuarios[0].id_rol,userId:usuarios[0].id_usuario}
     const token = jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:"2h"})
     //enviar jwt
-    res.send({token})
+    res.send({username:usuarios[0].username,rol:usuarios[0].id_rol,token})
 })
 export default router;
