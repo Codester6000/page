@@ -7,6 +7,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useState } from "react";
 import MenuNavbar from "./MenuNavbar";
+import { AuthStatus } from "../Auth";
 
 
 
@@ -26,7 +27,7 @@ export default function Navbar() {
                     </Button> */}
                         <img src="modex.png" alt="logo modex" style={{ width: "150px", height: "auto", padding: "15px", paddingRight: "10px" , filter: "brightness(0) invert(1)" }} />
                     <CustomizedInputBase ></CustomizedInputBase>
-                    <Button variant="contained" size="large" startIcon={<PersonIcon/>} sx={{ml: 2, backgroundColor: "#a111ad", borderRadius: "20px", objectFit: "contain"}}>Ingresar</Button>
+                    <AuthStatus />
                     <IconButton variant="contained" sx={{ml: 2, backgroundColor: "#a111ad", borderRadius: 20, height: "45px", width: "45px" , padding: "5px", objectFit: "cover", color: "white"}}><FavoriteIcon color="inherit"/></IconButton>
                     <IconButton variant="contained" sx={{ml: 2, backgroundColor: "#a111ad", borderRadius: 50, height: "45px", width: "45px" , padding: "5px", objectFit: "cover", color: "white"}}><ShoppingCartIcon color="inherit"/></IconButton>
                     {/* <Button> <img src="./public/fav.png" alt="" style={{ width: "50px", height: "auto", padding: "15px", filter: "brightness(0) invert(1)" }} /></Button>

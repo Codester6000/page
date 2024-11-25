@@ -1,8 +1,9 @@
 import { createContext, useContext, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-
 const AuthContext = createContext();
 
+import PersonIcon from '@mui/icons-material/Person';
+import {Button } from "@mui/material";
 // Hook con sesion
 export const useAuth = () => {
   return useContext(AuthContext);
@@ -59,4 +60,21 @@ export const AuthRol = ({ rol, children }) => {
   }
 
   return children;
+};
+
+
+export const AuthStatus = () => {
+  const { sesion, logout } = useAuth();
+  const navigate = useNavigate();
+
+  if (!sesion) {
+    return <Button variant="contained" size="large" startIcon={<PersonIcon/>} sx={{ml: 2, backgroundColor: "#a111ad", borderRadius: "20px", objectFit: "contain"}}>Ingresar</Button>
+  }
+
+  return (
+    <>
+      <p>Conectado como {sesion.username}</p>
+      <button onClick={() => logout(() => navigate("/"))}>Salir</button>
+    </>
+  );
 };
