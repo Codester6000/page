@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 import Card from "@mui/joy/Card";
 import Container from "@mui/material/Container";
 import Grid from "@mui/joy/Grid";
@@ -24,6 +25,7 @@ export default function ProductCard() {
     const [precioMax, setPrecioMax] = useState("");
     const [precioMin, setPrecioMin] = useState("");
     const { sesion } = useAuth();
+
 
     const construirQuery = () => {
         let query = `offset=${(pagina - 1) * itemPorPagina}&limit=${itemPorPagina}`;
@@ -69,6 +71,8 @@ export default function ProductCard() {
     }, [pagina]);
     return (
         <Container>
+            <Typography level="h3">Filtrar por: </Typography>
+            <br />
             <TextField label="Buscar por Nombre" name="nombre" variant="outlined" size="small" value={nombre} onChange={(e) => setNombre(e.target.value)} style={{ marginRight: "10px" }} />
             {/* <TextField label="Buscar por Categoria" name="categoria" variant="outlined" size="small" value={categoria} onChange={(e) => setCategoria(e.target.value)}  style={{ marginRight: "10px" }} /> */}
             <TextField label="Minimo Precio" name="precioMin" variant="outlined" size="small" value={precioMax} onChange={(e) => setPrecioMax(e.target.value)}  style={{ marginRight: "10px" }} />
