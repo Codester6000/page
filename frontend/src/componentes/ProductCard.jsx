@@ -13,35 +13,44 @@ import Pagination from "@mui/material/Pagination";
 import { TextField } from "@mui/material";
 
 import { useAuth } from "../Auth";
+
 export default function ProductCard() {
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 30;
-    const [totales, setTotales] = useState(0)
-    const [nombre, setNombre] = useState("")
-    const [categoria, setCategoria] = useState("")
-    const [precioMax, setPrecioMax] = useState()
-    const [precioMin, setPrecioMin] = useState()
-    const [query, setQuery] = useState("30&nombre=procesador")
-    const {sesion} = useAuth()
+    const [totales, setTotales] = useState(0);
+    const [nombre, setNombre] = useState("");
+    const [categoria, setCategoria] = useState("");
+    const [precioMax, setPrecioMax] = useState("");
+    const [precioMin, setPrecioMin] = useState("");
+    const { sesion } = useAuth();
+
+    const construirQuery = () => {
+        let query = `offset=${(pagina - 1) * itemPorPagina}&limit=${itemPorPagina}`;
+        if (precioMin) query += `&precio_lt=${precioMin}`;
+        if (precioMax) query += `&precio_gt=${precioMax}`;
+        if (categoria) query += `&categoria=${categoria}`;
+        if (nombre) query += `&nombre=${nombre}`;
+        return query;
+    };
+
     const getProductos = async () => {
         try {
-            const offset = (pagina - 1) * itemPorPagina;
+            const query = construirQuery();
             const response = await fetch(
-                `http://localhost:3000/productos?offset=${offset}&limit=${query}`,
+                `http://localhost:3000/productos?${query}`,
                 {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization:
-                        `Bearer ${sesion.token}`,
+                        Authorization: `Bearer ${sesion.token}`,
                     },
                 }
-                );
+            );
 
             if (response.ok) {
                 const data = await response.json();
-                setTotales(data.cantidadProductos)
+                setTotales(data.cantidadProductos);
                 if (data.productos && Array.isArray(data.productos)) {
                     setProductos(data.productos);
                 } else {
@@ -54,23 +63,17 @@ export default function ProductCard() {
             console.error("Error en la solicitud:", error);
         }
     };
-    
-    const ponerFiltros=()=>{
-
-    }
 
     useEffect(() => {
-        
         getProductos();
     }, [pagina]);
-
     return (
         <Container>
             <TextField label="Buscar por Nombre" name="nombre" variant="outlined" size="small" value={nombre} onChange={(e) => setNombre(e.target.value)} style={{ marginRight: "10px" }} />
             {/* <TextField label="Buscar por Categoria" name="categoria" variant="outlined" size="small" value={categoria} onChange={(e) => setCategoria(e.target.value)}  style={{ marginRight: "10px" }} /> */}
             <TextField label="Minimo Precio" name="precioMin" variant="outlined" size="small" value={precioMax} onChange={(e) => setPrecioMax(e.target.value)}  style={{ marginRight: "10px" }} />
             <TextField label="Maximo Precio" name="precioMax" variant="outlined" size="small" value={precioMin} onChange={(e) => setPrecioMin(e.target.value)}  style={{ marginRight: "10px" }} />
-            <Button variant="contained" sx={{backgroundColor: "#a111ad"}} onClick={(ponerFiltros) => setPagina(1)}>
+            <Button variant="contained" sx={{backgroundColor: "#a111ad"}} onClick={() => {setPagina(1); getProductos();}}>
                     Aplicar Filtros
                 </Button>
             <Grid container spacing={5} style={{ marginTop: "20px" }}>

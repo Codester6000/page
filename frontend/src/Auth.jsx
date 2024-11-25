@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 const AuthContext = createContext();
-
+import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
 import {Button } from "@mui/material";
 // Hook con sesion
@@ -73,8 +73,9 @@ export const AuthStatus = () => {
 
   return (
     <>
-      <p>Conectado como {sesion.username}</p>
-      <button onClick={() => logout(() => navigate("/"))}>Salir</button>
+      {/* <p>Conectado como {sesion.username}</p> */}
+      {/* <button onClick={() => logout(() => navigate("/"))}>Salir</button> */}
+      <Button variant="contained" startIcon={<LogoutIcon></LogoutIcon>} sx={{ml: 2, backgroundColor: "#a111ad", height: 45 , borderRadius: "25px", objectFit: "contain"}} onClick={() => logout(() => navigate("/"))} >{sesion.username}</Button>
     </>
   );
 };
