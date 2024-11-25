@@ -1,19 +1,13 @@
 import express from "express";
 import {db} from "./database/connectionMySQL.js"
-import { body,query,validationResult} from "express-validator"
-import { validarQuerysProducto,validarBodyProducto } from "./middleware/validaciones.js";
+import { validarQuerysProducto,validarBodyProducto,verificarValidaciones } from "./middleware/validaciones.js";
+
 import passport from "passport";
+import { validarJwt, validarRol } from "./auth.js";
 export const productosRouter = express.Router()
 
 
-productosRouter.get("/",passport.authenticate("jwt",{session:false}),validarQuerysProducto(),async (req, res) => {
-    const validacion = validationResult(req);
-  if (!validacion.isEmpty()) {
-    res.status(400).send({ errores: validacion.array() });
-    return;
-  }
-  const [totalProductos] = await db.execute("SELECT COUNT(*) AS total_productos FROM productos")
-  console.log(totalProductos[0].total_productos)
+productosRouter.get("/",validarJwt,validarQuerysProducto(),verificarValidaciones,async (req, res) => {
     let sql = `SELECT pr.nombre,p.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
 ,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
 p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,
@@ -51,7 +45,6 @@ let sqlParteFinal = ` group by pr.id_producto, p.stock,p.precio_dolar, p.precio_
     const precio_lt = req.query.precio_lt;
     if (precio_lt != undefined){
         filtros.push("p.precio_pesos_iva < ?")
-        console.log(precio_lt)
         parametros.push(precio_lt)
     }
     const nombre = req.query.nombre;
@@ -82,7 +75,6 @@ let sqlParteFinal = ` group by pr.id_producto, p.stock,p.precio_dolar, p.precio_
         }
         
         const [cuenta,fields2] = await db.execute(sqlCuenta,parametros)
-        console.log(cuenta[0].cuenta)
     let limit = req.query.limit;
 
     const offset = req.query.offset;
@@ -91,7 +83,7 @@ let sqlParteFinal = ` group by pr.id_producto, p.stock,p.precio_dolar, p.precio_
     }else{
         parametros.push(0)
     }
-    if (Number(offset) > Number(totalProductos[0].total_productos)- 1){
+    if (Number(offset) > Number(cuenta[0].cuenta)- 1){
         return res.status(400).send("El offset no puede ser mayor al total de productos")
     }
     parametros.push(limit)
@@ -106,7 +98,7 @@ let sqlParteFinal = ` group by pr.id_producto, p.stock,p.precio_dolar, p.precio_
 
 })  
 
-productosRouter.get("/:id",async (req, res) => {
+productosRouter.get("/:id",validarJwt,async (req, res) => {
     const id = req.params.id
     const [resultado, fields] = await db.execute(`SELECT pr.nombre,p.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
 ,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
@@ -132,11 +124,8 @@ WHERE
 res.status(200).send({datos: resultado})
 })
 
-productosRouter.post("/", passport.authenticate("jwt",{session:false}),validarBodyProducto(),async(req, res) => {
-    const errores = validationResult(req);
-    if (!errores.isEmpty()) {
-        return res.status(400).json({ errores: errores.array() });
-    }
+productosRouter.post("/", validarJwt,validarRol(2),validarBodyProducto(),verificarValidaciones,async(req, res) => {
+
 
     const {
         nombre,

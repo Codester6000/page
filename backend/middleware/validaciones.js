@@ -1,4 +1,4 @@
-import { query,body} from "express-validator"
+import { query,body,param,validationResult} from "express-validator"
 
 export const validarQuerysProducto = () => [
     query("categoria").isString().notEmpty().withMessage("La categoría debe ser alfabética.").optional(),
@@ -61,3 +61,17 @@ export const validarBodyLogin = () => [
     minSymbols:0
 }).withMessage("La contraseña debe contener 8 caracteres, 1 mayuscula , 1 minuscula, y 1 numero"),
 ]
+
+export const validarBodyCarrito = () => [
+    body("id_producto").isAlphanumeric().notEmpty().isLength({min:1}).withMessage("Ingrese un id producto valido"),
+]
+export const validarId = param("id").isInt({min:1})
+
+export const verificarValidaciones = (req, res, next) => {
+    // Enviar errores de validacion en caso de ocurrir alguno.
+    const validacion = validationResult(req);
+    if (!validacion.isEmpty()) {
+        return res.status(400).send({ errores: validacion.array() });
+    }
+    next();
+  };
