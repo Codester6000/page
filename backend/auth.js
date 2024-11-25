@@ -18,7 +18,6 @@ export function authConfig() {
 
     passport.use(
         new Strategy(jwtOptions, async(payload, next)=>{
-            console.log(payload)
             const [usuarios] = await db.execute(
                 "SELECT username FROM usuarios WHERE username = ?",
                 [payload.username]
@@ -55,7 +54,11 @@ body("password").isStrongPassword({
         return
     }
     //verificar usuario y contraseña
-    const passwrodCompared = await bcrypt.compare(password, usuarios[0].password)
+    const passwrodCompared = await bcrypt.compare(
+        password,
+        usuarios[0].
+        password);
+        
     if(!passwrodCompared){
         res.status(400).send({error:"Usuario o contraseña incorrecta"})
         return
