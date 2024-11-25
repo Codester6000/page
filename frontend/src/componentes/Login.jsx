@@ -5,10 +5,17 @@ import icono_contraseña from '/iconos/password.png'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { formLoginSchema } from '../validations/formlogin'
+import {useLocation, useNavigate} from "react-router-dom"
+import { useAuth } from "../Auth";
 const Login = () =>{
     const {register,handleSubmit,resetField,formState:{errors}} = useForm({
         resolver:zodResolver(formLoginSchema)
     })
+    const { login } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const from = location.state?.from?.pathname || "/";
 
     const onSubmit = async (datos) => {
         console.log(datos)
@@ -24,6 +31,13 @@ const Login = () =>{
             console.log(mensaje)
         
         }
+        login(
+            datos.username,
+            datos.password,
+            () =>navigate(from,{replace:true}),
+            () =>console.log('Error')
+        )
+        event.preventDefault();
     };
     return (
         <div className="loginContainer">
