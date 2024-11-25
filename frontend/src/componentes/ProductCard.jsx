@@ -21,8 +21,7 @@ export default function ProductCard() {
     const [categoria, setCategoria] = useState("")
     const [precioMax, setPrecioMax] = useState()
     const [precioMin, setPrecioMin] = useState()
-    const [query, setQuery] = useState("30")
-    
+    const [query, setQuery] = useState("30&nombre=procesador")
     
     const getProductos = async () => {
         try {
