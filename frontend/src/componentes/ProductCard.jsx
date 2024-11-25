@@ -12,6 +12,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import Pagination from "@mui/material/Pagination";
 import { TextField } from "@mui/material";
 
+import { useAuth } from "../Auth";
 export default function ProductCard() {
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
@@ -23,7 +24,7 @@ export default function ProductCard() {
     const [precioMin, setPrecioMin] = useState()
     const [query, setQuery] = useState("30")
     
-    
+    const {sesion} = useAuth()
     const getProductos = async () => {
         try {
             const offset = (pagina - 1) * itemPorPagina;
@@ -34,7 +35,7 @@ export default function ProductCard() {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization:
-                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlNodWtlciIsInJvbCI6MSwidXNlcklkIjoxMiwiaWF0IjoxNzMyNDg2ODc1LCJleHAiOjE3MzI0OTQwNzV9.JRMnAoOOf3Xg_ZjKu_GFaQj7Uftdc75MXPrKHFCUakI",
+                        `Bearer ${sesion.token}`,
                     },
                 }
                 );
