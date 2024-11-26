@@ -71,18 +71,9 @@ export default function ProductCard() {
     }, [pagina]);
     return (
         <Container>
-            <Card sx={{ width: "100%", bgcolor: "#e0e0e0", my: "40px" }}>
+            <Card sx={{ width: "100%", bgcolor: "#e0e0e0", my: "20px", paddingLeft: 10  }}>
 
-                {/* <Typography level="h3">Filtrar por: </Typography>
-            <br />
-            <TextField label="Buscar por Nombre" name="nombre" variant="outlined" size="small" value={nombre} onChange={(e) => setNombre(e.target.value)} style={{ marginRight: "10px" }} />
-            <TextField label="Buscar por Categoria" name="categoria" variant="outlined" size="small" value={categoria} onChange={(e) => setCategoria(e.target.value)}  style={{ marginRight: "10px" }} />
-            <TextField label="Minimo Precio" name="precioMin" variant="outlined" size="small" value={precioMax} onChange={(e) => setPrecioMax(e.target.value)}  style={{ marginRight: "10px" }} />
-            <TextField label="Maximo Precio" name="precioMax" variant="outlined" size="small" value={precioMin} onChange={(e) => setPrecioMin(e.target.value)}  style={{ marginRight: "10px" }} />
-            <Button variant="contained" sx={{backgroundColor: "#a111ad"}} onClick={() => {setPagina(1); getProductos();}}>
-                    Aplicar Filtros
-                </Button> */}
-                <Grid container spacing={2} style={{ marginTop: "10px" }}>
+                <Grid container spacing={3} style={{ marginTop: "10px" }}>
                     {productos.length > 0 ? (
                         productos.map((producto, index) => (
                             <Grid item key={index} xs={12}>
@@ -90,7 +81,7 @@ export default function ProductCard() {
                                     variant="outlined"
                                     orientation="horizontal"
                                     sx={{
-                                        width: "90%",
+                                        width: "95%",
                                         '&:hover': { boxShadow: 'md', borderColor: 'neutral.outlinedHoverBorder' }
                                     }}
                                 >
@@ -105,13 +96,46 @@ export default function ProductCard() {
                                         <Typography level="h2" id="card-description" sx={{ fontWeight: 'bold' }}>
                                             {producto.nombre}
                                         </Typography>
-                                        <Typography level="body-sm" aria-describedby="card-description" sx={{ mb: 1 }}>
-                                            {producto.descripcion}
+                                        <Typography level="body-m" aria-describedby="card-description" sx={{ mb: 1 }}>
+                                            {producto.categorias}
                                         </Typography>
-                                        <Typography level="h2" sx={{ fontWeight: "bold", mt: 0.8 }}>
+                                        <Typography level="body-m" aria-describedby="card-description" sx={{ mb: 1 }}>
+                                            {producto.codigo_fabricante}
+                                        </Typography>
+                                        <Typography level="h2" sx={{ fontWeight: "bold", mt: 0.8, color: "#FF7d21" }}>
                                             ${producto.precio_pesos_iva}
                                         </Typography>
                                     </CardContent>
+                                <Grid>
+                                <div style={{ display: "flex", flexDirection: "column" , alignItems: "center", marginLeft: "auto" }}>
+                                                    <IconButton variant="contained" size="large" sx={{
+                                                        my: 4, ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white",
+                                                        "&:active": {
+                                                            transform: "scale(0.95)",
+                                                            transition: "transform 0.2s ease",
+                                                        },
+                                                        "&:hover": {
+                                                            backgroundColor: "#9e2590",
+                                                        },
+                                                    }}
+                                                    >
+                                                        <AddShoppingCartIcon/>
+                                                    </IconButton>
+                                                    <IconButton variant="contained" size="large" sx={{
+                                                        ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white",
+                                                        "&:active": {
+                                                            transform: "scale(0.95)",
+                                                            transition: "transform 0.2s ease",
+                                                        },
+                                                        "&:hover": {
+                                                            backgroundColor: "#9e2590",
+                                                        },
+                                                    }}
+                                                    >
+                                                        <FavoriteIcon />
+                                                    </IconButton>
+                                                </div>
+                                </Grid>
                                 </Card>
                             </Grid>
                         ))

@@ -109,6 +109,7 @@ export default function Categorias() {
                                                     color: '#ffff',
                                                     borderRadius: "0px",
                                                 }}
+                                                // onClick={}
                                             >
                                                 {subcategory}
                                             </ListItemButton>

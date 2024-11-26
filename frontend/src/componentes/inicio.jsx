@@ -15,9 +15,7 @@ function Inicio() {
         <div className="cont-doble">
 
             <div className="barra-lateral">
-                <Card sx={{ bgcolor: "#9e2590" }}>
-                    <Categorias />
-                </Card>
+
             </div>
             <div className="mostrar-prod">
                 <ProductCard />
