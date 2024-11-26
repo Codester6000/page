@@ -13,6 +13,7 @@ import Login from "./componentes/Login"
 import Register from "./componentes/Register"
 import Footer from "./componentes/footer"
 import Inicio from "./componentes/inicio";
+import Busqueda from "./componentes/Busqueda";
 
 
 
@@ -27,6 +28,7 @@ function App() {
         <Routes>
         <Route path="/" element={<AuthPage><Inicio /></AuthPage>}/>
 
+        <Route path="/busqueda" element={<Busqueda/>} />
         <Route path="/login" element={<Login/>}/>
         <Route path="/register" element={<Register/>}/>
 
