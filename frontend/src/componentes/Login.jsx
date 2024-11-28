@@ -7,6 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { formLoginSchema } from '../validations/formlogin'
 import {useLocation, useNavigate} from "react-router-dom"
 import { useAuth } from "../Auth";
+import { Link } from "react-router-dom";
+
 const Login = () =>{
     const {register,handleSubmit,resetField,formState:{errors}} = useForm({
         resolver:zodResolver(formLoginSchema)
@@ -64,7 +66,9 @@ const Login = () =>{
             <div className="submit-contenedor">
                 <button type="submit" className="submit">Iniciar sesión</button>
             </div>
+            <p>No tienes una cuenta? Haz clic <Link to="/register">Aquí!</Link></p>
             </form>
+            
         </div>
     )
 }
