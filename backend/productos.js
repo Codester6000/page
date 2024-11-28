@@ -1,6 +1,6 @@
 import express from "express";
 import {db} from "./database/connectionMySQL.js"
-import { validarQuerysProducto,validarBodyProducto,verificarValidaciones } from "./middleware/validaciones.js";
+import { validarQuerysProducto,validarBodyProducto,verificarValidaciones,validarId } from "./middleware/validaciones.js";
 
 import passport from "passport";
 import { validarJwt, validarRol } from "./auth.js";
@@ -98,7 +98,7 @@ let sqlParteFinal = ` group by pr.id_producto, p.stock,p.precio_dolar, p.precio_
 
 })  
 
-productosRouter.get("/:id",validarJwt,async (req, res) => {
+productosRouter.get("/:id",validarJwt,validarId,verificarValidaciones,async (req, res) => {
     const id = req.params.id
     const [resultado, fields] = await db.execute(`SELECT pr.nombre,p.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
 ,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
@@ -179,6 +179,36 @@ productosRouter.post("/", validarJwt,validarRol(2),validarBodyProducto(),verific
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Error al cargar el producto" });
+    }
+})
+
+productosRouter.delete("/:id",validarJwt,validarRol(2),validarId,async (req,res)=> {
+    const id = req.params.id
+    try {
+        const sql = "DELETE FROM productos WHERE id_producto = ?;"
+        const [resultado] = db.execute(sql,[id])
+        if(resultado.affectedRows == 0){
+            return res.status(400).send({mensaje:"Prodcuto no encontrado"})
+        }
+        return res.status(200).send({mensaje:"Producto eliminado con exito"})
+    
+        
+    }catch(error){
+        return res.status(500).send({error:error})
+    }
+})
+productosRouter.put("/:id",validarJwt,validarRol(2),validarId,verificarValidaciones,async (req,res)=>{
+    const id = req.params.id
+    const {nuevo_precio,producto_id,proveedor_id} = req.query
+    try{
+        const sql = "UPDATE precios SET precio_pesos_iva = ? WHERE (id_producto = ? AND id_proveedor = ?);"
+        const resultado = db.execute(sql,[nuevo_precio,producto_id,proveedor_id])
+        if(resultado.affectedRows == 0){
+            res.status(400).send({mensaje:"Id producto o id proveedor invalido"})
+        }
+        res.status(200).send({mensaje:"Precio actualizado"})
+    }catch(error){
+    res.status(500).send({error:error})
     }
 })
 export default productosRouter;
