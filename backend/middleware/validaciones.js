@@ -65,6 +65,10 @@ export const validarBodyLogin = () => [
 export const validarBodyCarrito = () => [
     body("id_producto").isAlphanumeric().notEmpty().isLength({min:1}).withMessage("Ingrese un id producto valido"),
 ]
+export const validarBodyPutCarrito = () => [
+    body("id_producto").isAlphanumeric().notEmpty().isLength({min:1}).withMessage("Ingrese un id producto valido"),
+    body("cantidad").isInt({min:1}).notEmpty().withMessage("Pasar un numero entero")
+]
 export const validarId = param("id").isInt({min:1})
 
 export const verificarValidaciones = (req, res, next) => {
