@@ -15,6 +15,7 @@ import Footer from "./componentes/footer"
 import Inicio from "./componentes/inicio";
 import Busqueda from "./componentes/Busqueda";
 import Carrito from "./componentes/Carrito";
+import Favorito from "./componentes/Favorito";
 
 
 
@@ -33,6 +34,7 @@ function App() {
         <Route path="/login" element={<Login/>}/>
         <Route path="/register" element={<Register/>}/>
         <Route path="/carrito" element={<Carrito/>}/>
+        <Route path="/favorito" element={<Favorito/>}/>
 
         </Routes>
       </body>

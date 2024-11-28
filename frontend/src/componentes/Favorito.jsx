@@ -6,30 +6,21 @@ import Grid from "@mui/joy/Grid";
 import CardContent from "@mui/joy/CardContent";
 import Typography from "@mui/joy/Typography";
 import AspectRatio from "@mui/joy/AspectRatio";
-import Button from "@mui/material/Button";
 import IconButton from "@mui/joy/IconButton";
-import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import Pagination from "@mui/material/Pagination";
-import { Chip, TextField } from "@mui/material";
-
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useAuth } from "../Auth";
 
-export default function ProductCard() {
+export default function Favorito() {
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 30;
     const [totales, setTotales] = useState(0);
-    const [nombre, setNombre] = useState("");
-    const [categoria, setCategoria] = useState("");
-    const [precioMax, setPrecioMax] = useState("");
-    const [precioMin, setPrecioMin] = useState("");
-    const { sesion } = useAuth();
 
+    const { sesion } = useAuth();
 
     const construirQuery = () => {
         let query = `offset=${(pagina - 1) * itemPorPagina}&limit=${itemPorPagina}`;
-        if (nombre) query += `&nombre=${nombre}`;
         return query;
     };
 
@@ -68,8 +59,9 @@ export default function ProductCard() {
     }, [pagina]);
     return (
         <Container>
-            <Card sx={{ width: "100%", bgcolor: "#e0e0e0", my: "20px", paddingLeft: 10  }}>
 
+            <Card sx={{ width: "100%", bgcolor: "#e0e0e0", my: "20px", paddingLeft: 10 }}>
+                <Typography starIcon level="h1" id="card-description" sx={{ fontWeight: 'bold' }}> Favoritos de {sesion.username}</Typography>
                 <Grid container spacing={3} style={{ marginTop: "10px" }}>
                     {productos.length > 0 ? (
                         productos.map((producto, index) => (
@@ -103,36 +95,22 @@ export default function ProductCard() {
                                             ${producto.precio_pesos_iva}
                                         </Typography>
                                     </CardContent>
-                                <Grid>
-                                <div style={{ display: "flex", flexDirection: "column" , alignItems: "center", marginLeft: "auto" }}>
-                                                    <IconButton variant="contained" size="large" sx={{
-                                                        my: 4, ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white",
-                                                        "&:active": {
-                                                            transform: "scale(0.95)",
-                                                            transition: "transform 0.2s ease",
-                                                        },
-                                                        "&:hover": {
-                                                            backgroundColor: "#9e2590",
-                                                        },
-                                                    }}
-                                                    >
-                                                        <AddShoppingCartIcon/>
-                                                    </IconButton>
-                                                    <IconButton variant="contained" size="large" sx={{
-                                                        ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white",
-                                                        "&:active": {
-                                                            transform: "scale(0.95)",
-                                                            transition: "transform 0.2s ease",
-                                                        },
-                                                        "&:hover": {
-                                                            backgroundColor: "#9e2590",
-                                                        },
-                                                    }}
-                                                    >
-                                                        <FavoriteIcon />
-                                                    </IconButton>
-                                                </div>
-                                </Grid>
+                                    <Grid>
+                                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginLeft: "auto" }}>
+                                            <IconButton variant="contained" size="large" sx={{mt: 8, ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white",
+                                                "&:active": {
+                                                    transform: "scale(0.95)",
+                                                    transition: "transform 0.2s ease",
+                                                },
+                                                "&:hover": {
+                                                    backgroundColor: "#9e2590",
+                                                },
+                                            }}
+                                            >
+                                                <DeleteIcon></DeleteIcon>
+                                            </IconButton>
+                                        </div>
+                                    </Grid>
                                 </Card>
                             </Grid>
                         ))
