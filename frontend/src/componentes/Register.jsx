@@ -7,7 +7,10 @@ import icono_fechaNacimiento from '/iconos/fechaNacimiento.png'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { formRegisterSchema } from '../validations/formlogin'
+import { useNavigate } from "react-router-dom";
+
 const Register = () =>{
+    const navigate = useNavigate();
     const [errores,setErrores] = useState("")
     const {register,handleSubmit,resetField,formState:{errors}} = useForm({
         resolver:zodResolver(formRegisterSchema)
@@ -26,7 +29,8 @@ const Register = () =>{
             resetField('password')
             resetField('email')
             resetField('fechaNacimiento')
-            setErrores("Cuenta Creada con exito")
+            setErrores("Cuenta Creada con exito"  )
+            navigate('/login')
             console.log(mensaje)
         
         }else{
@@ -70,7 +74,8 @@ const Register = () =>{
             <div className="submit-contenedor">
                 <button type="submit" className="submit">Registrarse</button>
             </div>
-            </form>
+            </form> 
+            
         </div>
     )
 }
