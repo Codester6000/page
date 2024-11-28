@@ -1,15 +1,14 @@
 import express from "express"
 import { db } from "./database/connectionMySQL.js"
 import { validarJwt } from "./auth.js"
-import { validarBodyCarrito,validarId,verificarValidaciones} from "./middleware/validaciones.js"
+import { validarBodyCarrito,validarId,verificarValidaciones,validarBodyPutCarrito} from "./middleware/validaciones.js"
 const carritoRouter = express.Router()
 
 carritoRouter.get('/',validarJwt,async (req,res) =>{
     const id = req.user.userId
-    const sql = `SELECT pr.id_producto,pr.nombre,p.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
+    const sql = `SELECT pr.id_producto,pr.nombre,ca.cantidad,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
 ,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
-p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,
-pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor
+p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,pro.nombre_proveedor
 FROM productos pr 
 INNER JOIN precios p 
 ON pr.id_producto = p.id_producto 
@@ -27,7 +26,7 @@ WHERE
         FROM precios 
         WHERE id_producto = pr.id_producto
         ) AND ca.id_usuario = ?
-group by pr.id_producto, p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor;`
+group by pr.id_producto,ca.cantidad,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pro.nombre_proveedor;`
     const [resultado,fields] = await db.execute(sql,[id])
 
     res.status(200).send({carrito:resultado})
@@ -40,8 +39,22 @@ carritoRouter.post('/',validarJwt,validarBodyCarrito(),verificarValidaciones, as
     const [resul, fields] = await db.execute(sql,parametros)
     res.status(201).send({resultado:resul})
 })
+carritoRouter.put('/',validarJwt,validarBodyPutCarrito(),async (req,res)=>{
+    const {id_producto,cantidad} = req.body;
+    try {
+        const parametros = [cantidad,id_producto,req.user.userId]
+        const sql = "UPDATE carritos SET cantidad = ? WHERE id_producto = ? AND id_usuario = ?;"
+        const resultado = db.execute(sql,parametros)
+        if(resultado.affectedRows == 0){
+            res.status(400).send({mensaje:"Id producto o id usuario invalido"})
+        }
+        res.status(200).send({mensaje:"cantidad Actualizada"})
 
-carritoRouter.delete('/',validarJwt,validarId,validarBodyCarrito(),async (req, res) => {
+    }catch(error){
+        res.status(500).send({mensaje:"Se produjo un error en el servidor"})
+    }
+})
+carritoRouter.delete('/',validarJwt,validarBodyCarrito(),async (req, res) => {
     const {id_producto } = req.body;
     try {
         const parametros = [id_producto,req.user.userId];
