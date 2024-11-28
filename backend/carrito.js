@@ -6,8 +6,29 @@ const carritoRouter = express.Router()
 
 carritoRouter.get('/',validarJwt,async (req,res) =>{
     const id = req.user.userId
-    console.log(req.user)
-    const [resultado,fields] = await db.execute("SELECT * FROM carritos WHERE id_usuario = ?",[id])
+    const sql = `SELECT pr.id_producto,pr.nombre,p.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
+,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
+p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,
+pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor
+FROM productos pr 
+INNER JOIN precios p 
+ON pr.id_producto = p.id_producto 
+INNER JOIN productos_categorias pc 
+ON pr.id_producto = pc.id_producto 
+INNER JOIN categorias c ON pc.id_categoria = c.id_categoria
+INNER JOIN productos_imagenes pi ON pi.id_producto = pr.id_producto
+INNER JOIN imagenes i ON pi.id_imagen = i.id_imagen
+INNER JOIN proveedores pro ON pro.id_proveedor = p.id_proveedor
+INNER JOIN carritos ca ON ca.id_producto = pr.id_producto
+INNER JOIN usuarios u ON u.id_usuario = ca.id_usuario
+WHERE 
+    p.precio_dolar = (
+        SELECT MIN(precio_dolar) 
+        FROM precios 
+        WHERE id_producto = pr.id_producto
+        ) AND ca.id_usuario = ?
+group by pr.id_producto, p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor;`
+    const [resultado,fields] = await db.execute(sql,[id])
 
     res.status(200).send({carrito:resultado})
 })

@@ -12,7 +12,6 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Pagination from "@mui/material/Pagination";
 import { TextField } from "@mui/material";
-import Categorias from "./Categorias";
 import { useAuth } from "../Auth";
 
 export default function ProductCard() {
@@ -84,6 +83,8 @@ export default function ProductCard() {
                     console.error("Estructura de datos incorrecta:", data);
                 }
             } else {
+                localStorage.removeItem('sesion')
+                console.log("aaa")
                 console.error("Error al obtener productos:", response.status);
             }
         } catch (error) {
