@@ -28,8 +28,8 @@ export default function ProductCard() {
 
     const construirQuery = () => {
         let query = `offset=${(pagina - 1) * itemPorPagina}&limit=${itemPorPagina}`;
-        if (precioMin) query += `&precio_lt=${precioMin}`;
-        if (precioMax) query += `&precio_gt=${precioMax}`;
+        if (precioMin) query += `&precio_gt=${precioMin}`;
+        if (precioMax) query += `&precio_lt=${precioMax}`;
         if (categoria) query += `&categoria=${categoria}`;
         if (nombre) query += `&nombre=${nombre}`;
         return query;
@@ -104,8 +104,8 @@ export default function ProductCard() {
                     <br />
                     <TextField label="Buscar por Nombre" name="nombre" variant="outlined" size="small" value={nombre} onChange={(e) => setNombre(e.target.value)} style={{ marginRight: "10px" }} />
                     <TextField label="Buscar por Categoria" name="categoria" variant="outlined" size="small" value={categoria} onChange={(e) => setCategoria(e.target.value)}  style={{ marginRight: "10px" }} />
-                    <TextField label="Minimo Precio" name="precioMin" variant="outlined" size="small" value={precioMin} onChange={(e) => setPrecioMax(e.target.value)}  style={{ marginRight: "10px" }} />
-                    <TextField label="Maximo Precio" name="precioMax" variant="outlined" size="small" value={precioMax} onChange={(e) => setPrecioMin(e.target.value)}  style={{ marginRight: "10px" }} />
+                    <TextField label="Minimo Precio" name="precioMin" variant="outlined" size="small" value={precioMin} onChange={(e) => setPrecioMin(e.target.value)}  style={{ marginRight: "10px" }} />
+                    <TextField label="Maximo Precio" name="precioMax" variant="outlined" size="small" value={precioMax} onChange={(e) => setPrecioMax(e.target.value)}  style={{ marginRight: "10px" }} />
                     <Button variant="contained" sx={{backgroundColor: "#a111ad"}} onClick={() => {setPagina(1); getProductos();}}>
                             Aplicar Filtros
                         </Button>

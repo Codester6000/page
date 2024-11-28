@@ -14,6 +14,7 @@ import Register from "./componentes/Register"
 import Footer from "./componentes/footer"
 import Inicio from "./componentes/inicio";
 import Busqueda from "./componentes/Busqueda";
+import Carrito from "./componentes/Carrito";
 
 
 
@@ -31,6 +32,7 @@ function App() {
         <Route path="/busqueda" element={<Busqueda/>} />
         <Route path="/login" element={<Login/>}/>
         <Route path="/register" element={<Register/>}/>
+        <Route path="/carrito" element={<Carrito/>}/>
 
         </Routes>
       </body>
