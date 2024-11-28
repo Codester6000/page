@@ -8,7 +8,7 @@ export const productosRouter = express.Router()
 
 
 productosRouter.get("/",validarJwt,validarQuerysProducto(),verificarValidaciones,async (req, res) => {
-    let sql = `SELECT pr.nombre,p.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
+    let sql = `SELECT pr.id_producto, pr.nombre,p.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
 ,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
 p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,
 pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor
@@ -100,7 +100,7 @@ let sqlParteFinal = ` group by pr.id_producto, p.stock,p.precio_dolar, p.precio_
 
 productosRouter.get("/:id",validarJwt,validarId,verificarValidaciones,async (req, res) => {
     const id = req.params.id
-    const [resultado, fields] = await db.execute(`SELECT pr.nombre,p.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
+    const [resultado, fields] = await db.execute(`SELECT pr.id_producto, pr.nombre,p.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
 ,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
 p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,
 pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor

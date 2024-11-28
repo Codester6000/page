@@ -16,7 +16,6 @@ carritoRouter.post('/',validarJwt,validarBodyCarrito(),verificarValidaciones, as
     const {id_producto } = req.body;
     const parametros = [req.user.userId,id_producto];
     const sql = 'INSERT INTO carritos (id_usuario,id_producto) VALUES (?,?);';
-    console.log(parametros)
     const [resul, fields] = await db.execute(sql,parametros)
     res.status(201).send({resultado:resul})
 })
