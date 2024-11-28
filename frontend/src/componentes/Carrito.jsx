@@ -34,11 +34,11 @@ export default function Carrito() {
         return query;
     };
 
-    const getProductos = async () => {
+    const getCarrito = async () => {
         try {
             const query = construirQuery();
             const response = await fetch(
-                `http://localhost:3000/productos?${query}`,
+                `http://localhost:3000/carrito`,
                 {
                     method: "GET",
                     headers: {
@@ -64,8 +64,67 @@ export default function Carrito() {
         }
     };
 
+    const deleteCarrito = async (id_producto) => {
+        try {
+            const query = construirQuery();
+            const response = await fetch(
+                `http://localhost:3000/carrito`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${sesion.token}`,
+                    },body:JSON.stringify({id_producto:id_producto})
+                }
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                setTotales(data.cantidadProductos);
+                if (data.productos && Array.isArray(data.productos)) {
+                    setProductos(data.productos);
+                } else {
+                    console.error("Estructura de datos incorrecta:", data);
+                }
+            } else {
+                console.error("Error al obtener productos:", response.status);
+            }
+        } catch (error) {
+            console.error("Error en la solicitud:", error);
+        }
+    };
+    const putCarrito = async (id_producto,cantidadProductos) => {
+        try {
+            const query = construirQuery();
+            const response = await fetch(
+                `http://localhost:3000/carrito`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${sesion.token}`,
+                    },body:JSON.stringify({id_producto:id_producto,cantidad:cantidadProductos})
+                }
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                setTotales(data.cantidadProductos);
+                if (data.productos && Array.isArray(data.productos)) {
+                    setProductos(data.productos);
+                } else {
+                    console.error("Estructura de datos incorrecta:", data);
+                }
+            } else {
+                console.error("Error al obtener productos:", response.status);
+            }
+        } catch (error) {
+            console.error("Error en la solicitud:", error);
+        }
+    };
+
     useEffect(() => {
-        getProductos();
+        getCarrito();
     }, [pagina]);
     return (
         <Container>
@@ -118,7 +177,7 @@ export default function Carrito() {
                                     </Grid>
                                     <Grid>
                                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginLeft: "auto" }}>
-                                            <IconButton variant="contained" size="large" sx={{mt: 8, ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white",
+                                            <IconButton onClick={()=>deleteCarrito()} variant="contained" size="large" sx={{mt: 8, ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white",
                                                 "&:active": {
                                                     transform: "scale(0.95)",
                                                     transition: "transform 0.2s ease",
