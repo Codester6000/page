@@ -9,6 +9,20 @@ import icono_mother from "/iconos/armadorIconos/motherboard.png"
 import icono_gabinete from "/iconos/armadorIconos/gabinete.png"
 import { useAuth } from '../Auth'
 
+
+import Card from "@mui/joy/Card";
+import Container from "@mui/material/Container";
+import Grid from "@mui/joy/Grid";
+import CardContent from "@mui/joy/CardContent";
+import Typography from "@mui/joy/Typography";
+import AspectRatio from "@mui/joy/AspectRatio";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/joy/IconButton";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import Pagination from "@mui/material/Pagination";
+import { TextField } from "@mui/material";
+
 function ArmadorPc() {
 const { sesion } = useAuth();
 const [productos,setProductos] =useState(
@@ -41,7 +55,6 @@ const getArmador = async () => {
         if (response.ok) {
             const data = await response.json();
             setProductos(data)
-            console.log(productos)
         } else {
             console.error("Error al obtener productos:", response.status);
         }
@@ -51,6 +64,8 @@ const getArmador = async () => {
 };
 useEffect(() => {
     getArmador();
+    
+    
 }, [elecciones]);
 return(
     <div className="containerArmador">
@@ -66,7 +81,49 @@ return(
 
             </div>
             <div className="productos">
-                {productos[tipo].map((producto)=>console.log(producto))}
+                {console.log(productos)}
+            {productos.length > 0 ? (
+                            productos[tipo].map((producto, index) => (
+                                <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                                    <Card sx={{ width: 280, bgcolor: "#e0e0e0", height: 350 }}>
+                                        {console.log(producto.url_imagenes)}
+                                        <AspectRatio minHeight="120px" maxHeight="200px">
+                                            <img
+                                                src={producto.url_imagenes}
+                                                alt={producto.nombre}
+                                                loading="lazy"
+                                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                                />
+                                        </AspectRatio>
+                                        <CardContent orientation="horizontal" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                                            <div>
+                                                <Typography level="h4" sx={{ display: "-webkit-box", overflow: "hidden", WebkitBoxOrient: "vertical", WebkitLineClamp: 2, textOverflow: "ellipsis", fontWeight: "bold",}}>{producto.nombre}</Typography>
+                                                <Typography>{producto.descripcion}</Typography>
+                                                <Typography level="h3" sx={{ fontWeight: "xl", mt: 0.8 }}>${producto.precio_pesos_iva}</Typography>
+                                                <div style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
+                                                    <Button variant="contained" size="large" onClick={()=>agregarCarrito(producto.id_producto)} startIcon={<AddShoppingCartIcon />} sx={{ ml: 2, my: 2, backgroundColor: "#a111ad", height: 45, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Añadir al Carro</Button>
+                                                    <IconButton variant="contained" size="large" sx={{
+                                                        ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white",
+                                                        "&:active": {
+                                                            transform: "scale(0.95)",
+                                                            transition: "transform 0.2s ease",
+                                                        },
+                                                        "&:hover": {
+                                                            backgroundColor: "#9e2590",
+                                                        },
+                                                    }}
+                                                    >
+                                                        <FavoriteIcon />
+                                                    </IconButton>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                            ))
+                        ) : (
+                            <Typography>Despues pongo un mensaje de error o skeleton</Typography>
+                        )}
             </div>
         </div>
     </div>
