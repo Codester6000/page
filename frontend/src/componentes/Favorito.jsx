@@ -41,8 +41,8 @@ export default function Favorito() {
             if (response.ok) {
                 const data = await response.json();
                 setTotales(data.cantidadProductos);
-                if (data.productos && Array.isArray(data.productos)) {
-                    setProductos(data.productos);
+                if (data.favoritos && Array.isArray(data.favoritos)) {
+                    setProductos(data.favoritos);
                 } else {
                     console.error("Estructura de datos incorrecta:", data);
                 }

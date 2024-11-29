@@ -51,8 +51,8 @@ export default function Carrito() {
             if (response.ok) {
                 const data = await response.json();
                 setTotales(data.cantidadProductos);
-                if (data.productos && Array.isArray(data.productos)) {
-                    setProductos(data.productos);
+                if (data.carrito && Array.isArray(data.carrito)) {
+                    setProductos(data.carrito);
                 } else {
                     console.error("Estructura de datos incorrecta:", data);
                 }
@@ -63,7 +63,7 @@ export default function Carrito() {
             console.error("Error en la solicitud:", error);
         }
     };
-
+// a partir de aca todas estas funciones estan incompletas o no probe que funcionen
     const deleteCarrito = async (id_producto) => {
         try {
             const query = construirQuery();
@@ -80,19 +80,15 @@ export default function Carrito() {
 
             if (response.ok) {
                 const data = await response.json();
-                setTotales(data.cantidadProductos);
-                if (data.productos && Array.isArray(data.productos)) {
-                    setProductos(data.productos);
-                } else {
-                    console.error("Estructura de datos incorrecta:", data);
                 }
-            } else {
+             else {
                 console.error("Error al obtener productos:", response.status);
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);
         }
     };
+    // cantidadProductos tiene que ser 1+ o 1- de la cantidad que tiene cada producto en el carrito 
     const putCarrito = async (id_producto,cantidadProductos) => {
         try {
             const query = construirQuery();
@@ -109,12 +105,6 @@ export default function Carrito() {
 
             if (response.ok) {
                 const data = await response.json();
-                setTotales(data.cantidadProductos);
-                if (data.productos && Array.isArray(data.productos)) {
-                    setProductos(data.productos);
-                } else {
-                    console.error("Estructura de datos incorrecta:", data);
-                }
             } else {
                 console.error("Error al obtener productos:", response.status);
             }
@@ -132,6 +122,8 @@ export default function Carrito() {
             <Card sx={{ width: "100%", bgcolor: "#e0e0e0", my: "20px", paddingLeft: 10 }}>
                 <Typography starIcon level="h1" id="card-description" sx={{ fontWeight: 'bold' }}> Carrito de {sesion.username}</Typography>
                 <Grid container spacing={3} style={{ marginTop: "10px" }}>
+                    {//aca hay que conectar los los botones con sus respectivas funciones eliminar , y un put para el + - 
+                    }
                     {productos.length > 0 ? (
                         productos.map((producto, index) => (
                             <Grid item key={index} xs={12}>
