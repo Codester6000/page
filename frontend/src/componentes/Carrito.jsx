@@ -91,7 +91,6 @@ export default function Carrito() {
     // cantidadProductos tiene que ser 1+ o 1- de la cantidad que tiene cada producto en el carrito 
     const putCarrito = async (id_producto, cantidadProductos) => {
         try {
-            const query = construirQuery();
             const response = await fetch(
                 `http://localhost:3000/carrito`,
                 {
@@ -99,17 +98,18 @@ export default function Carrito() {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${sesion.token}`,
-                    }, body: JSON.stringify({ id_producto: id_producto, cantidad: cantidadProductos })
+                    }, body: JSON.stringify({ id_producto, cantidad: cantidadProductos })
                 }
             );
 
             if (response.ok) {
-                const data = await response.json();
+                console.log(`Cantidad del producto ${id_producto} actualizada a ${cantidadProductos}.`)
+                getCarrito()
             } else {
-                console.error("Error al obtener productos:", response.status);
+                console.error("Error al actualizar producto:", response.status);
             }
         } catch (error) {
-            console.error("Error en la solicitud:", error);
+            console.error("Error en la solicitud de actualización:", error);
         }
     };
 
