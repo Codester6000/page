@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useContext } from "react";
 
 import Card from "@mui/joy/Card";
 import Container from "@mui/material/Container";
@@ -14,22 +14,19 @@ import Pagination from "@mui/material/Pagination";
 import { Chip, TextField } from "@mui/material";
 
 import { useAuth } from "../Auth";
-
+import {SearchContext} from "../searchContext"
 export default function ProductCard() {
+    const { searchTerm } = useContext(SearchContext)
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 30;
     const [totales, setTotales] = useState(0);
-    const [nombre, setNombre] = useState("");
-    const [categoria, setCategoria] = useState("");
-    const [precioMax, setPrecioMax] = useState("");
-    const [precioMin, setPrecioMin] = useState("");
+    
     const { sesion } = useAuth();
-
 
     const construirQuery = () => {
         let query = `offset=${(pagina - 1) * itemPorPagina}&limit=${itemPorPagina}`;
-        if (nombre) query += `&nombre=${nombre}`;
+        if (searchTerm) query += `&nombre=${searchTerm}`;
         return query;
     };
 
@@ -65,7 +62,8 @@ export default function ProductCard() {
 
     useEffect(() => {
         getProductos();
-    }, [pagina]);
+        
+    }, [pagina,searchTerm]);
     return (
         <Container>
             <Card sx={{ width: "100%", bgcolor: "#e0e0e0", my: "20px", paddingLeft: 10  }}>

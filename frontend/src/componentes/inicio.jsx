@@ -2,8 +2,7 @@
 import Carousel from "./Carousel"
 import ProductCard from "./ProductCard"
 import "../styl.css"
-import Categorias from "./Categorias";
-import Card from "@mui/joy/Card";
+
 
 function Inicio() {
   
