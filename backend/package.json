@@ -21,7 +21,7 @@
     "bcrypt": "^5.1.1",
     "convert-array-to-csv": "^2.0.0",
     "cors": "^2.8.5",
-    "express": "^4.19.2",
+    "express": "^4.21.1",
     "express-validator": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.11.3",
