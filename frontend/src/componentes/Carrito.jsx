@@ -192,7 +192,7 @@ export default function Carrito() {
                     )}
                 </Grid>
 
-                <Typography level="h5" sx={{ mt: 3, fontWeight: 'bold', textAlign: 'right', color: 'black' }}>
+                <Typography level="h3" sx={{ mt: 3, fontWeight: 'bold', textAlign: 'right', color: 'orange' }}>
                     Total: ${totales.toFixed(2)}
                 </Typography>
 
