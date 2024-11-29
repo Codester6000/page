@@ -29,19 +29,19 @@ const Carousel = () => {
       autoplay={{ delay : 5000}}
     >
       <SwiperSlide>
-        <img className='imgCR' src="https://http2.mlstatic.com/D_NQ_782850-MLA80692086387_112024-OO.webp/" alt="Slide 1" />
+        <img className='imgCR' src="./public/1.png" alt="Slide 1" />
       </SwiperSlide>
       <SwiperSlide>
-        <img className='imgCR' src="https://http2.mlstatic.com/D_NQ_875512-MLA80367743746_112024-OO.webp" alt="Slide 2" />
+        <img className='imgCR' src="./public/2.png" alt="Slide 2" />
       </SwiperSlide>
       <SwiperSlide>
-        <img className='imgCR' src="https://http2.mlstatic.com/D_NQ_927293-MLA80332625178_112024-OO.webp" alt="Slide 3" />
+        <img className='imgCR' src="./public/3.png" alt="Slide 3" />
       </SwiperSlide>
       <SwiperSlide>
-        <img className='imgCR' src="https://http2.mlstatic.com/D_NQ_601593-MLA80388683188_112024-OO.webp" alt="Slide 3" />
+        <img className='imgCR' src="./public/4.png" alt="Slide 4" />
       </SwiperSlide>
       <SwiperSlide>
-        <img className='imgCR' src="https://http2.mlstatic.com/D_NQ_778913-MLA80717485897_112024-OO.webp" alt="Slide 3" />
+        <img className='imgCR' src="./public/5.png" alt="Slide 5" />
       </SwiperSlide>
     </Swiper>
   );
