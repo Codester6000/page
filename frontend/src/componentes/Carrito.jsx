@@ -158,13 +158,12 @@ export default function Carrito() {
                                     </CardContent>
                                     <Grid>
                                         <div style={{ display: "flex", flexDirection: "row" }}>
-                                            <Button onClick={decrement} variant="contained" sx={{ mt: 8, height: 40, width: 20, backgroundColor: "#a111ad", borderRadius: "20px" }}>-</Button>
+                                            <Button onClick={() => putCarrito(producto.id_producto, producto.cantidad - 1)} variant="contained" sx={{ mt: 8, height: 40, width: 20, backgroundColor: "#a111ad", borderRadius: "20px" }}>-</Button>
                                             <TextField sx={{ height: 20, width: 40, mt: 7, ml: 2 }}
-                                                value={value}
-                                                onChange={(e) => setValue(Number(e.target.value))}
-                                                min={0}
+                                                value={producto.cantidad}
+                                                InputProps={{ readOnly: true }}
                                             />
-                                            <Button onClick={increment} variant="contained" size="large" sx={{ mt: 8, ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white" }}>+</Button>
+                                            <Button onClick={() => putCarrito(producto.id_producto, producto.cantidad + 1)} variant="contained" size="large" sx={{ mt: 8, ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white" }}>+</Button>
                                         </div>
                                     </Grid>
                                     <Grid>
