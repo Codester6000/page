@@ -23,11 +23,15 @@ export default function Navbar() {
                 <Toolbar>
                     <IconButton onClick={()=> setAbierto(true)} sx={{ml: 1,height: "55px", width: "55px" , padding: "5px", objectFit: "cover", color: "white"}}
                     ><MenuIcon></MenuIcon></IconButton>
-                    <Drawer open={abierto} anchor="left" onClose={()=> setAbierto(false)}><MenuNavbar></MenuNavbar> </Drawer>
+                    <Drawer open={abierto} anchor="left" onClose={()=> setAbierto(false)} sx={{
+    '& .MuiDrawer-paper': {
+      backgroundColor: '#E66C1D',
+    },
+  }}><MenuNavbar></MenuNavbar> </Drawer>
                     {/* <Button>
                         <MenuIcon size="large" edge="start" color="orange" aria-label="menu" sx={{ mr: 2 }} ></MenuIcon>
                     </Button> */}
-                        <img src="modex.png" alt="logo modex" onClick={()=> navigate("/")} style={{ width: "150px", height: "auto", padding: "15px", paddingRight: "10px" , filter: "brightness(0) invert(1)" }} />
+                        <img src="modex.png" alt="logo modex" onClick={()=> navigate("/")} style={{ width: "150px", height: "auto", padding: "15px", paddingRight: "10px" , filter: "brightness(0) invert(1)",}} />
                     <CustomizedInputBase ></CustomizedInputBase>
                     <AuthStatus />
                     <IconButton variant="contained" onClick={()=> navigate("/favorito")} sx={{ml: 2, backgroundColor: "#a111ad", borderRadius: 20, height: "45px", width: "45px" , padding: "5px", objectFit: "cover", color: "white"}}><FavoriteIcon color="inherit"/></IconButton>

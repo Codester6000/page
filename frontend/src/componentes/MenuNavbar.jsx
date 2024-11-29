@@ -62,7 +62,7 @@ export default function MenuNavbar() {
                 }}
             >
                 {Object.entries(data).map(([category, subcategories]) => (
-                    <ListItem key={category} nested sx={{ my: 1 }}>
+                    <ListItem key={category} nested sx={{ my: 1 }} >
                         {/* Botón de categoría */}
                         <ListItemButton
                             onClick={() => toggleCategory(category)}
@@ -100,7 +100,7 @@ export default function MenuNavbar() {
                             {openCategory === category && (
                                 <List sx={{ '--ListItem-paddingY': '8px' }}>
                                     {subcategories.map((subcategory) => (
-                                        <ListItem key={subcategory}>
+                                        <ListItem key={subcategory} >
                                             <ListItemButton
                                                 sx={{
                                                     paddingLeft: '40px',
