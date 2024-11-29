@@ -68,7 +68,7 @@ const [gabinetes] = await db.execute(sql,paramGabinente)
 const paramAlmacenamiento = ["discos internos","discos internos ssd",2];
 const [almacenamientos] = await db.execute(sql,paramAlmacenamiento)
 
-    res.status(200).send({ procesadores: procesadores, motherboards: motherboards, gpus:gpus,memorias: memorias, fuentes: fuentes, gabinetes: gabinetes, almacenamiento: almacenamientos })
+    res.status(200).send({ productos : {"procesadores": procesadores, "motherboards": motherboards, "gpus":gpus,"memorias": memorias, "fuentes": fuentes, "gabinetes": gabinetes, "almacenamiento": almacenamientos }})
 })
 
 export default armadorRouter;

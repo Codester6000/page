@@ -25,17 +25,17 @@ import { TextField } from "@mui/material";
 
 function ArmadorPc() {
 const { sesion } = useAuth();
-const [productos,setProductos] =useState(
-    {
-        procesadores:[],
-        mothers:[],
-        placas:[],
-        almacenamiento:[],
-        memorias:[],
-        coolers:[],
-        fuentes:[],
-        gabinetes:[]
-    }
+const [productos,setProductos] =useState({
+    productos:{
+        "procesadores":[],
+        "mothers":[],
+        "placas":[],
+        "almacenamiento":[],
+        "memorias":[],
+        "coolers":[],
+        "fuentes":[],
+        "gabinetes":[]
+    }}
 );
 const [tipo,setTipo] = useState("procesadores")
 const [elecciones, setElecciones] = useState({procesador:"",mother:"",placas:"",almacenamiento:[],memorias:[],coolers:[],fuente:"",gabinete:""});
@@ -59,7 +59,6 @@ const getArmador = async () => {
             console.error("Error al obtener productos:", response.status);
         }
     } catch (error) {
-        console.error("Error en la solicitud:", error);
     }
 };
 useEffect(() => {
@@ -68,6 +67,8 @@ useEffect(() => {
     
 }, [elecciones]);
 return(
+    <Container>
+
     <div className="containerArmador">
         <div className="armador">
             <div className="tipo">
@@ -81,12 +82,14 @@ return(
 
             </div>
             <div className="productos">
-                {console.log(productos)}
-            {productos.length > 0 ? (
-                            productos[tipo].map((producto, index) => (
-                                <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+        {productos.productos["procesadores"].map((tip)=>console.log(tip))}
+        
+            {
+                
+                            productos.productos["procesadores"].map((producto, index) => (
+                                <Grid container spacing={5} style={{ marginTop: "20px" }}>
+                                {/* <Grid item xs={12} sm={6} md={4} lg={3} key={index}> */}
                                     <Card sx={{ width: 280, bgcolor: "#e0e0e0", height: 350 }}>
-                                        {console.log(producto.url_imagenes)}
                                         <AspectRatio minHeight="120px" maxHeight="200px">
                                             <img
                                                 src={producto.url_imagenes}
@@ -121,12 +124,11 @@ return(
                                     </Card>
                                 </Grid>
                             ))
-                        ) : (
-                            <Typography>Despues pongo un mensaje de error o skeleton</Typography>
-                        )}
+                        }  
             </div>
         </div>
     </div>
+                        </Container>
 )
 }
 
