@@ -24,11 +24,10 @@ export default function Favorito() {
         return query;
     };
 
-    const getProductos = async () => {
+    const getFavorito = async () => {
         try {
-            const query = construirQuery();
             const response = await fetch(
-                `http://localhost:3000/productos?${query}`,
+                `http://localhost:3000/favorito`,
                 {
                     method: "GET",
                     headers: {
@@ -40,6 +39,7 @@ export default function Favorito() {
 
             if (response.ok) {
                 const data = await response.json();
+                // console.log(data)
                 setTotales(data.cantidadProductos);
                 if (data.favoritos && Array.isArray(data.favoritos)) {
                     setProductos(data.favoritos);
@@ -53,9 +53,34 @@ export default function Favorito() {
             console.error("Error en la solicitud:", error);
         }
     };
+    // a partir de aca todas estas funciones estan incompletas o no probe que funcionen
+    const deleteFavorito = async (id_producto) => {
+        try {
+            const response = await fetch(
+                `http://localhost:3000/favorito`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${sesion.token}`,
+                    }, body: JSON.stringify({ id_producto })
+                }
+            );
+
+            if (response.ok) {
+                console.log(`Producto ${id_producto} eliminado del carrito.`)
+                getFavorito()
+            }
+            else {
+                console.error("Error al obtener productos:", response.status);
+            }
+        } catch (error) {
+            console.error("Error en la solicitud:", error);
+        }
+    };
 
     useEffect(() => {
-        getProductos();
+        getFavorito();
     }, [pagina]);
     return (
         <Container>
@@ -106,6 +131,7 @@ export default function Favorito() {
                                                     backgroundColor: "#9e2590",
                                                 },
                                             }}
+                                            onClick={() => deleteFavorito(producto.id_producto)}
                                             >
                                                 <DeleteIcon></DeleteIcon>
                                             </IconButton>

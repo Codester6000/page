@@ -34,10 +34,37 @@ export default function ProductCard() {
         if (nombre) query += `&nombre=${nombre}`;
         return query;
     };
+
     const agregarCarrito = async (producto_id) =>{
         try {
             const response = await fetch(
                 "http://localhost:3000/carrito",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${sesion.token}`,
+                    },
+                    body: JSON.stringify({"id_producto":producto_id})
+                }
+            ); 
+            if (response.ok){
+                const mensaje = await response.json()
+                console.log(mensaje)
+            }else{
+                console.log(response)
+                console.log(producto_id)
+            }
+        }catch(error){
+            console.log("aaaa")
+            console.log(error)
+        }
+    };
+
+    const agregarFavorito = async (producto_id) =>{
+        try {
+            const response = await fetch(
+                "http://localhost:3000/favorito",
                 {
                     method: "POST",
                     headers: {
@@ -130,7 +157,7 @@ export default function ProductCard() {
                                                 <Typography level="h3" sx={{ fontWeight: "xl", mt: 0.8 }}>${producto.precio_pesos_iva}</Typography>
                                                 <div style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
                                                     <Button variant="contained" size="large" onClick={()=>agregarCarrito(producto.id_producto)} startIcon={<AddShoppingCartIcon />} sx={{ ml: 2, my: 2, backgroundColor: "#a111ad", height: 45, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Añadir al Carro</Button>
-                                                    <IconButton variant="contained" size="large" sx={{
+                                                    <IconButton  variant="contained" size="large" sx={{
                                                         ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white",
                                                         "&:active": {
                                                             transform: "scale(0.95)",
@@ -140,6 +167,7 @@ export default function ProductCard() {
                                                             backgroundColor: "#9e2590",
                                                         },
                                                     }}
+                                                    onClick={()=>agregarFavorito(producto.id_producto)}
                                                     >
                                                         <FavoriteIcon />
                                                     </IconButton>
