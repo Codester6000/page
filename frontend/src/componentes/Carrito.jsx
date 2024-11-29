@@ -52,6 +52,8 @@ export default function Carrito() {
                 setTotales(data.cantidadProductos);
                 if (data.carrito && Array.isArray(data.carrito)) {
                     setProductos(data.carrito);
+                    const total = data.carrito.reduce((sum, producto) => sum + (producto.precio_pesos_iva * producto.cantidad), 0);
+                    setTotales(total);
                 } else {
                     console.error("Estructura de datos incorrecta:", data);
                 }
@@ -190,7 +192,11 @@ export default function Carrito() {
                     )}
                 </Grid>
 
-                <Pagination count={Math.ceil(totales / itemPorPagina)} pagina={pagina} onChange={(e, value) => setPagina(value)} color="primary" sx={{
+                <Typography level="h5" sx={{ mt: 3, fontWeight: 'bold', textAlign: 'right', color: 'black' }}>
+                    Total: ${totales.toFixed(2)}
+                </Typography>
+
+                <Pagination count={Math.ceil(productos.length / itemPorPagina)} pagina={pagina} onChange={(e, value) => setPagina(value)} color="primary" sx={{
                     mt: 3, display: "flex", justifyContent: "center",
                     "& .MuiPaginationItem-root": {
                         color: "#a111ad",
