@@ -15,6 +15,10 @@ const chipsets = ["am4","am5"]
 export const validarQueryArmador = () => [
     query("procesador").isAlphanumeric().notEmpty().optional(),
     query("motherboard").isAlphanumeric().notEmpty().optional(),
+    query("memoria").isAlphanumeric().notEmpty().optional(),
+    query("gabinete").isAlphanumeric().notEmpty().optional(),
+    query("almacenamiento").isAlphanumeric().notEmpty().optional(),
+    query("motherboard").isAlphanumeric().notEmpty().optional(),
 ]
 
 export const validarBodyProducto = () => [
