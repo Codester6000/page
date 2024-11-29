@@ -70,8 +70,9 @@ Aca deberia laburar ramon, poner sus archivos en la carpeta frontEnd para poder 
 - Cards: Mui nos facilita un diseño de card que luego de modificarlo a lo que necesitabamos
 nos permitio un exelente integro en el proyecto.
 
-#EXPERIMENTANDO CON INICIO DE SESIÓN AUTOMÁTICA DE USUARIO# - Martín
  Estas librerias tambien nos ayudan a lograr que la pagina responda correctamente ante diferentes pantallas
 aunque no son una solucion magica, aun tienen alguinos errores a la hora de hacer o quitar zoom,
 dimensiones especificas de pantallas, entre otros errores menores que algunos ya fueron solucionados
 y/o estan en proceso de solucion mediante css.
+
+#EXPERIMENTANDO CON INICIO DE SESIÓN AUTOMÁTICA DE USUARIO# - Martín
