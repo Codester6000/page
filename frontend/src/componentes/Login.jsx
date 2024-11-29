@@ -39,7 +39,6 @@ const Login = () =>{
             () =>navigate(from,{replace:true}),
             () =>console.log('Error')
         )
-        event.preventDefault();
     };
     return (
         <div className="loginContainer">
