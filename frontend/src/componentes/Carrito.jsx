@@ -36,7 +36,6 @@ export default function Carrito() {
 
     const getCarrito = async () => {
         try {
-            const query = construirQuery();
             const response = await fetch(
                 `http://localhost:3000/carrito`,
                 {
@@ -158,7 +157,7 @@ export default function Carrito() {
                                     </CardContent>
                                     <Grid>
                                         <div style={{ display: "flex", flexDirection: "row" }}>
-                                            <Button onClick={() => { if (producto.cantidad > 0) {putCarrito(producto.id_producto, producto.cantidad - 1)}}} variant="contained" sx={{ mt: 8, height: 40, width: 20, backgroundColor: "#a111ad", borderRadius: "20px" }}>-</Button>
+                                            <Button onClick={() => putCarrito(producto.id_producto, producto.cantidad - 1)} disabled={producto.cantidad <= 1} variant="contained" sx={{ mt: 8, height: 40, width: 20, backgroundColor: "#a111ad", borderRadius: "20px" }}>-</Button>
                                             <TextField sx={{ height: 20, width: 40, mt: 7, ml: 2 }}
                                                 value={producto.cantidad}
                                                 InputProps={{ readOnly: true }}
