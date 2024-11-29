@@ -23,6 +23,58 @@ export default function ProductCard() {
     const [totales, setTotales] = useState(0);
     
     const { sesion } = useAuth();
+    const agregarCarrito = async (producto_id) => {
+        try {
+            const response = await fetch(
+                "http://localhost:3000/carrito",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${sesion.token}`,
+                    },
+                    body: JSON.stringify({ "id_producto": producto_id })
+                }
+            );
+            if (response.ok) {
+                const mensaje = await response.json()
+                console.log(mensaje)
+            } else {
+                console.log(response)
+                console.log(producto_id)
+            }
+        } catch (error) {
+            console.log("aaaa")
+            console.log(error)
+        }
+    };
+
+  const agregarFavorito = async (producto_id) => {
+        try {
+            const response = await fetch(
+                "http://localhost:3000/favorito",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${sesion.token}`,
+                    },
+                    body: JSON.stringify({ "id_producto": producto_id })
+                }
+            );
+            if (response.ok) {
+                const mensaje = await response.json()
+                console.log(mensaje)
+                setFavoritos([...favoritos, producto_id])
+            } else {
+                console.log(response)
+                console.log(producto_id)
+            }
+        } catch (error) {
+            console.log("aaaa")
+            console.log(error)
+        }
+    };
 
     const construirQuery = () => {
         let query = `offset=${(pagina - 1) * itemPorPagina}&limit=${itemPorPagina}`;
@@ -113,7 +165,9 @@ export default function ProductCard() {
                                                             backgroundColor: "#9e2590",
                                                         },
                                                     }}
+                                                    onClick={() => agregarCarrito(producto.id_producto)}
                                                     >
+                                                        
                                                         <AddShoppingCartIcon/>
                                                     </IconButton>
                                                     <IconButton variant="contained" size="large" sx={{
@@ -126,6 +180,7 @@ export default function ProductCard() {
                                                             backgroundColor: "#9e2590",
                                                         },
                                                     }}
+                                                    onClick={() => agregarFavorito(producto.id_producto)}
                                                     >
                                                         <FavoriteIcon />
                                                     </IconButton>
