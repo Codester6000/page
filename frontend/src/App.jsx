@@ -15,6 +15,7 @@ import Footer from "./componentes/footer"
 import Inicio from "./componentes/inicio";
 import Busqueda from "./componentes/Busqueda";
 import Carrito from "./componentes/Carrito";
+import Armadorpc from "./componentes/Armadorpc";
 
 
 
@@ -28,7 +29,7 @@ function App() {
         </header>
         <Routes>
         <Route path="/" element={<AuthPage><Inicio /></AuthPage>}/>
-
+        <Route path="/armador" element={<AuthPage><Armadorpc /></AuthPage>} />
         <Route path="/busqueda" element={<Busqueda/>} />
         <Route path="/login" element={<Login/>}/>
         <Route path="/register" element={<Register/>}/>
