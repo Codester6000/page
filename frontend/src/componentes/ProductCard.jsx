@@ -62,7 +62,7 @@ export default function ProductCard() {
         }
     };
 
-    const agregarFavorito = async (producto_id) => {
+  const agregarFavorito = async (producto_id) => {
         try {
             const response = await fetch(
                 "http://localhost:3000/favorito",
