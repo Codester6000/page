@@ -29,7 +29,7 @@ const Register = () =>{
             resetField('password')
             resetField('email')
             resetField('fechaNacimiento')
-            setErrores("Cuenta Creada con exito"  )
+            setErrores("Cuenta Creada con exito")
             navigate('/login')
             console.log(mensaje)
         
