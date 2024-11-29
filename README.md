@@ -73,3 +73,5 @@ nos permitio un exelente integro en el proyecto.
 aunque no son una solucion magica, aun tienen alguinos errores a la hora de hacer o quitar zoom,
 dimensiones especificas de pantallas, entre otros errores menores que algunos ya fueron solucionados
 y/o estan en proceso de solucion mediante css.
+
+#Rama dedicada al desarrollo del frontend del armador de pc# -Martín
