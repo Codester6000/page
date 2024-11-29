@@ -16,6 +16,7 @@ export default function Favorito() {
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 30;
     const [totales, setTotales] = useState(0);
+    
 
     const { sesion } = useAuth();
 
