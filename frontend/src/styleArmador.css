@@ -10,7 +10,7 @@
     width: 90vw;
     height: fit-content;
     border: 1px solid red;
-    
+margin-left: -5rem;    
 }
 .tipo {
     padding: 3rem;
@@ -20,6 +20,16 @@
     height: fit-content;
     max-width: 30vw;
     border: 1px solid black;
+}
+.productos{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width:100%;
+    overflow-y: scroll;
+    gap: 3rem;
+    row-gap: 1rem;
 }
 
 .tipo div{
