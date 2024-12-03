@@ -89,9 +89,6 @@ WHERE
     } else {
         parametros.push(0)
     }
-    if (Number(offset) > Number(cuenta[0].cuenta) - 1) {
-        return res.status(400).send("El offset no puede ser mayor al total de productos")
-    }
     parametros.push(limit)
 
 
