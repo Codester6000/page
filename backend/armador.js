@@ -65,7 +65,7 @@ const [fuentes] = await db.execute(sql,paramFuente)
 
 const paramGabinente = ["gabinetes","",1];
 const [gabinetes] = await db.execute(sql,paramGabinente)
-const paramAlmacenamiento = ["discos internos","discos internos ssd",2];
+const paramAlmacenamiento = ["discos internos","discos internos ssd",1];
 const [almacenamientos] = await db.execute(sql,paramAlmacenamiento)
 
     res.status(200).send({ productos : {"procesadores": procesadores, "motherboards": motherboards, "gpus":gpus,"memorias": memorias, "fuentes": fuentes, "gabinetes": gabinetes, "almacenamiento": almacenamientos }})
