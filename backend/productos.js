@@ -8,9 +8,33 @@ export const productosRouter = express.Router()
 
 
 productosRouter.get("/", validarJwt, validarQuerysProducto(), verificarValidaciones, async (req, res) => {
-    let sql = `SELECT pr.id_producto, pr.nombre,p.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
-,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
-p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,
+    let sql = `SELECT pr.id_producto,
+    pr.nombre,p.stock,
+    pr.peso,pr.garantia_meses,
+    pr.codigo_fabricante,
+    GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias,
+    GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
+CASE
+        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_dolar * 1.20
+        WHEN pro.nombre_proveedor = 'air' THEN p.precio_dolar * 1.25
+        ELSE p.precio_dolar
+    END AS precio_dolar_ajustado,
+    CASE
+        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_dolar_iva * 1.20
+        WHEN pro.nombre_proveedor = 'air' THEN p.precio_dolar_iva * 1.25
+        ELSE p.precio_dolar_iva
+    END AS precio_dolar_iva_ajustado,
+    p.iva, 
+    CASE
+        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos * 1.2
+        WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos * 1.25
+        ELSE p.precio_pesos
+    END AS precio_pesos_ajustado,
+    CASE
+        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos_iva * 1.2
+        WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos_iva * 1.25
+        ELSE p.precio_pesos_iva
+    END AS precio_pesos_iva_ajustado,
 pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor
 FROM productos pr 
 INNER JOIN precios p 
@@ -45,12 +69,24 @@ WHERE
     }
     const precio_gt = req.query.precio_gt;
     if (precio_gt != undefined) {
-        filtros.push("p.precio_pesos_iva > ?")
+        filtros.push(`(
+        CASE
+            WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos * 1.20
+            WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos * 1.25
+            ELSE p.precio_pesos
+        END
+    ) > ?`)
         parametros.push(precio_gt)
     }
     const precio_lt = req.query.precio_lt;
     if (precio_lt != undefined) {
-        filtros.push("p.precio_pesos_iva < ?")
+        filtros.push(`(
+        CASE
+            WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos * 1.20
+            WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos * 1.25
+            ELSE p.precio_pesos
+        END
+    ) < ?`)
         parametros.push(precio_lt)
     }
     const nombre = req.query.nombre;
@@ -103,9 +139,35 @@ WHERE
 
 productosRouter.get("/:id", validarJwt, validarId, verificarValidaciones, async (req, res) => {
     const id = req.params.id
-    const [resultado, fields] = await db.execute(`SELECT pr.id_producto, pr.nombre,p.stock,pr.peso,pr.garantia_meses,pr.codigo_fabricante,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
-,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
-p.precio_dolar, p.precio_dolar_iva, p.iva,p.precio_pesos, p.precio_pesos_iva,
+    const [resultado, fields] = await db.execute(`SELECT pr.id_producto,
+        pr.nombre,
+        p.stock,
+        pr.peso,
+        pr.garantia_meses,
+        pr.codigo_fabricante,
+        GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias,
+        GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
+        CASE
+        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_dolar * 1.20
+        WHEN pro.nombre_proveedor = 'air' THEN p.precio_dolar * 1.25
+        ELSE p.precio_dolar
+    END AS precio_dolar_ajustado,
+    CASE
+        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_dolar_iva * 1.20
+        WHEN pro.nombre_proveedor = 'air' THEN p.precio_dolar_iva * 1.25
+        ELSE p.precio_dolar_iva
+    END AS precio_dolar_iva_ajustado,
+    p.iva, 
+    CASE
+        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos * 1.2
+        WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos * 1.25
+        ELSE p.precio_pesos
+    END AS precio_pesos_ajustado,
+    CASE
+        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos_iva * 1.2
+        WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos_iva * 1.25
+        ELSE p.precio_pesos_iva
+    END AS precio_pesos_iva_ajustado,
 pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor
 FROM productos pr 
 INNER JOIN precios p 
@@ -215,3 +277,4 @@ productosRouter.put("/:id", validarJwt, validarRol(2), validarId, verificarValid
     }
 })
 export default productosRouter;
+

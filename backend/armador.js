@@ -6,9 +6,47 @@ import {query} from "express-validator"
 const armadorRouter = express.Router()
 
 armadorRouter.get("/", validarQueryArmador(),verificarValidaciones, async (req, res) => {
-const {procesador,motherboard,gpu,memoria,gabinete,almacenamiento} = req.query
+const {procesador_id,motherboard_id,gpu_id,memoria_id,gabinete_id,almacenamiento_id} = req.query
+let procesador = undefined
+let motherboard = undefined
+let gpu = undefined
+let memoria = undefined
 
-const sql = `SELECT 
+const handleSeleccionar = async (id_producto) =>{
+    const listaRestricciones = []
+    const [restricciones] = await db.execute("CALL determinar_categoria_armador(?)",[id_producto])
+    restricciones[0].map((restriccion)=>{
+        switch (restriccion?.nombre_categoria) {
+            case 'am4':
+                procesador='am4'
+                motherboard='am4'
+                break;
+            case 'am5':
+                procesador='am5'
+                motherboard='am5'
+                break;
+            case '1200':
+                procesador='1200'
+                motherboard='1200'
+                break;
+            case '1700':
+                procesador='1700'
+                motherboard='1700'
+                break;
+        
+            default:
+                break;
+        }
+    })
+}
+if (procesador_id != undefined){
+    await handleSeleccionar(procesador_id)
+}
+if (motherboard_id != undefined){
+    await handleSeleccionar(motherboard_id)
+}
+const sql = `SELECT
+    pr.id_producto, 
     pr.nombre, 
     p.stock, 
     pr.peso, 
