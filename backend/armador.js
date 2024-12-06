@@ -33,6 +33,11 @@ const handleSeleccionar = async (id_producto) =>{
                 procesador='1700'
                 motherboard='1700'
                 break;
+            case 'DDR3':
+                memoria='DDR3'
+                motherboard='DDR3'
+                break;
+            
         
             default:
                 break;
