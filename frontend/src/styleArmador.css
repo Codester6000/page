@@ -12,6 +12,12 @@
     border: 1px solid red;
 margin-left: -5rem;    
 }
+.ladoIzquierdoArmador{
+display: flex;
+flex-direction: column;
+height: fit-content;
+gap: 1rem;
+}
 .tipo {
     padding: 3rem;
     display: flex;

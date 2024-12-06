@@ -23,6 +23,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import Pagination from "@mui/material/Pagination";
 import { TextField } from "@mui/material";
 
+
 function ArmadorPc() {
 const { sesion } = useAuth();
 const [productos,setProductos] =useState({
@@ -35,8 +36,7 @@ const [productos,setProductos] =useState({
         "coolers":[],
         "fuentes":[],
         "gabinetes":[]
-    }}
-);
+    }});
 const [tipo,setTipo] = useState("procesadores")
 const [elecciones, setElecciones] = useState({procesador:"",mother:"",placa:"",almacenamiento:[],memorias:[],coolers:[],fuente:"",gabinete:""});
 const getArmador = async () => {
@@ -46,6 +46,9 @@ const getArmador = async () => {
         }
         if (elecciones.mother !="") {
             query += `&motherboard_id=${elecciones.mother}`;
+        }
+        if (elecciones.memorias.length>0) {
+            query += `&memoria_id=${elecciones.memorias[0]}`;
         }
 
     try {
@@ -79,21 +82,25 @@ const handleSeleccionar = (id_producto) =>{
     switch (tipo) {
         case 'procesadores':
             setElecciones({...elecciones,procesador:id_producto})
+            setTipo('motherboards')
             break;
         case 'motherboards':
             setElecciones({...elecciones,mother:id_producto})
+            setTipo('gpus')
             break;
         case 'gpus':
             setElecciones({...elecciones,placa:id_producto})
+            setTipo('memorias')
             break;
         case 'memorias':
             setElecciones({...elecciones,memorias:[...elecciones.memorias,id_producto]})
             break;
         case 'almacenamiento':
-            setElecciones({...elecciones,memorias:[...elecciones.almacenamiento,id_producto]})
+            setElecciones({...elecciones,almacenamiento:[...elecciones.almacenamiento,id_producto]})
             break;
         case 'fuentes':
             setElecciones({...elecciones,fuente:id_producto})
+            setTipo('gabinetes')
             break;
         case 'gabinetes':
             setElecciones({...elecciones,gabinete:id_producto})
@@ -103,21 +110,34 @@ const handleSeleccionar = (id_producto) =>{
             break;
     }
 
+
 }
 return(
     <Container>
 
     <div className="containerArmador">
         <div className="armador">
-            <div className="tipo">
-                <div className="procesador" onClick={()=>setTipo("procesadores")}><img src={icono_cpu}  /></div>
-                <div className="motherboard" onClick={()=>setTipo("motherboards")}><img src={icono_mother}  /></div>
-                <div className="gpu" onClick={()=>setTipo("gpus")}><img src={icono_gpu}  /></div>
-                <div className="memoria" onClick={()=>setTipo("memorias")}><img src={icono_ram}  /></div>
-                <div className="almacenamiento" onClick={()=>setTipo("almacenamiento")}><img src={icono_hdd}  /></div>
-                <div className="psu" onClick={()=>setTipo("fuentes")}><img src={icono_psu}  /></div>
-                <div className="gabinete" onClick={()=>setTipo("gabinetes")}><img src={icono_gabinete}  /></div>
-
+            <div className="ladoIzquierdoArmador">
+                <div className="tipo">
+                    <div className="procesador" onClick={()=>setTipo("procesadores")}><img src={icono_cpu}  /></div>
+                    <div className="motherboard" onClick={()=>setTipo("motherboards")}><img src={icono_mother}  /></div>
+                    <div className="gpu" onClick={()=>setTipo("gpus")}><img src={icono_gpu}  /></div>
+                    <div className="memoria" onClick={()=>setTipo("memorias")}><img src={icono_ram}  /></div>
+                    <div className="almacenamiento" onClick={()=>setTipo("almacenamiento")}><img src={icono_hdd}  /></div>
+                    <div className="psu" onClick={()=>setTipo("fuentes")}><img src={icono_psu}  /></div>
+                    <div className="gabinete" onClick={()=>setTipo("gabinetes")}><img src={icono_gabinete}  /></div>
+                </div>
+                <div className="elecciones">
+                    {console.log("aaaa")}
+                    { Object.entries(elecciones).map(([categoria,valor])=>{
+                        if(valor == 0){
+                            return null
+                        }
+                        return (
+                            <div className="productoCarritoArmador" key={categoria}> {valor} </div>
+                        )
+                    })}
+                </div>
             </div>
             <div className="productos">
         

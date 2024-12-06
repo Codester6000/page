@@ -59,6 +59,9 @@ if (procesador_id != undefined){
 if (motherboard_id != undefined){
     await handleSeleccionar(motherboard_id)
 }
+if (memoria_id != undefined){
+    await handleSeleccionar(memoria_id)
+}
 const sql = `SELECT
     pr.id_producto, 
     pr.nombre, 
@@ -88,7 +91,7 @@ WHERE
     p.precio_dolar = (
         SELECT MIN(precio_dolar) 
         FROM precios 
-        WHERE id_producto = pr.id_producto AND stock > 0
+        WHERE id_producto = pr.id_producto
     )
     AND pr.id_producto IN (
         SELECT pc2.id_producto
@@ -103,8 +106,17 @@ GROUP BY pr.id_producto, p.stock, p.precio_dolar, p.precio_dolar_iva, p.iva, p.p
 const paramProcesadores = (procesador !=undefined) ? ["procesadores",procesador,'teest',2] : ["procesadores","",'teest',1]; 
 const [procesadores] = await db.execute(sql,paramProcesadores)
 
-const paramMotherboards = (motherboard !=undefined && motherboardDDR != undefined) ? ["motherboards",motherboard,motherboard,3] : (motherboard !=undefined && motherboardDDR == undefined) ? ["motherboards",motherboard,'teest',1]: ["motherboards","",'teest',1];
-
+let paramMotherboards = (motherboard !=undefined && motherboardDDR != undefined) ? ["motherboards",motherboard,motherboardDDR,3] : (motherboard !=undefined && motherboardDDR == undefined) ? ["motherboards",motherboard,'teest',1]: ["motherboards","",'teest',1];
+if (motherboard == undefined && motherboardDDR != undefined){
+    paramMotherboards = ["motherboards","teest",motherboardDDR,2]
+}else if (motherboard != undefined && motherboardDDR == undefined){
+    paramMotherboards = ['motherboards', motherboard,'test',2]
+}else if (motherboard != undefined && motherboardDDR != undefined){
+    paramMotherboards = ['motherboards', motherboard,motherboardDDR,3]
+}else{
+    paramMotherboards = ['motherboards', 'test','test',1]
+}
+console.log(paramMotherboards)
 const [motherboards] = await db.execute(sql,paramMotherboards);
 
 const paramGpus = (gpu !=undefined) ?  ["Placas de Video",gpu,,'teest',2]:["Placas de Video","",'teest',1]
