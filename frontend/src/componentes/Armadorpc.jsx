@@ -37,8 +37,25 @@ const [productos,setProductos] =useState({
         "fuentes":[],
         "gabinetes":[]
     }});
+
+// Crear un índice
+const crearIndice = (productos) => {
+    const indice = {};
+    for (const categoria in productos) {
+      productos[categoria].forEach((producto) => {
+        indice[producto.id_producto] = { ...producto, categoria };
+      });
+    }
+    return indice;
+  };
+  
+  // Crear el índice una vez
+  const indiceProductos = crearIndice(productos.productos);
+  
+  // Búsqueda rápida
+  const buscarPorId = (id) => indiceProductos[id] || null;
 const [tipo,setTipo] = useState("procesadores")
-const [elecciones, setElecciones] = useState({procesador:"",mother:"",placa:"",almacenamiento:[],memorias:[],coolers:[],fuente:"",gabinete:""});
+const [elecciones, setElecciones] = useState({procesador:"",mother:"",placa:"",memorias:[],almacenamiento:[],coolers:[],fuente:"",gabinete:""});
 const getArmador = async () => {
     let query = `?`;
         if (elecciones.procesador !="") {
@@ -133,14 +150,27 @@ return(
                         if(valor == 0){
                             return null
                         }
-                        return (
-                            <div className="productoCarritoArmador" key={categoria}> {valor} </div>
-                        )
+                        if(typeof(valor) == "object"){
+                            return valor.map((productoArreglo,index) =>{
+                                const producArreglo = buscarPorId(productoArreglo)
+                                console.log(producArreglo)
+                                return (
+                                    <div className="productoCarritoArmador" key={`${productoArreglo}+${index}`}> {producArreglo.nombre} </div>
+                                )
+                            })
+                        }else {
+
+                            
+                            const produc = buscarPorId(valor)
+                            return (
+                                <div className="productoCarritoArmador" key={categoria}> {produc.nombre} </div>
+                            )
+
+                        }
                     })}
                 </div>
             </div>
             <div className="productos">
-        
                 <Grid container spacing={5} style={{ marginTop: "20px" }}>
             {
                             productos.productos[`${tipo}`].map((producto, index) => (
