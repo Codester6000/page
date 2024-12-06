@@ -9,6 +9,7 @@ armadorRouter.get("/", validarQueryArmador(),verificarValidaciones, async (req, 
 const {procesador_id,motherboard_id,gpu_id,memoria_id,gabinete_id,almacenamiento_id} = req.query
 let procesador = undefined
 let motherboard = undefined
+let motherboardDDR = undefined
 let gpu = undefined
 let memoria = undefined
 
@@ -35,7 +36,15 @@ const handleSeleccionar = async (id_producto) =>{
                 break;
             case 'DDR3':
                 memoria='DDR3'
-                motherboard='DDR3'
+                motherboardDDR='DDR3'
+                break;
+            case 'DDR4':
+                memoria='DDR4'
+                motherboardDDR='DDR4'
+                break;
+            case 'DDR5':
+                memoria='DDR5'
+                motherboardDDR='DDR5'
                 break;
             
         
@@ -85,30 +94,30 @@ WHERE
         SELECT pc2.id_producto
         FROM productos_categorias pc2
         INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
-        WHERE c2.nombre_categoria IN (?, ?)
+        WHERE c2.nombre_categoria IN (?, ?, ?)
         GROUP BY pc2.id_producto
         HAVING COUNT(DISTINCT c2.nombre_categoria) = ?
     )
 GROUP BY pr.id_producto, p.stock, p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva, pr.alto, pr.ancho, pr.largo, pro.nombre_proveedor;
 `
-const paramProcesadores = (procesador !=undefined) ? ["procesadores",procesador,2] : ["procesadores","",1]; 
+const paramProcesadores = (procesador !=undefined) ? ["procesadores",procesador,'teest',2] : ["procesadores","",'teest',1]; 
 const [procesadores] = await db.execute(sql,paramProcesadores)
 
-const paramMotherboards = (motherboard !=undefined) ? ["motherboards",motherboard,2] : ["motherboards","",1];
+const paramMotherboards = (motherboard !=undefined && motherboardDDR != undefined) ? ["motherboards",motherboard,motherboard,3] : (motherboard !=undefined && motherboardDDR == undefined) ? ["motherboards",motherboard,'teest',1]: ["motherboards","",'teest',1];
 
 const [motherboards] = await db.execute(sql,paramMotherboards);
 
-const paramGpus = (gpu !=undefined) ?  ["Placas de Video",gpu,2]:["Placas de Video","",1]
+const paramGpus = (gpu !=undefined) ?  ["Placas de Video",gpu,,'teest',2]:["Placas de Video","",'teest',1]
 const [gpus] = await db.execute(sql,paramGpus);
-const paramMemorias = (memoria != undefined) ? ["memorias pc",memoria,2] : ["memorias pc","",1];
+const paramMemorias = (memoria != undefined) ? ["memorias pc",memoria,'teest',2] : ["memorias pc","",'teest',1];
 const [memorias] = await db.execute(sql,paramMemorias);
 
-const paramFuente = ["fuentes","",1]
+const paramFuente = ["fuentes","",'teest',1]
 const [fuentes] = await db.execute(sql,paramFuente)
 
-const paramGabinente = ["gabinetes","",1];
+const paramGabinente = ["gabinetes","",'test',1];
 const [gabinetes] = await db.execute(sql,paramGabinente)
-const paramAlmacenamiento = ["discos internos","discos internos ssd",1];
+const paramAlmacenamiento = ["discos internos","discos internos ssd",'teest',1];
 const [almacenamientos] = await db.execute(sql,paramAlmacenamiento)
 
     res.status(200).send({ productos : {"procesadores": procesadores, "motherboards": motherboards, "gpus":gpus,"memorias": memorias, "fuentes": fuentes, "gabinetes": gabinetes, "almacenamiento": almacenamientos }})

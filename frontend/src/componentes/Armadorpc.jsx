@@ -121,12 +121,11 @@ return(
             </div>
             <div className="productos">
         
+                <Grid container spacing={5} style={{ marginTop: "20px" }}>
             {
-                
                             productos.productos[`${tipo}`].map((producto, index) => (
-                                <Grid container spacing={5} style={{ marginTop: "20px" }}>
-                                {/* <Grid item xs={12} sm={6} md={4} lg={3} key={index}> */}
-                                    <Card sx={{ width: 280, bgcolor: "#e0e0e0", height: 350 }}>
+                                <Grid item xs={12} sm={6} md={4} lg={3} key={producto.id_producto}>
+                                    <Card sx={{ width: 280, bgcolor: "#e0e0e0", height: 350 }} >
                                         <AspectRatio minHeight="120px" maxHeight="200px">
                                             <img
                                                 src={producto.url_imagenes}
@@ -159,9 +158,10 @@ return(
                                             </div>
                                         </CardContent>
                                     </Card>
-                                </Grid>
+                                    </Grid>
                             ))
                         }  
+                        </Grid>
             </div>
         </div>
     </div>
