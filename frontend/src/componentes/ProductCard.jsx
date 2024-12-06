@@ -158,7 +158,7 @@ export default function ProductCard() {
                                         <div>
                                             <Typography level="h4" sx={{ display: "-webkit-box", overflow: "hidden", WebkitBoxOrient: "vertical", WebkitLineClamp: 2, textOverflow: "ellipsis", fontWeight: "bold", }}>{producto.nombre}</Typography>
                                             <Typography>{producto.descripcion}</Typography>
-                                            <Typography level="h3" sx={{ fontWeight: "xl", mt: 0.8 }}>${producto.precio_pesos_iva}</Typography>
+                                            <Typography level="h3" sx={{ fontWeight: "xl", mt: 0.8 }}>${parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2)}</Typography>
                                             <div style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
                                                 <Button variant="contained" size="large" onClick={() => agregarCarrito(producto.id_producto)} startIcon={<AddShoppingCartIcon />} sx={{ ml: 2, my: 2, backgroundColor: "#a111ad", height: 45, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Añadir al Carro</Button>
                                                 <IconButton variant="contained" size="large" sx={{

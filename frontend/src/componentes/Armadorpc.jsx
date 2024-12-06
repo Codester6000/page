@@ -38,21 +38,19 @@ const [productos,setProductos] =useState({
     }}
 );
 const [tipo,setTipo] = useState("procesadores")
-const [elecciones, setElecciones] = useState({procesador:"",mother:"",placas:"",almacenamiento:[],memorias:[],coolers:[],fuente:"",gabinete:""});
-const determinarChipset = (categorias)=> {
-    const listaProcesadores = ['am4','am5','1200','1700']
-    console.log(categorias)
-    const listaCategorias = categorias.split(',').map(elemento => elemento.trim());
-
-    for (let categoria of listaCategorias){
-        if (listaProcesadores.includes(categoria))
-            return categoria;
-    }
-}
+const [elecciones, setElecciones] = useState({procesador:"",mother:"",placa:"",almacenamiento:[],memorias:[],coolers:[],fuente:"",gabinete:""});
 const getArmador = async () => {
+    let query = `?`;
+        if (elecciones.procesador !="") {
+            query += `&procesador_id=${elecciones.procesador}`;
+        }
+        if (elecciones.mother !="") {
+            query += `&motherboard_id=${elecciones.mother}`;
+        }
+
     try {
         const response = await fetch(
-            `http://localhost:3000/armador`,
+            `http://localhost:3000/armador${query}`,
             {
                 method: "GET",
                 headers: {
@@ -76,6 +74,36 @@ useEffect(() => {
     
     
 }, [elecciones]);
+
+const handleSeleccionar = (id_producto) =>{
+    switch (tipo) {
+        case 'procesadores':
+            setElecciones({...elecciones,procesador:id_producto})
+            break;
+        case 'motherboards':
+            setElecciones({...elecciones,mother:id_producto})
+            break;
+        case 'gpus':
+            setElecciones({...elecciones,placa:id_producto})
+            break;
+        case 'memorias':
+            setElecciones({...elecciones,memorias:[...elecciones.memorias,id_producto]})
+            break;
+        case 'almacenamiento':
+            setElecciones({...elecciones,memorias:[...elecciones.almacenamiento,id_producto]})
+            break;
+        case 'fuentes':
+            setElecciones({...elecciones,fuente:id_producto})
+            break;
+        case 'gabinetes':
+            setElecciones({...elecciones,gabinete:id_producto})
+            break;
+    
+        default:
+            break;
+    }
+
+}
 return(
     <Container>
 
@@ -113,7 +141,7 @@ return(
                                                 <Typography>{producto.descripcion}</Typography>
                                                 <Typography level="h3" sx={{ fontWeight: "xl", mt: 0.8 }}>${producto.precio_pesos_iva}</Typography>
                                                 <div style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
-                                                    <Button variant="contained" onClick={()=>console.log(determinarChipset(productos.categorias))} size="large" sx={{ ml: 3.5, my: 2, backgroundColor: "#a111ad", height: 45, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Seleccionar</Button>
+                                                    <Button variant="contained" onClick={()=>handleSeleccionar(producto.id_producto)} size="large" sx={{ ml: 3.5, my: 2, backgroundColor: "#a111ad", height: 45, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Seleccionar</Button>
                                                     <IconButton variant="contained" size="large" sx={{
                                                         ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white",
                                                         "&:active": {
