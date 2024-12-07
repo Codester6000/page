@@ -94,7 +94,7 @@ export default function Carrito() {
     const putCarrito = async (id_producto, cantidadProductos) => {
         try {
             const response = await fetch(
-                `http://${url}/carrito`,
+                `http://${url}:3000/carrito`,
                 {
                     method: "PUT",
                     headers: {
