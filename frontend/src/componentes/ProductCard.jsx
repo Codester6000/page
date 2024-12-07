@@ -11,8 +11,9 @@ import IconButton from "@mui/joy/IconButton";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Pagination from "@mui/material/Pagination";
-import { TextField } from "@mui/material";
+import { Alert, AlertTitle, Box, Snackbar, TextField } from "@mui/material";
 import { useAuth } from "../Auth";
+import ShoppingCart from "@mui/icons-material/ShoppingCart";
 
 export default function ProductCard() {
     const url = 'localhost'
@@ -26,7 +27,8 @@ export default function ProductCard() {
     const [precioMin, setPrecioMin] = useState("");
     const [favoritos, setFavoritos] = useState([])
     const { sesion } = useAuth();
-
+    const [alerta, setAlerta] = useState(false)
+    const [alertaFav, setAlertaFav] = useState(false)
 
     const construirQuery = () => {
         let query = `offset=${(pagina - 1) * itemPorPagina}&limit=${itemPorPagina}`;
@@ -161,7 +163,7 @@ export default function ProductCard() {
                                             <Typography>{producto.descripcion}</Typography>
                                             <Typography level="h3" sx={{ fontWeight: "xl", mt: 0.8 }}>${parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2)}</Typography>
                                             <div style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
-                                                <Button variant="contained" size="large" onClick={() => agregarCarrito(producto.id_producto)} startIcon={<AddShoppingCartIcon />} sx={{ ml: 2, my: 2, backgroundColor: "#a111ad", height: 45, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Añadir al Carro</Button>
+                                                <Button variant="contained" size="large" onClick={() => {agregarCarrito(producto.id_producto); setAlerta(true)}} startIcon={<AddShoppingCartIcon />} sx={{ ml: 2, my: 2, backgroundColor: "#a111ad", height: 45, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Añadir al Carro</Button>
                                                 <IconButton variant="contained" size="large" sx={{
                                                     ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white",
                                                     "&:active": {
@@ -172,7 +174,7 @@ export default function ProductCard() {
                                                         backgroundColor: "#9e2590",
                                                     },
                                                 }}
-                                                    onClick={() => agregarFavorito(producto.id_producto)}
+                                                    onClick={() => {agregarFavorito(producto.id_producto); setAlertaFav(true)}}
                                                 >
                                                     {estaEnFavoritos(producto.id_producto) ? (
                                                         <FavoriteIcon sx={{ color: "orange" }} />
@@ -190,6 +192,32 @@ export default function ProductCard() {
                         <Typography>Despues pongo un mensaje de error o skeleton</Typography>
                     )}
                 </Grid>
+                <Snackbar
+                        open={alerta}
+                        autoHideDuration={2000}
+                        onClose={() => setAlerta(false)}
+                        variant="solid"
+                    >
+                    <Alert size="large" severity="success" icon={<AddShoppingCartIcon sx={{fontSize: "2rem", color:"white"}}/>}
+                    sx={{
+                        backgroundColor: "#a111ad", color: "white", fontSize: "1rem", padding: "12px", display: "flex", alignItems: "center", borderRadius: 3
+                    }}>
+                        El producto fué Añadido al Carrito
+                    </Alert>
+                </Snackbar>
+                <Snackbar
+                        open={alertaFav}
+                        autoHideDuration={2000}
+                        onClose={() => setAlertaFav(false)}
+                        variant="solid"
+                    >
+                    <Alert size="large" severity="success" icon={<FavoriteIcon sx={{fontSize: "2rem", color:"white"}}/>} 
+                    sx={{
+                        backgroundColor: "#a111ad", color: "white", fontSize: "1rem", padding: "12px", display: "flex", alignItems: "center", borderRadius: 3
+                    }}>
+                        El producto fué Añadido a Favorito
+                    </Alert>
+                </Snackbar>
                 <Pagination count={Math.ceil(totales / itemPorPagina)} pagina={pagina} onChange={(e, value) => setPagina(value)} color="primary" sx={{
                     mt: 3, display: "flex", justifyContent: "center",
                     "& .MuiPaginationItem-root": {
