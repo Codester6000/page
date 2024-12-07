@@ -8,7 +8,7 @@ import {Button } from "@mui/material";
 export const useAuth = () => {
   return useContext(AuthContext);
 };
-
+const url = 'localhost'
 // Componente principal
 export const AuthProvider = ({ children }) => {
   const [sesion, setSesion] = useState(()=>{
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
   },[sesion]);
 
   const login = async (username, password, ok, error) => {
-    const response = await fetch("http://192.168.1.8:3000/auth/login", {
+    const response = await fetch(`http://${url}]:3000/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),

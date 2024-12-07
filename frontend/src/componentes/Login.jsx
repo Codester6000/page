@@ -21,7 +21,7 @@ const Login = () =>{
 
     const onSubmit = async (datos) => {
         console.log(datos)
-        const response = await fetch("http://192.168.1.8:3000/auth/login", {
+        const response = await fetch(`http://${url}:3000/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datos),

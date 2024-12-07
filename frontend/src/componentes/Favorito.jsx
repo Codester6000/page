@@ -12,6 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useAuth } from "../Auth";
 
 export default function Favorito() {
+    const url = 'localhost'
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 30;
@@ -28,7 +29,7 @@ export default function Favorito() {
     const getFavorito = async () => {
         try {
             const response = await fetch(
-                `http://192.168.1.8:3000/favorito`,
+                `http://${url}:3000/favorito`,
                 {
                     method: "GET",
                     headers: {
@@ -58,7 +59,7 @@ export default function Favorito() {
     const deleteFavorito = async (id_producto) => {
         try {
             const response = await fetch(
-                `http://192.168.1.8:3000/favorito`,
+                `http://${url}:3000/favorito`,
                 {
                     method: "DELETE",
                     headers: {

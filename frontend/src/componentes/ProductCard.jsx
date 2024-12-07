@@ -15,6 +15,7 @@ import { TextField } from "@mui/material";
 import { useAuth } from "../Auth";
 
 export default function ProductCard() {
+    const url = 'localhost'
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 30;
@@ -39,7 +40,7 @@ export default function ProductCard() {
     const agregarCarrito = async (producto_id) => {
         try {
             const response = await fetch(
-                "http://192.168.1.8:3000/carrito",
+                `http://${url}:3000/carrito`,
                 {
                     method: "POST",
                     headers: {
@@ -65,7 +66,7 @@ export default function ProductCard() {
   const agregarFavorito = async (producto_id) => {
         try {
             const response = await fetch(
-                "http://192.168.1.8:3000/favorito",
+                `http://${url}:3000/favorito`,
                 {
                     method: "POST",
                     headers: {
@@ -95,7 +96,7 @@ export default function ProductCard() {
         try {
             const query = construirQuery();
             const response = await fetch(
-                `http://192.168.1.8:3000/productos?${query}`,
+                `http://${url}:3000/productos?${query}`,
                 {
                     method: "GET",
                     headers: {

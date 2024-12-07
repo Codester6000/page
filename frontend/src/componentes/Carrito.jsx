@@ -13,6 +13,7 @@ import { useAuth } from "../Auth";
 import { Button, Input, TextField } from "@mui/material";
 
 export default function Carrito() {
+    const url = 'localhost'
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 30;
@@ -37,7 +38,7 @@ export default function Carrito() {
     const getCarrito = async () => {
         try {
             const response = await fetch(
-                `http://192.168.1.8:3000/carrito`,
+                `http://${url}:3000/carrito`,
                 {
                     method: "GET",
                     headers: {
@@ -68,7 +69,7 @@ export default function Carrito() {
     const deleteCarrito = async (id_producto) => {
         try {
             const response = await fetch(
-                `http://192.168.1.8:3000/carrito`,
+                `http://${url}:3000/carrito`,
                 {
                     method: "DELETE",
                     headers: {
@@ -93,7 +94,7 @@ export default function Carrito() {
     const putCarrito = async (id_producto, cantidadProductos) => {
         try {
             const response = await fetch(
-                `http://192.168.1.8:3000/carrito`,
+                `http://${url}/carrito`,
                 {
                     method: "PUT",
                     headers: {

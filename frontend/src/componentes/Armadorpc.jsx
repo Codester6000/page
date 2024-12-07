@@ -25,6 +25,7 @@ import { TextField } from "@mui/material";
 
 
 function ArmadorPc() {
+const url = 'localhost'
 const { sesion } = useAuth();
 const [productos,setProductos] =useState({
     productos:{
@@ -72,7 +73,7 @@ const getArmador = async () => {
 
     try {
         const response = await fetch(
-            `http://192.168.1.8:3000/armador${query}`,
+            `http://${url}:3000/armador${query}`,
             {
                 method: "GET",
                 headers: {
