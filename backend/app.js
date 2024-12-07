@@ -9,6 +9,7 @@ import authRouter, { authConfig } from "./auth.js"
 import favoritoRouter from "./favorito.js"
 
 const PUERTO = 3000
+const HOST = '0.0.0.0'
 const app = express()
 conectarDB()
 app.use(cors())
@@ -27,6 +28,6 @@ app.get("/", (req, res) => {
     res.send("hola mundo")
 })
 
-app.listen(PUERTO, () => {
-    console.log(`La app esta esuchando el puerto ${PUERTO}`)
+app.listen(PUERTO, HOST,() => {
+    console.log(`La app esta esuchando en ${HOST} y en el puerto ${PUERTO}`)
 })

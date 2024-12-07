@@ -71,11 +71,27 @@ const sql = `SELECT
     pr.codigo_fabricante,
     GROUP_CONCAT(DISTINCT c.nombre_categoria SEPARATOR ', ') AS categorias,
     GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
-    p.precio_dolar, 
-    p.precio_dolar_iva, 
+    CASE
+        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_dolar * 1.20
+        WHEN pro.nombre_proveedor = 'air' THEN p.precio_dolar * 1.25
+        ELSE p.precio_dolar
+    END AS precio_dolar_ajustado,
+    CASE
+        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_dolar_iva * 1.20
+        WHEN pro.nombre_proveedor = 'air' THEN p.precio_dolar_iva * 1.25
+        ELSE p.precio_dolar_iva
+    END AS precio_dolar_iva_ajustado,
     p.iva, 
-    p.precio_pesos, 
-    p.precio_pesos_iva,
+    CASE
+        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos * 1.2
+        WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos * 1.25
+        ELSE p.precio_pesos
+    END AS precio_pesos_ajustado,
+    CASE
+        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos_iva * 1.2
+        WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos_iva * 1.25
+        ELSE p.precio_pesos_iva
+    END AS precio_pesos_iva_ajustado,
     pr.alto, 
     pr.ancho, 
     pr.largo, 

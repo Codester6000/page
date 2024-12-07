@@ -54,8 +54,10 @@ const crearIndice = (productos) => {
   
   // Búsqueda rápida
   const buscarPorId = (id) => indiceProductos[id] || null;
+
 const [tipo,setTipo] = useState("procesadores")
 const [elecciones, setElecciones] = useState({procesador:"",mother:"",placa:"",memorias:[],almacenamiento:[],coolers:[],fuente:"",gabinete:""});
+const [total,setTotal] = useState(0)
 const getArmador = async () => {
     let query = `?`;
         if (elecciones.procesador !="") {
@@ -70,7 +72,7 @@ const getArmador = async () => {
 
     try {
         const response = await fetch(
-            `http://localhost:3000/armador${query}`,
+            `http://192.168.1.8:3000/armador${query}`,
             {
                 method: "GET",
                 headers: {
@@ -89,13 +91,30 @@ const getArmador = async () => {
     } catch (error) {
     }
 };
+let totalaux = 0;
 useEffect(() => {
     getArmador();
-    
-    
+    setTotal(Number(totalaux))
 }, [elecciones]);
+const eliminarID = (id) => {
+  setElecciones((prevElecciones) => {
+    const nuevasElecciones = { ...prevElecciones };
 
-const handleSeleccionar = (id_producto) =>{
+    Object.keys(nuevasElecciones).forEach((key) => {
+      if (Array.isArray(nuevasElecciones[key])) {
+        // Si es un array, eliminamos el ID si está presente
+        nuevasElecciones[key] = nuevasElecciones[key].filter((item) => item !== id);
+      } else if (nuevasElecciones[key] === id) {
+        // Si no es un array y coincide, lo eliminamos
+        nuevasElecciones[key] = "";
+      }
+    });
+
+    return nuevasElecciones;
+  });
+};
+const handleSeleccionar = (id_producto,precio) =>{
+    
     switch (tipo) {
         case 'procesadores':
             setElecciones({...elecciones,procesador:id_producto})
@@ -110,7 +129,16 @@ const handleSeleccionar = (id_producto) =>{
             setTipo('memorias')
             break;
         case 'memorias':
-            setElecciones({...elecciones,memorias:[...elecciones.memorias,id_producto]})
+            console.log(elecciones.memorias.length)
+            if(elecciones.memorias.length < 4){
+                setElecciones({...elecciones,memorias:[...elecciones.memorias,id_producto]})
+                if(elecciones.memorias.length == 4){
+                    setTipo('almacenamiento')
+                }
+            }else{
+                setTipo('almacenamiento')
+            }
+            
             break;
         case 'almacenamiento':
             setElecciones({...elecciones,almacenamiento:[...elecciones.almacenamiento,id_producto]})
@@ -145,29 +173,38 @@ return(
                     <div className="gabinete" onClick={()=>setTipo("gabinetes")}><img src={icono_gabinete}  /></div>
                 </div>
                 <div className="elecciones">
-                    {console.log("aaaa")}
-                    { Object.entries(elecciones).map(([categoria,valor])=>{
+                    
+                    { 
+                    Object.entries(elecciones).map(([categoria,valor])=>{
                         if(valor == 0){
                             return null
                         }
                         if(typeof(valor) == "object"){
                             return valor.map((productoArreglo,index) =>{
                                 const producArreglo = buscarPorId(productoArreglo)
-                                console.log(producArreglo)
+                                totalaux = Number(totalaux) + Number(producArreglo.precio_pesos_iva_ajustado)
                                 return (
-                                    <div className="productoCarritoArmador" key={`${productoArreglo}+${index}`}> {producArreglo.nombre} </div>
+                                    <div className="productoCarritoArmador" key={`${productoArreglo}+${index}`}>
+                                        {producArreglo.nombre} : $ {parseFloat(producArreglo.precio_pesos_iva_ajustado).toFixed(2)} 
+                                        <button type="button" onClick={()=>eliminarID(producArreglo.id_producto)}>X</button> 
+                                        </div>
                                 )
                             })
                         }else {
 
                             
                             const produc = buscarPorId(valor)
+                            totalaux = Number(totalaux) + Number(produc.precio_pesos_iva_ajustado)
                             return (
-                                <div className="productoCarritoArmador" key={categoria}> {produc.nombre} </div>
+                                <div className="productoCarritoArmador" key={categoria}> 
+                                {produc.nombre} : $ {parseFloat(produc.precio_pesos_iva_ajustado).toFixed(2)}
+                                <button type="button" onClick={()=>eliminarID(produc.id_producto)}>X</button>
+                                </div>
                             )
 
                         }
                     })}
+                    <p className='total'>Total: $ {total.toFixed(2)}</p>
                 </div>
             </div>
             <div className="productos">
@@ -188,9 +225,9 @@ return(
                                             <div>
                                                 <Typography level="h4" sx={{ display: "-webkit-box", overflow: "hidden", WebkitBoxOrient: "vertical", WebkitLineClamp: 2, textOverflow: "ellipsis", fontWeight: "bold",}}>{producto.nombre}</Typography>
                                                 <Typography>{producto.descripcion}</Typography>
-                                                <Typography level="h3" sx={{ fontWeight: "xl", mt: 0.8 }}>${producto.precio_pesos_iva}</Typography>
+                                                <Typography level="h3" sx={{ fontWeight: "xl", mt: 0.8 }}>${parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2)}</Typography>
                                                 <div style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
-                                                    <Button variant="contained" onClick={()=>handleSeleccionar(producto.id_producto)} size="large" sx={{ ml: 3.5, my: 2, backgroundColor: "#a111ad", height: 45, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Seleccionar</Button>
+                                                    <Button variant="contained" onClick={()=>handleSeleccionar(producto.id_producto,parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2))} size="large" sx={{ ml: 3.5, my: 2, backgroundColor: "#a111ad", height: 45, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Seleccionar</Button>
                                                     <IconButton variant="contained" size="large" sx={{
                                                         ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white",
                                                         "&:active": {

@@ -37,7 +37,7 @@ export default function Carrito() {
     const getCarrito = async () => {
         try {
             const response = await fetch(
-                `http://localhost:3000/carrito`,
+                `http://192.168.1.8:3000/carrito`,
                 {
                     method: "GET",
                     headers: {
@@ -52,7 +52,7 @@ export default function Carrito() {
                 setTotales(data.cantidadProductos);
                 if (data.carrito && Array.isArray(data.carrito)) {
                     setProductos(data.carrito);
-                    const total = data.carrito.reduce((sum, producto) => sum + (producto.precio_pesos_iva * producto.cantidad), 0);
+                    const total = data.carrito.reduce((sum, producto) => sum + (parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2) * producto.cantidad), 0);
                     setTotales(total);
                 } else {
                     console.error("Estructura de datos incorrecta:", data);
@@ -68,7 +68,7 @@ export default function Carrito() {
     const deleteCarrito = async (id_producto) => {
         try {
             const response = await fetch(
-                `http://localhost:3000/carrito`,
+                `http://192.168.1.8:3000/carrito`,
                 {
                     method: "DELETE",
                     headers: {
@@ -93,7 +93,7 @@ export default function Carrito() {
     const putCarrito = async (id_producto, cantidadProductos) => {
         try {
             const response = await fetch(
-                `http://localhost:3000/carrito`,
+                `http://192.168.1.8:3000/carrito`,
                 {
                     method: "PUT",
                     headers: {
@@ -154,7 +154,7 @@ export default function Carrito() {
                                             {producto.codigo_fabricante}
                                         </Typography>
                                         <Typography level="h2" sx={{ fontWeight: "bold", mt: 0.8, color: "#FF7d21" }}>
-                                            ${producto.precio_pesos_iva}
+                                            ${parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2)}
                                         </Typography>
                                     </CardContent>
                                     <Grid>

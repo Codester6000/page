@@ -28,7 +28,7 @@ export default function Favorito() {
     const getFavorito = async () => {
         try {
             const response = await fetch(
-                `http://localhost:3000/favorito`,
+                `http://192.168.1.8:3000/favorito`,
                 {
                     method: "GET",
                     headers: {
@@ -58,7 +58,7 @@ export default function Favorito() {
     const deleteFavorito = async (id_producto) => {
         try {
             const response = await fetch(
-                `http://localhost:3000/favorito`,
+                `http://192.168.1.8:3000/favorito`,
                 {
                     method: "DELETE",
                     headers: {
@@ -118,7 +118,7 @@ export default function Favorito() {
                                             {producto.codigo_fabricante}
                                         </Typography>
                                         <Typography level="h2" sx={{ fontWeight: "bold", mt: 0.8, color: "#FF7d21" }}>
-                                            ${producto.precio_pesos_iva}
+                                            ${parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2)}
                                         </Typography>
                                     </CardContent>
                                     <Grid>

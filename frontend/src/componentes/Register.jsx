@@ -18,7 +18,7 @@ const Register = () =>{
 
     const onSubmit = async (datos) => {
         console.log(datos)
-        const response = await fetch("http://localhost:3000/usuarios", {
+        const response = await fetch("http://192.168.1.8:3000/usuarios", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datos),

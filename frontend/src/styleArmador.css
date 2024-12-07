@@ -48,3 +48,8 @@ gap: 1rem;
     width: 64px;
     height: 64px;
 }
+.total{
+    font-size: large;
+    font-weight: 600;
+    
+}

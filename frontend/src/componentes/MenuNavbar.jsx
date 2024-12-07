@@ -7,6 +7,7 @@ import Typography from '@mui/joy/Typography';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 import { useState } from "react";
 import data from "./MenuData.json"
+import { useNavigate } from 'react-router-dom';
 
 // JSON con las categorías y subcategorías
 // const data = {
@@ -40,7 +41,7 @@ export default function MenuNavbar() {
     const [openCategory, setOpenCategory] = useState(null);
 
     const [height, setHeight] = useState(0);
-
+    const navigate = useNavigate()
     const toggleCategory = (category) => {
         if (openCategory === category) {
             setHeight(0); 
@@ -100,7 +101,7 @@ export default function MenuNavbar() {
                             {openCategory === category && (
                                 <List sx={{ '--ListItem-paddingY': '8px' }}>
                                     {subcategories.map((subcategory) => (
-                                        <ListItem key={subcategory} >
+                                        <ListItem key={subcategory}>
                                             <ListItemButton
                                                 sx={{
                                                     paddingLeft: '40px',
@@ -108,7 +109,7 @@ export default function MenuNavbar() {
                                                     color: '#ffff',
                                                     borderRadius: "10px",
                                                 }}
-                                            >
+                                            onClick={()=>navigate(`/${subcategory}`)}>
                                                 {subcategory}
                                             </ListItemButton>
                                         </ListItem>
