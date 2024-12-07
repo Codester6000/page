@@ -24,7 +24,7 @@ function App() {
 
   return (
     <>
-      <body>
+
         <header>
           <Navbar></Navbar>
         </header>
@@ -38,7 +38,7 @@ function App() {
         <Route path="/favorito" element={<AuthPage><Favorito /></AuthPage>}/>
 
         </Routes>
-      </body>
+
         <Footer></Footer>
     </>
   )

@@ -124,7 +124,7 @@ export default function ProductCard() {
                 <Grid container spacing={3} style={{ marginTop: "10px" }}>
                     {productos.length > 0 ? (
                         productos.map((producto, index) => (
-                            <Grid item key={index} xs={12}>
+                            <Grid key={index} xs={12}>
                                 <Card
                                     variant="outlined"
                                     orientation="horizontal"

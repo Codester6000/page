@@ -128,7 +128,7 @@ export default function Carrito() {
                     }
                     {productos.length > 0 ? (
                         productos.map((producto, index) => (
-                            <Grid item key={index} xs={12}>
+                            <Grid key={index} xs={12}>
                                 <Card
                                     variant="outlined"
                                     orientation="horizontal"

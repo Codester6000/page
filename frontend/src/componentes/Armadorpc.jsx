@@ -212,7 +212,7 @@ return(
                 <Grid container spacing={5} style={{ marginTop: "20px" }}>
             {
                             productos.productos[`${tipo}`].map((producto, index) => (
-                                <Grid item xs={12} sm={6} md={4} lg={3} key={producto.id_producto}>
+                                <Grid xs={12} sm={6} md={4} lg={3} key={producto.id_producto}>
                                     <Card sx={{ width: 280, bgcolor: "#e0e0e0", height: 350 }} >
                                         <AspectRatio minHeight="120px" maxHeight="200px">
                                             <img
