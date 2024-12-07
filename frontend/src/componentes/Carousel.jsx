@@ -29,19 +29,19 @@ const Carousel = () => {
       autoplay={{ delay : 5000}}
     >
       <SwiperSlide>
-        <img className='imgCR' src="./public/1.png" alt="Slide 1" />
+        <img className='imgCR' src="/1.png" alt="Slide 1" />
       </SwiperSlide>
       <SwiperSlide>
-        <img className='imgCR' src="./public/2.png" alt="Slide 2" />
+        <img className='imgCR' src="/2.png" alt="Slide 2" />
       </SwiperSlide>
       <SwiperSlide>
-        <img className='imgCR' src="./public/3.png" alt="Slide 3" />
+        <img className='imgCR' src="/3.png" alt="Slide 3" />
       </SwiperSlide>
       <SwiperSlide>
-        <img className='imgCR' src="./public/4.png" alt="Slide 4" />
+        <img className='imgCR' src="/4.png" alt="Slide 4" />
       </SwiperSlide>
       <SwiperSlide>
-        <img className='imgCR' src="./public/5.png" alt="Slide 5" />
+        <img className='imgCR' src="/5.png" alt="Slide 5" />
       </SwiperSlide>
     </Swiper>
   );

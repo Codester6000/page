@@ -29,6 +29,10 @@ export default function ProductCard() {
     const { sesion } = useAuth();
     const [alerta, setAlerta] = useState(false)
     const [alertaFav, setAlertaFav] = useState(false)
+    const [carrito, setCarrito] = useState([]);
+    const [favorito, setFavorito] = useState([]);
+
+
 
     const construirQuery = () => {
         let query = `offset=${(pagina - 1) * itemPorPagina}&limit=${itemPorPagina}`;
@@ -40,6 +44,11 @@ export default function ProductCard() {
     };
 
     const agregarCarrito = async (producto_id) => {
+        if (carrito.includes(producto_id)) {
+            console.log("El producto ya está en el carrito");
+            return;
+        }
+
         try {
             const response = await fetch(
                 `http://${url}:3000/carrito`,
@@ -55,6 +64,7 @@ export default function ProductCard() {
             if (response.ok) {
                 const mensaje = await response.json()
                 console.log(mensaje)
+                setCarrito([...carrito, producto_id])
             } else {
                 console.log(response)
                 console.log(producto_id)
@@ -66,6 +76,11 @@ export default function ProductCard() {
     };
 
   const agregarFavorito = async (producto_id) => {
+    if (favorito.includes(producto_id)) {
+        console.log("El producto ya está en favorito");
+        return;
+    }
+    
         try {
             const response = await fetch(
                 `http://${url}:3000/favorito`,
@@ -81,7 +96,7 @@ export default function ProductCard() {
             if (response.ok) {
                 const mensaje = await response.json()
                 console.log(mensaje)
-                setFavoritos([...favoritos, producto_id])
+                setFavorito([...favorito, producto_id])
             } else {
                 console.log(response)
                 console.log(producto_id)
@@ -92,7 +107,7 @@ export default function ProductCard() {
         }
     };
 
-    const estaEnFavoritos = (producto_id) => favoritos.includes(producto_id);
+    const estaEnFavoritos = (producto_id) => favorito.includes(producto_id);
 
     const getProductos = async () => {
         try {
