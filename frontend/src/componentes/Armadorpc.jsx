@@ -22,6 +22,7 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Pagination from "@mui/material/Pagination";
 import { TextField } from "@mui/material";
+import Delete from '@mui/icons-material/Delete'
 
 
 function ArmadorPc() {
@@ -49,10 +50,10 @@ const crearIndice = (productos) => {
     }
     return indice;
   };
-  
+
   // Crear el índice una vez
   const indiceProductos = crearIndice(productos.productos);
-  
+
   // Búsqueda rápida
   const buscarPorId = (id) => indiceProductos[id] || null;
 
@@ -82,7 +83,7 @@ const getArmador = async () => {
                 },
             }
         );
-        
+
         if (response.ok) {
             const data = await response.json();
             setProductos(data)
@@ -115,7 +116,7 @@ const eliminarID = (id) => {
   });
 };
 const handleSeleccionar = (id_producto,precio) =>{
-    
+
     switch (tipo) {
         case 'procesadores':
             setElecciones({...elecciones,procesador:id_producto})
@@ -139,7 +140,7 @@ const handleSeleccionar = (id_producto,precio) =>{
             }else{
                 setTipo('almacenamiento')
             }
-            
+
             break;
         case 'almacenamiento':
             setElecciones({...elecciones,almacenamiento:[...elecciones.almacenamiento,id_producto]})
@@ -151,7 +152,7 @@ const handleSeleccionar = (id_producto,precio) =>{
         case 'gabinetes':
             setElecciones({...elecciones,gabinete:id_producto})
             break;
-    
+
         default:
             break;
     }
@@ -159,7 +160,6 @@ const handleSeleccionar = (id_producto,precio) =>{
 
 }
 return(
-    <Container>
 
     <div className="containerArmador">
         <div className="armador">
@@ -174,8 +174,8 @@ return(
                     <div className="gabinete" onClick={()=>setTipo("gabinetes")}><img src={icono_gabinete}  /></div>
                 </div>
                 <div className="elecciones">
-                    
-                    { 
+
+                    {
                     Object.entries(elecciones).map(([categoria,valor])=>{
                         if(valor == 0){
                             return null
@@ -185,36 +185,60 @@ return(
                                 const producArreglo = buscarPorId(productoArreglo)
                                 totalaux = Number(totalaux) + Number(producArreglo.precio_pesos_iva_ajustado)
                                 return (
-                                    <div className="productoCarritoArmador" key={`${productoArreglo}+${index}`}>
-                                        {producArreglo.nombre} : $ {parseFloat(producArreglo.precio_pesos_iva_ajustado).toFixed(2)} 
-                                        <button type="button" onClick={()=>eliminarID(producArreglo.id_producto)}>X</button> 
-                                        </div>
+                                    <div className="productoCarritoArmador" key={`${productoArreglo}+${index}`}> 
+                                        {producArreglo.nombre} :<br></br> $ {parseFloat(producArreglo.precio_pesos_iva_ajustado).toFixed(2)} <br />
+                                        {/* <button type="button" onClick={()=>eliminarID(producArreglo.id_producto)}>X</button>  */}
+                                        <IconButton variant='contained' onClick={()=>eliminarID(producArreglo.id_producto)} sx={{height: 20, width: 20, backgroundColor: "#a111ad", borderRadius: "10px", objectFit: "contain", color: "white",
+                                                "&:active": {
+                                                    transform: "scale(0.95)",
+                                                    transition: "transform 0.2s ease",
+                                                },
+                                                "&:hover": {
+                                                    backgroundColor: "#e0e0e0",
+                                                    color: "black"
+                                                },
+                                            }}><Delete></Delete></IconButton>
+                                    </div>
                                 )
                             })
                         }else {
 
-                            
+
                             const produc = buscarPorId(valor)
                             totalaux = Number(totalaux) + Number(produc.precio_pesos_iva_ajustado)
                             return (
-                                <div className="productoCarritoArmador" key={categoria}> 
-                                {produc.nombre} : $ {parseFloat(produc.precio_pesos_iva_ajustado).toFixed(2)}
-                                <button type="button" onClick={()=>eliminarID(produc.id_producto)}>X</button>
+                                <div className="productoCarritoArmador" key={categoria}>
+                                {produc.nombre}: <br></br>$ {parseFloat(produc.precio_pesos_iva_ajustado).toFixed(2)}
+                                
+                                {/* <button type="button" onClick={()=>eliminarID(produc.id_producto)}><Delete></Delete></button> */}
+                                    
+                                <div>
+                                <IconButton  onClick={()=>eliminarID(produc.id_producto)} sx={{height: 20, width: 20, backgroundColor: "#a111ad", borderRadius: "10px", objectFit: "contain", color: "white",
+                                                "&:active": {
+                                                    transform: "scale(0.95)",
+                                                    transition: "transform 0.2s ease",
+                                                },
+                                                "&:hover": {
+                                                    backgroundColor: "#e0e0e0",
+                                                    color: "black"
+                                                },
+                                            }}><Delete></Delete></IconButton>
+                                            </div>
                                 </div>
                             )
 
                         }
                     })}
-                    <p className='total'>Total: $ {total.toFixed(2)}</p>
+                    <p className='total'>Total: <span style={{marginLeft: "10px", color:"green"}}> ${total.toFixed(2)}</span></p>
                 </div>
             </div>
             <div className="productos">
-                <Grid container spacing={5} style={{ marginTop: "20px" }}>
+                <Grid container spacing={2} style={{ marginTop: "10px", justifyContent: "center"}}>
             {
                             productos.productos[`${tipo}`].map((producto, index) => (
-                                <Grid xs={12} sm={6} md={4} lg={3} key={producto.id_producto}>
-                                    <Card sx={{ width: 280, bgcolor: "#e0e0e0", height: 350 }} >
-                                        <AspectRatio minHeight="120px" maxHeight="200px">
+                                <Grid item lg={3.9} key={producto.id_producto}>
+                                    <Card orientation='horizontal' sx={{ width: "95%", bgcolor: "#e0e0e0", height: 180 }} >
+                                        <AspectRatio  ratio="1"  sx={{ width: 130 }}>
                                             <img
                                                 src={producto.url_imagenes}
                                                 alt={producto.nombre}
@@ -224,36 +248,23 @@ return(
                                         </AspectRatio>
                                         <CardContent orientation="horizontal" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                                             <div>
-                                                <Typography level="h4" sx={{ display: "-webkit-box", overflow: "hidden", WebkitBoxOrient: "vertical", WebkitLineClamp: 2, textOverflow: "ellipsis", fontWeight: "bold",}}>{producto.nombre}</Typography>
+                                                <Typography level="h5" sx={{ display: "-webkit-box", overflow: "hidden", WebkitBoxOrient: "vertical", WebkitLineClamp: 2, textOverflow: "ellipsis", fontWeight: "bold",}}>{producto.nombre}</Typography>
                                                 <Typography>{producto.descripcion}</Typography>
-                                                <Typography level="h3" sx={{ fontWeight: "xl", mt: 0.8 }}>${parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2)}</Typography>
+                                                <Typography level="h4" sx={{ fontWeight: "xl", mt: 0.8 }}>${parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2)}</Typography>
                                                 <div style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
-                                                    <Button variant="contained" onClick={()=>handleSeleccionar(producto.id_producto,parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2))} size="large" sx={{ ml: 3.5, my: 2, backgroundColor: "#a111ad", height: 45, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Seleccionar</Button>
-                                                    <IconButton variant="contained" size="large" sx={{
-                                                        ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white",
-                                                        "&:active": {
-                                                            transform: "scale(0.95)",
-                                                            transition: "transform 0.2s ease",
-                                                        },
-                                                        "&:hover": {
-                                                            backgroundColor: "#9e2590",
-                                                        },
-                                                    }}
-                                                    >
-                                                        <FavoriteIcon />
-                                                    </IconButton>
+                                                    <Button variant="contained" onClick={()=>handleSeleccionar(producto.id_producto,parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2))} size="" sx={{ ml: 2, my:1.5, backgroundColor: "#a111ad", height: 40, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Seleccionar</Button>
+
                                                 </div>
                                             </div>
                                         </CardContent>
                                     </Card>
                                     </Grid>
                             ))
-                        }  
+                        }
                         </Grid>
             </div>
         </div>
     </div>
-                        </Container>
 )
 }
 

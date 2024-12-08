@@ -1,33 +1,49 @@
-.armadorContainer {
+
+.containerArmador {
+    padding: 10px;
+    margin: 10px;
+}
+/* .containerArmador {
     width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
-}
+} */
 .armador{
     display: flex;
-    gap: 2rem;
-    width: 90vw;
+    gap: 1rem;
+    width: 100%;
     height: fit-content;
-    border: 1px solid red;
-margin-left: -5rem;    
+    /* border: 1px solid red; */
+    margin: 0 auto;
+    box-sizing: border-box;
+    /* padding: 1rem; */
+    /* margin-left: -7.3rem;    
+    margin-right: 10px;     */
 }
 .ladoIzquierdoArmador{
-display: flex;
-flex-direction: column;
-height: fit-content;
-gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    /* height: fit-content; */
+    gap: 1rem;
+    width: 25%;
+    min-width: 280px;
+    /* margin-left: 10px; */
 }
 .tipo {
     padding: 3rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    display: grid;
+    margin: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    /* flex-direction: column; */
+    background-color: #e0e0e0;
+    border-radius: 15px;
+    gap: 1.4rem;
     height: fit-content;
-    max-width: 30vw;
-    border: 1px solid black;
+    /* max-width: 30vw; */
+    /* border: 1px solid black; */
 }
-.productos{
+/* .productos{
     display: flex;
     justify-content: center;
     align-items: center;
@@ -36,13 +52,14 @@ gap: 1rem;
     overflow-y: scroll;
     gap: 3rem;
     row-gap: 1rem;
-}
+} */
 
 .tipo div{
     border: 1px solid black;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 0.5re;
 }
 .tipo img{
     width: 64px;
@@ -52,4 +69,28 @@ gap: 1rem;
     font-size: large;
     font-weight: 600;
     
+}
+
+.productoCarritoArmador{
+    display: flex;
+    flex-direction: row;
+    font-family: League Spartan;
+    font-size: 15px;
+    background-color: #e0e0e0;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    margin-left: 8px;
+    margin-right: 2px;
+    font-weight:450;
+}
+.elecciones p{
+    display: flex;
+    flex-direction: row;
+    font-family: League Spartan;
+    font-size: 30px;
+    margin-bottom: 10px;
+    margin-left: 8px;
+    margin-right: 2px;
+    font-weight:650;
 }
