@@ -19,7 +19,7 @@ export default function ProductCard() {
     const url = 'localhost'
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
-    const itemPorPagina = 30;
+    const itemPorPagina = 32;
     const [totales, setTotales] = useState(0);
     const [nombre, setNombre] = useState("");
     const [categoria, setCategoria] = useState("");
