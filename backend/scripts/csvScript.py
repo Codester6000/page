@@ -127,7 +127,7 @@ categorias_final_air = {
 "002-0320": "Monitores",
 "000-0299": "Monopatines y scooters",
 "002-0299": "Monopatines y scooters",
-"001-0333": "Mother + micro",
+"001-0333": "Mother_micro",
 "001-0331": "Motherboards",
 "001-0340": "Mouses",
 "001-0290": "Muebles",
