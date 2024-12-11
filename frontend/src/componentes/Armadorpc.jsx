@@ -7,6 +7,7 @@ import icono_ram from "/iconos/armadorIconos/ram.png"
 import icono_hdd from "/iconos/armadorIconos/hdd.png"
 import icono_mother from "/iconos/armadorIconos/motherboard.png"
 import icono_gabinete from "/iconos/armadorIconos/gabinete.png"
+import icono_cooler from "/iconos/armadorIconos/cooler.png"
 import { useAuth } from '../Auth'
 
 
@@ -18,15 +19,12 @@ import Typography from "@mui/joy/Typography";
 import AspectRatio from "@mui/joy/AspectRatio";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/joy/IconButton";
-import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import Pagination from "@mui/material/Pagination";
-import { TextField } from "@mui/material";
+
 import Delete from '@mui/icons-material/Delete'
 
 
 function ArmadorPc() {
-const url = 'localhost'
+const url = 'https://modexwebpage.onrender.com'
 const { sesion } = useAuth();
 const [productos,setProductos] =useState({
     productos:{
@@ -35,9 +33,10 @@ const [productos,setProductos] =useState({
         "placas":[],
         "almacenamiento":[],
         "memorias":[],
-        "coolers":[],
         "fuentes":[],
-        "gabinetes":[]
+        "gabinetes":[],
+        "coolers":[],
+        "monitores":[]
     }});
 
 // Crear un índice
@@ -58,8 +57,9 @@ const crearIndice = (productos) => {
   const buscarPorId = (id) => indiceProductos[id] || null;
 
 const [tipo,setTipo] = useState("procesadores")
-const [elecciones, setElecciones] = useState({procesador:"",mother:"",placa:"",memorias:[],almacenamiento:[],coolers:[],fuente:"",gabinete:""});
+const [elecciones, setElecciones] = useState({procesador:"",mother:"",placa:"",memorias:[],almacenamiento:[],coolers:[],fuente:"",gabinete:"",monitores:[]});
 const [total,setTotal] = useState(0)
+const [order,setOrder] = useState('asc')
 const getArmador = async () => {
     let query = `?`;
         if (elecciones.procesador !="") {
@@ -71,10 +71,14 @@ const getArmador = async () => {
         if (elecciones.memorias.length>0) {
             query += `&memoria_id=${elecciones.memorias[0]}`;
         }
+        if (order != ""){
+            query += `&order=${order}`;
+        }
+        
 
     try {
         const response = await fetch(
-            `http://${url}:3000/armador${query}`,
+            `${url}/armador${query}`,
             {
                 method: "GET",
                 headers: {
@@ -97,7 +101,7 @@ let totalaux = 0;
 useEffect(() => {
     getArmador();
     setTotal(Number(totalaux))
-}, [elecciones]);
+}, [elecciones,order]);
 const eliminarID = (id) => {
   setElecciones((prevElecciones) => {
     const nuevasElecciones = { ...prevElecciones };
@@ -115,7 +119,7 @@ const eliminarID = (id) => {
     return nuevasElecciones;
   });
 };
-const handleSeleccionar = (id_producto,precio) =>{
+const handleSeleccionar = (id_producto) =>{
 
     switch (tipo) {
         case 'procesadores':
@@ -152,6 +156,12 @@ const handleSeleccionar = (id_producto,precio) =>{
         case 'gabinetes':
             setElecciones({...elecciones,gabinete:id_producto})
             break;
+        case 'coolers':
+            setElecciones({...elecciones,coolers:[...elecciones.coolers, id_producto]})
+            break;
+        case 'monitores':
+            setElecciones({...elecciones,monitores:[...elecciones.monitores, id_producto]})
+            break;
 
         default:
             break;
@@ -172,6 +182,8 @@ return(
                     <div className="almacenamiento" onClick={()=>setTipo("almacenamiento")}><img src={icono_hdd}  /></div>
                     <div className="psu" onClick={()=>setTipo("fuentes")}><img src={icono_psu}  /></div>
                     <div className="gabinete" onClick={()=>setTipo("gabinetes")}><img src={icono_gabinete}  /></div>
+                    <div className="coolers" onClick={()=>setTipo("coolers")}><img src={icono_cooler}  /></div>
+                    <div className="monitores" onClick={()=>setTipo("monitores")}><img src={icono_cooler}  /></div>
                 </div>
                 <div className="elecciones">
 
@@ -186,7 +198,11 @@ return(
                                 totalaux = Number(totalaux) + Number(producArreglo.precio_pesos_iva_ajustado)
                                 return (
                                     <div className="productoCarritoArmador" key={`${productoArreglo}+${index}`}> 
-                                        {producArreglo.nombre} :<br></br> $ {parseFloat(producArreglo.precio_pesos_iva_ajustado).toFixed(2)} <br />
+                                        {producArreglo.nombre} :<br></br>  {Number(producArreglo.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
+    style: 'currency',
+    currency: 'ARS',
+    maximumFractionDigits:0
+})} <br />
                                         {/* <button type="button" onClick={()=>eliminarID(producArreglo.id_producto)}>X</button>  */}
                                         <IconButton variant='contained' onClick={()=>eliminarID(producArreglo.id_producto)} sx={{height: 20, width: 20, backgroundColor: "#a111ad", borderRadius: "10px", objectFit: "contain", color: "white",
                                                 "&:active": {
@@ -208,7 +224,11 @@ return(
                             totalaux = Number(totalaux) + Number(produc.precio_pesos_iva_ajustado)
                             return (
                                 <div className="productoCarritoArmador" key={categoria}>
-                                {produc.nombre}: <br></br>$ {parseFloat(produc.precio_pesos_iva_ajustado).toFixed(2)}
+                                {produc.nombre}: <br></br> {Number(produc.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
+    style: 'currency',
+    currency: 'ARS',
+    maximumFractionDigits:0
+})}
                                 
                                 {/* <button type="button" onClick={()=>eliminarID(produc.id_producto)}><Delete></Delete></button> */}
                                     
@@ -229,14 +249,24 @@ return(
 
                         }
                     })}
-                    <p className='total'>Total: <span style={{marginLeft: "10px", color:"green"}}> ${total.toFixed(2)}</span></p>
+                    <p className='total'>Total: <span style={{marginLeft: "10px", color:"green"}}> {total.toLocaleString('es-ar', {
+    style: 'currency',
+    currency: 'ARS',
+    maximumFractionDigits:0
+})}</span></p>
                 </div>
             </div>
             <div className="productos">
+                <form className='filtrosArmador'>
+                    <select name="ordernar Por" value={order} onChange={(e)=>setOrder(e.target.value)}>
+                        <option value="ASC">Precio menor a mayor</option>
+                        <option value="DESC">Precio mayor a menor</option>
+                    </select>
+                </form>
                 <Grid container spacing={2} style={{ marginTop: "10px", justifyContent: "center"}}>
             {
                             productos.productos[`${tipo}`].map((producto, index) => (
-                                <Grid item lg={3.9} key={producto.id_producto}>
+                                <Grid lg={3.9} key={producto.id_producto}>
                                     <Card orientation='horizontal' sx={{ width: "95%", bgcolor: "#e0e0e0", height: 180 }} >
                                         <AspectRatio  ratio="1"  sx={{ width: 130 }}>
                                             <img
@@ -245,14 +275,19 @@ return(
                                                 loading="lazy"
                                                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
                                                 />
+                                                <div className="badge">{(producto.nombre_proveedor == 'air') ? <img src="/badges/24HS.png" alt="" /> : (producto.nombre_proveedor == 'elit') ? <img src="/badges/5_DIAS.png" alt="" /> : <img src="/badges/LOCAL.png" alt="" />} </div>
                                         </AspectRatio>
                                         <CardContent orientation="horizontal" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                                             <div>
                                                 <Typography level="h5" sx={{ display: "-webkit-box", overflow: "hidden", WebkitBoxOrient: "vertical", WebkitLineClamp: 2, textOverflow: "ellipsis", fontWeight: "bold",}}>{producto.nombre}</Typography>
                                                 <Typography>{producto.descripcion}</Typography>
-                                                <Typography level="h4" sx={{ fontWeight: "xl", mt: 0.8 }}>${parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2)}</Typography>
+                                                <Typography level="h4" sx={{ fontWeight: "xl", mt: 0.8 }}>{Number(producto.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
+    style: 'currency',
+    currency: 'ARS',
+    maximumFractionDigits:0
+})}</Typography>
                                                 <div style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
-                                                    <Button variant="contained" onClick={()=>handleSeleccionar(producto.id_producto,parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2))} size="" sx={{ ml: 2, my:1.5, backgroundColor: "#a111ad", height: 40, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Seleccionar</Button>
+                                                    <Button variant="contained" onClick={()=>handleSeleccionar(producto.id_producto)} size="" sx={{ ml: 2, my:1.5, backgroundColor: "#a111ad", height: 40, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Seleccionar</Button>
 
                                                 </div>
                                             </div>

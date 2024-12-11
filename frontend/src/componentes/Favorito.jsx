@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useAuth } from "../Auth";
 
 export default function Favorito() {
-    const url = 'localhost'
+    const url = 'https://modexwebpage.onrender.com'
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 30;
@@ -29,7 +29,7 @@ export default function Favorito() {
     const getFavorito = async () => {
         try {
             const response = await fetch(
-                `http://${url}:3000/favorito`,
+                `${url}/favorito`,
                 {
                     method: "GET",
                     headers: {
@@ -59,7 +59,7 @@ export default function Favorito() {
     const deleteFavorito = async (id_producto) => {
         try {
             const response = await fetch(
-                `http://${url}:3000/favorito`,
+                `${url}/favorito`,
                 {
                     method: "DELETE",
                     headers: {
@@ -107,6 +107,7 @@ export default function Favorito() {
                                             alt={producto.nombre}
                                             loading="lazy"
                                         />
+                                         <div className="badge">{(producto.nombre_proveedor == 'air') ? <img src="/badges/24HS.png" alt="" /> : (producto.nombre_proveedor == 'elit') ? <img src="/badges/5_DIAS.png" alt="" /> : <img src="/badges/LOCAL.png" alt="" />} </div>
                                     </AspectRatio>
                                     <CardContent>
                                         <Typography level="h2" id="card-description" sx={{ fontWeight: 'bold' }}>
@@ -119,7 +120,7 @@ export default function Favorito() {
                                             {producto.codigo_fabricante}
                                         </Typography>
                                         <Typography level="h2" sx={{ fontWeight: "bold", mt: 0.8, color: "#FF7d21" }}>
-                                            ${parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2)}
+                                            ${parseFloat(producto.precio_pesos_iva_ajustado).toFixed(0)}
                                         </Typography>
                                     </CardContent>
                                     <Grid>

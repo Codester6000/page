@@ -10,7 +10,7 @@ import { useAuth } from "../Auth";
 import { Link } from "react-router-dom";
 
 const Login = () =>{
-    const url = 'localhost'
+    const url = 'https://modexwebpage.onrender.com'
     const {register,handleSubmit,resetField,formState:{errors}} = useForm({
         resolver:zodResolver(formLoginSchema)
     })
@@ -22,7 +22,7 @@ const Login = () =>{
 
     const onSubmit = async (datos) => {
         console.log(datos)
-        const response = await fetch(`http://${url}:3000/auth/login`, {
+        const response = await fetch(`${url}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datos),

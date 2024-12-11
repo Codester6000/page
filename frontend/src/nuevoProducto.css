@@ -1,0 +1,60 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+html{
+    height: 100vh;
+}
+.nuevoProducto{
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    width: 100vw;
+}
+#root{
+    height: 100vh;
+}
+.formProducto{
+    display: flex;
+    flex-direction: column;
+    width: 90vw;
+    height: fit-content;
+    padding-top: 3rem;
+    gap: 1rem;
+    margin-left: 50%;
+    margin-right: 50%;
+}
+
+.fila{
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 1rem;
+}
+#filaDetalle{
+    align-items: start;
+}
+#filaPrecio{
+flex-direction: column;
+align-items: start;
+}
+
+.titulo{
+    width: 150px;
+}
+.labelInput{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+textarea{
+    width: 300px;
+    height: 100px;
+}
+#stock, #garantia{
+    width: 50px;
+}
+#medidas input{
+    width: 60px;
+}

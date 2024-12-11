@@ -19,6 +19,7 @@ export const validarQueryArmador = () => [
     query("gabinete").isAlphanumeric().notEmpty().optional(),
     query("almacenamiento").isAlphanumeric().notEmpty().optional(),
     query("motherboard").isAlphanumeric().notEmpty().optional(),
+    query("order").isAlphanumeric().notEmpty()
 ]
 
 export const validarBodyProducto = () => [
