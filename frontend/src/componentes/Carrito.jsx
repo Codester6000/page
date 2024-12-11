@@ -38,7 +38,7 @@ export default function Carrito() {
     const getCarrito = async () => {
         try {
             const response = await fetch(
-                `http://${url}/carrito`,
+                `${url}/carrito`,
                 {
                     method: "GET",
                     headers: {
@@ -69,7 +69,7 @@ export default function Carrito() {
     const deleteCarrito = async (id_producto) => {
         try {
             const response = await fetch(
-                `http://${url}/carrito`,
+                `${url}/carrito`,
                 {
                     method: "DELETE",
                     headers: {
@@ -94,7 +94,7 @@ export default function Carrito() {
     const putCarrito = async (id_producto, cantidadProductos) => {
         try {
             const response = await fetch(
-                `http://${url}/carrito`,
+                `${url}/carrito`,
                 {
                     method: "PUT",
                     headers: {

@@ -19,7 +19,7 @@ const Register = () =>{
 
     const onSubmit = async (datos) => {
         console.log(datos)
-        const response = await fetch(`http://${url}/usuarios`, {
+        const response = await fetch(`${url}/usuarios`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datos),

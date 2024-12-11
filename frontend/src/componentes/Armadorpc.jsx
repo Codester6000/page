@@ -78,7 +78,7 @@ const getArmador = async () => {
 
     try {
         const response = await fetch(
-            `http://${url}/armador${query}`,
+            `${url}/armador${query}`,
             {
                 method: "GET",
                 headers: {

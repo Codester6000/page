@@ -29,7 +29,7 @@ export default function Favorito() {
     const getFavorito = async () => {
         try {
             const response = await fetch(
-                `http://${url}/favorito`,
+                `${url}/favorito`,
                 {
                     method: "GET",
                     headers: {
@@ -59,7 +59,7 @@ export default function Favorito() {
     const deleteFavorito = async (id_producto) => {
         try {
             const response = await fetch(
-                `http://${url}/favorito`,
+                `${url}/favorito`,
                 {
                     method: "DELETE",
                     headers: {

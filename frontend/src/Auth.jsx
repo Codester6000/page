@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
   },[sesion]);
 
   const login = async (username, password, ok, error) => {
-    const response = await fetch(`http://${url}/auth/login`, {
+    const response = await fetch(`${url}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),

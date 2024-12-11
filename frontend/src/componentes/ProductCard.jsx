@@ -52,7 +52,7 @@ export default function ProductCard() {
 
         try {
             const response = await fetch(
-                `http://${url}/carrito`,
+                `${url}/carrito`,
                 {
                     method: "POST",
                     headers: {
@@ -84,7 +84,7 @@ export default function ProductCard() {
     
         try {
             const response = await fetch(
-                `http://${url}/favorito`,
+                `${url}/favorito`,
                 {
                     method: "POST",
                     headers: {
@@ -114,7 +114,7 @@ export default function ProductCard() {
         try {
             const query = construirQuery();
             const response = await fetch(
-                `http://${url}/productos?${query}`,
+                `${url}/productos?${query}`,
                 {
                     method: "GET",
                     headers: {
