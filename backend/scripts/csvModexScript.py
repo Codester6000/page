@@ -195,35 +195,37 @@ def extraer_columnas_csv(ruta_csv):
  
     """
     cuenta = 1
-    with open(ruta_csv, mode='r', newline='', encoding='ISO-8859-1') as archivo_csv:
-        lector_csv = csv.DictReader(archivo_csv)
+    with open(ruta_csv, mode='r',newline='', encoding='ISO-8859-1') as archivo_csv:
+        lector_csv = csv.DictReader(archivo_csv,delimiter=";")
         for fila in lector_csv:
-            nombre = fila["Descripcion"]
-            stock = int(fila["CBA"])
+            nombre = fila["Producto"]
+            stock = int(float(fila["Stock"].replace(',','.')))
             garantia_meses = 6
             detalle = "a"
-            largo = float("0")
-            alto = float("0")
-            ancho = float("0")
-            peso = float("0")
-            codigo_fabricante = fila["Part Number "]
-            marca = "a"
+            largo = float(fila["Alto (Cm)"].replace(',','.'))
+            alto = float(fila["Ancho (Cm)"].replace(',','.'))
+            ancho = float(fila["Profundidad (Cm)"].replace(',','.'))
+            peso = float(fila["Peso (Kg)"].replace(',','.'))
+            codigo_fabricante = fila["ID"]
+            marca = fila['Marca']
             sub_categoria = "a"
-            proveedor = "air"
-            precio_dolares = fila["lista3"]
-            precio_dolares_iva = float("{:.2f}".format(float(fila["lista3"]) * (float(fila["IVA"]) / 100 + 1)))
-            iva = float(fila["IVA"]) 
-            precio_pesos = float(fila["lista3"]) * float(dolar_venta)
-            precio_pesos_iva = float("{:.2f}".format(float(fila["lista3"]) * float(dolar_venta) * (float(fila["IVA"]) / 100 + 1)))
+            iva = float(fila['Alicuota IVA'].replace(',','.').replace('%',''))
+            proveedor = "Modex"
             url_imagen = "https://i.imgur.com/0wbrCkz.png"
-            codigo_categoria = fila["Rubro"]
-            try:
-                categoria = categorias_final_air[f"{codigo_categoria}"]
-            except:
-                categoria = 0   
-
-            if (categoria != 0 and len(codigo_fabricante) > 2):
+            categoria = fila["Categoría"]
+            if (fila['Moneda']=='$'):
+                precio_pesos = float(fila['Precio Compra'].replace('.','').replace(',','.')) 
+                precio_pesos_iva = float(fila['Precio Final'].replace('.','').replace(',','.'))
+                precio_dolares = float(fila["Precio Compra"].replace('.','').replace(',','.')) / float(dolar_venta)
+                precio_dolares_iva = float(fila['Precio Final'].replace('.','').replace(',','.')) / float(dolar_venta)
+            else:
+                precio_dolares = float(fila['Precio Compra'].replace('.','').replace(',','.'))
+                precio_dolares_iva = float(fila['Precio Final'].replace('.','').replace(',','.'))
+                precio_pesos = float(fila["Precio Compra"].replace('.','').replace(',','.')) * float(dolar_venta)
+                precio_pesos_iva = float(fila['Precio Final'].replace('.','').replace(',','.')) * float(dolar_venta)
+            if (categoria != 0 and stock > 0):
                 parametros = (nombre,stock,garantia_meses,detalle,largo,alto,ancho,peso,codigo_fabricante,marca,categoria,sub_categoria,proveedor,precio_dolares,precio_dolares_iva,iva,precio_pesos,precio_pesos_iva,url_imagen)
+                print(parametros)
                 try:
                     mycursor.callproc("cargarDatosProducto", parametros)
                     mydb.commit()  # Asegúrate de confirmar los cambios si la operación fue exitosa
@@ -241,6 +243,5 @@ def extraer_columnas_csv(ruta_csv):
     # Llama a la función para procesar las filas seleccionadas
 
 # Ejemplo de uso:
-ruta_csv = './arituc.csv'  # Cambia esto por pya ruta a tu archivo CSV
-columnas_interes = ['nombre', 'edad', 'correo']  # Cambia esto por las columnas que quieras extraer
+ruta_csv = './lista_productos.csv'  # Cambia esto por pya ruta a tu archivo CSV
 extraer_columnas_csv(ruta_csv)

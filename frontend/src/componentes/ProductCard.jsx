@@ -14,9 +14,10 @@ import Pagination from "@mui/material/Pagination";
 import { Alert, AlertTitle, Box, Snackbar, TextField } from "@mui/material";
 import { useAuth } from "../Auth";
 import ShoppingCart from "@mui/icons-material/ShoppingCart";
+import '../producto.css'
 
 export default function ProductCard() {
-    const url = 'localhost'
+    const url = 'https://modexwebpage.onrender.com'
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 32;
@@ -51,7 +52,7 @@ export default function ProductCard() {
 
         try {
             const response = await fetch(
-                `http://${url}:3000/carrito`,
+                `${url}/carrito`,
                 {
                     method: "POST",
                     headers: {
@@ -83,7 +84,7 @@ export default function ProductCard() {
     
         try {
             const response = await fetch(
-                `http://${url}:3000/favorito`,
+                `${url}/favorito`,
                 {
                     method: "POST",
                     headers: {
@@ -113,7 +114,7 @@ export default function ProductCard() {
         try {
             const query = construirQuery();
             const response = await fetch(
-                `http://${url}:3000/productos?${query}`,
+                `${url}/productos?${query}`,
                 {
                     method: "GET",
                     headers: {
@@ -164,6 +165,7 @@ export default function ProductCard() {
                         productos.map((producto, index) => (
                             <Grid xs={12} sm={6} md={4} lg={3} key={producto.id_producto}>
                                 <Card sx={{ width: 280, bgcolor: "#e0e0e0", height: 350 }}>
+                                    <div className="badge">{(producto.nombre_proveedor == 'air') ? <img src="/badges/24HS.png" alt="" /> : (producto.nombre_proveedor == 'elit') ? <img src="/badges/5_DIAS.png" alt="" /> : <img src="/badges/LOCAL.png" alt="" />} </div>
                                     <AspectRatio minHeight="120px" maxHeight="200px">
                                         <img
                                             src={producto.url_imagenes}
@@ -176,7 +178,11 @@ export default function ProductCard() {
                                         <div>
                                             <Typography level="h4" sx={{ display: "-webkit-box", overflow: "hidden", WebkitBoxOrient: "vertical", WebkitLineClamp: 2, textOverflow: "ellipsis", fontWeight: "bold", }}>{producto.nombre}</Typography>
                                             <Typography>{producto.descripcion}</Typography>
-                                            <Typography level="h3" sx={{ fontWeight: "xl", mt: 0.8 }}>${parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2)}</Typography>
+                                            <Typography level="h3" sx={{ fontWeight: "xl", mt: 0.8 }}>{Number(producto.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
+    style: 'currency',
+    currency: 'ARS',
+    maximumFractionDigits:0
+})}</Typography>
                                             <div style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
                                                 <Button variant="contained" size="large" onClick={() => {agregarCarrito(producto.id_producto); setAlerta(true)}} startIcon={<AddShoppingCartIcon />} sx={{ ml: 2, my: 2, backgroundColor: "#a111ad", height: 45, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Añadir al Carro</Button>
                                                 <IconButton variant="contained" size="large" sx={{

@@ -6,7 +6,7 @@ import {query} from "express-validator"
 const armadorRouter = express.Router()
 
 armadorRouter.get("/", validarQueryArmador(),verificarValidaciones, async (req, res) => {
-const {procesador_id,motherboard_id,gpu_id,memoria_id,gabinete_id,almacenamiento_id} = req.query
+const {procesador_id,motherboard_id,gpu_id,memoria_id,gabinete_id,almacenamiento_id,order} = req.query
 let procesador = undefined
 let motherboard = undefined
 let motherboardDDR = undefined
@@ -62,7 +62,7 @@ if (motherboard_id != undefined){
 if (memoria_id != undefined){
     await handleSeleccionar(memoria_id)
 }
-const sql = `SELECT
+let sql = `SELECT
     pr.id_producto, 
     pr.nombre, 
     p.stock, 
@@ -107,7 +107,7 @@ WHERE
     p.precio_dolar = (
         SELECT MIN(precio_dolar) 
         FROM precios 
-        WHERE id_producto = pr.id_producto
+        WHERE id_producto = pr.id_producto AND stock > 0
     )
     AND pr.id_producto IN (
         SELECT pc2.id_producto
@@ -117,8 +117,12 @@ WHERE
         GROUP BY pc2.id_producto
         HAVING COUNT(DISTINCT c2.nombre_categoria) = ?
     )
-GROUP BY pr.id_producto, p.stock, p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva, pr.alto, pr.ancho, pr.largo, pro.nombre_proveedor;
+GROUP BY pr.id_producto, p.stock, p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva, pr.alto, pr.ancho, pr.largo, pro.nombre_proveedor
+ORDER BY precio_pesos_ajustado 
 `
+if(order != undefined){
+    sql += order + ";"
+}
 const paramProcesadores = (procesador !=undefined) ? ["procesadores",procesador,'teest',2] : ["procesadores","",'teest',1]; 
 const [procesadores] = await db.execute(sql,paramProcesadores)
 
@@ -147,8 +151,11 @@ const paramGabinente = ["gabinetes","",'test',1];
 const [gabinetes] = await db.execute(sql,paramGabinente)
 const paramAlmacenamiento = ["discos internos","discos internos ssd",'teest',1];
 const [almacenamientos] = await db.execute(sql,paramAlmacenamiento)
-
-    res.status(200).send({ productos : {"procesadores": procesadores, "motherboards": motherboards, "gpus":gpus,"memorias": memorias, "fuentes": fuentes, "gabinetes": gabinetes, "almacenamiento": almacenamientos }})
+const paramCoolers = ["Coolers","test","test",1]
+const [coolers] = await db.execute(sql,paramCoolers)
+const paramMonitores = ["Monitores","test","test",1]
+const [monitores] = await db.execute(sql,paramMonitores)
+    res.status(200).send({ productos : {"procesadores": procesadores, "motherboards": motherboards, "gpus":gpus,"memorias": memorias, "fuentes": fuentes, "gabinetes": gabinetes, "almacenamiento": almacenamientos, 'coolers':coolers,'monitores':monitores }})
 })
 
 export default armadorRouter;

@@ -1,0 +1,15 @@
+.MuiCard-root{
+    position: relative;
+}
+.badge{
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+
+}
+.badge img{
+    width: 64px;
+    height: 64px;
+    z-index: 11;
+}
