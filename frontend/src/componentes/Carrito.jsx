@@ -13,7 +13,7 @@ import { useAuth } from "../Auth";
 import { Button, Input, TextField } from "@mui/material";
 
 export default function Carrito() {
-    const url = 'localhost'
+    const url = 'https://modexwebpage.onrender.com'
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 30;
@@ -38,7 +38,7 @@ export default function Carrito() {
     const getCarrito = async () => {
         try {
             const response = await fetch(
-                `http://${url}:3000/carrito`,
+                `http://${url}/carrito`,
                 {
                     method: "GET",
                     headers: {
@@ -53,7 +53,7 @@ export default function Carrito() {
                 setTotales(data.cantidadProductos);
                 if (data.carrito && Array.isArray(data.carrito)) {
                     setProductos(data.carrito);
-                    const total = data.carrito.reduce((sum, producto) => sum + (parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2) * producto.cantidad), 0);
+                    const total = data.carrito.reduce((sum, producto) => sum + (parseFloat(producto.precio_pesos_iva_ajustado).toFixed(0) * producto.cantidad), 0);
                     setTotales(total);
                 } else {
                     console.error("Estructura de datos incorrecta:", data);
@@ -69,7 +69,7 @@ export default function Carrito() {
     const deleteCarrito = async (id_producto) => {
         try {
             const response = await fetch(
-                `http://${url}:3000/carrito`,
+                `http://${url}/carrito`,
                 {
                     method: "DELETE",
                     headers: {
@@ -94,7 +94,7 @@ export default function Carrito() {
     const putCarrito = async (id_producto, cantidadProductos) => {
         try {
             const response = await fetch(
-                `http://${url}:3000/carrito`,
+                `http://${url}/carrito`,
                 {
                     method: "PUT",
                     headers: {
@@ -143,6 +143,7 @@ export default function Carrito() {
                                             alt={producto.nombre}
                                             loading="lazy"
                                         />
+                                         <div className="badge">{(producto.nombre_proveedor == 'air') ? <img src="/badges/24HS.png" alt="" /> : (producto.nombre_proveedor == 'elit') ? <img src="/badges/5_DIAS.png" alt="" /> : <img src="/badges/LOCAL.png" alt="" />} </div>
                                     </AspectRatio>
                                     <CardContent>
                                         <Typography level="h2" id="card-description" sx={{ fontWeight: 'bold' }}>
@@ -155,7 +156,11 @@ export default function Carrito() {
                                             {producto.codigo_fabricante}
                                         </Typography>
                                         <Typography level="h2" sx={{ fontWeight: "bold", mt: 0.8, color: "#FF7d21" }}>
-                                            ${parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2)}
+                                            {Number(producto.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
+    style: 'currency',
+    currency: 'ARS',
+    maximumFractionDigits:0
+})}
                                         </Typography>
                                     </CardContent>
                                     <Grid>
@@ -194,7 +199,11 @@ export default function Carrito() {
                 </Grid>
 
                 <Typography level="h3" sx={{ mt: 3, fontWeight: 'bold', textAlign: 'right', color: 'orange' }}>
-                    Total: ${totales.toFixed(2)}
+                    Total: {totales.toLocaleString('es-ar', {
+    style: 'currency',
+    currency: 'ARS',
+    maximumFractionDigits:0
+})}
                 </Typography>
 
                 <Pagination count={Math.ceil(productos.length / itemPorPagina)} pagina={pagina} onChange={(e, value) => setPagina(value)} color="primary" sx={{

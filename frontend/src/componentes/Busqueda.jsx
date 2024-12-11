@@ -16,7 +16,7 @@ import { Chip, TextField } from "@mui/material";
 import { useAuth } from "../Auth";
 import {SearchContext} from "../searchContext"
 export default function ProductCard() {
-    const url = 'localhost'
+    const url = 'https://modexwebpage.onrender.com'
     const { searchTerm } = useContext(SearchContext)
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
@@ -27,7 +27,7 @@ export default function ProductCard() {
     const agregarCarrito = async (producto_id) => {
         try {
             const response = await fetch(
-                `http://${url}:3000/carrito`,
+                `http://${url}/carrito`,
                 {
                     method: "POST",
                     headers: {
@@ -53,7 +53,7 @@ export default function ProductCard() {
   const agregarFavorito = async (producto_id) => {
         try {
             const response = await fetch(
-                `http://${url}:3000/favorito`,
+                `http://${url}/favorito`,
                 {
                     method: "POST",
                     headers: {
@@ -78,7 +78,7 @@ export default function ProductCard() {
     };
 
     const construirQuery = () => {
-        let query = `offset=${(pagina - 1) * itemPorPagina}&limit=${itemPorPagina}`;
+        let query = `?offset=${(pagina - 1) * itemPorPagina}&limit=${itemPorPagina}`;
         if (searchTerm) query += `&nombre=${searchTerm}`;
         return query;
     };
@@ -87,7 +87,7 @@ export default function ProductCard() {
         try {
             const query = construirQuery();
             const response = await fetch(
-                `http://${url}:3000/productos?${query}`,
+                `http://${url}/productos${query}`,
                 {
                     method: "GET",
                     headers: {
@@ -139,6 +139,7 @@ export default function ProductCard() {
                                             alt={producto.nombre}
                                             loading="lazy"
                                         />
+                                    <div className="badge">{(producto.nombre_proveedor == 'air') ? <img src="/badges/24HS.png" alt="" /> : (producto.nombre_proveedor == 'elit') ? <img src="/badges/5_DIAS.png" alt="" /> : <img src="/badges/LOCAL.png" alt="" />} </div>
                                     </AspectRatio>
                                     <CardContent>
                                         <Typography level="h2" id="card-description" sx={{ fontWeight: 'bold' }}>
@@ -151,7 +152,11 @@ export default function ProductCard() {
                                             {producto.codigo_fabricante}
                                         </Typography>
                                         <Typography level="h2" sx={{ fontWeight: "bold", mt: 0.8, color: "#FF7d21" }}>
-                                            ${parseFloat(producto.precio_pesos_iva_ajustado).toFixed(2)}
+                                            {Number(producto.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
+    style: 'currency',
+    currency: 'ARS',
+    maximumFractionDigits:0
+})}
                                         </Typography>
                                     </CardContent>
                                 <Grid>

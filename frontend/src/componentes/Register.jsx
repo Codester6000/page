@@ -10,7 +10,7 @@ import { formRegisterSchema } from '../validations/formlogin'
 import { useNavigate } from "react-router-dom";
 
 const Register = () =>{
-    const url = 'localhost'
+    const url = 'https://modexwebpage.onrender.com'
     const navigate = useNavigate();
     const [errores,setErrores] = useState("")
     const {register,handleSubmit,resetField,formState:{errors}} = useForm({
@@ -19,7 +19,7 @@ const Register = () =>{
 
     const onSubmit = async (datos) => {
         console.log(datos)
-        const response = await fetch(`http://${url}]:3000/usuarios`, {
+        const response = await fetch(`http://${url}/usuarios`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datos),
