@@ -3,13 +3,27 @@ import csv
 import requests
 import mysql.connector
 from mysql.connector import Error
+from dotenv import load_dotenv
+import os
+
+from pathlib import Path
+
+load_dotenv()
+
+# Obtener las variables de entorno
+hostenv = os.getenv("DB_HOST")
+userenv= os.getenv("DB_USER")
+passwordenv = os.getenv("DB_PASS")
+databasenv = os.getenv("DB_NAME")
+
 
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="root123",
-  database="schemamodex"
+  host=hostenv,
+  user=userenv,
+  password=passwordenv,
+  database=databasenv
 )
+
 
 mycursor = mydb.cursor()
 
