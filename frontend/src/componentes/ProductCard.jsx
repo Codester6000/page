@@ -11,10 +11,11 @@ import IconButton from "@mui/joy/IconButton";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Pagination from "@mui/material/Pagination";
-import { Alert, AlertTitle, Box, Snackbar, TextField } from "@mui/material";
+import { Alert, AlertTitle, Box, Skeleton, Snackbar, TextField } from "@mui/material";
 import { useAuth } from "../Auth";
 import ShoppingCart from "@mui/icons-material/ShoppingCart";
 import '../producto.css'
+import SkeletonProd from "./SkeletonProd";
 
 export default function ProductCard() {
     const url = 'https://modexwebpage.onrender.com'
@@ -147,6 +148,7 @@ export default function ProductCard() {
     }, [pagina]);
     return (
         <Container sx={{}}>
+            {/* <SkeletonProd></SkeletonProd> */}
             <Card sx={{ bgcolor: "#FFfff", padding: 5, marginX: -10, marginY: 5 }}>
                 <Grid>
 
@@ -210,7 +212,10 @@ export default function ProductCard() {
                             </Grid>
                         ))
                     ) : (
-                        <Typography>Despues pongo un mensaje de error o skeleton</Typography>
+                
+                        <SkeletonProd></SkeletonProd>
+                        // <Typography>Despues pongo un mensaje de error o skeleton</Typography>
+
                     )}
                 </Grid>
                 <Snackbar

@@ -258,7 +258,7 @@ return(
             </div>
             <div className="productos">
                 <form className='filtrosArmador'>
-                    <select name="ordernar Por" value={order} onChange={(e)=>setOrder(e.target.value)}>
+                    <select className='ordernarPor' name="ordernar Por" value={order} onChange={(e)=>setOrder(e.target.value)}>
                         <option value="ASC">Precio menor a mayor</option>
                         <option value="DESC">Precio mayor a menor</option>
                     </select>
