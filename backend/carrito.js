@@ -9,23 +9,79 @@ carritoRouter.get('/',validarJwt,async (req,res) =>{
     const sql = `SELECT pr.id_producto,pr.nombre,ca.cantidad,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
 ,GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
 CASE
+    WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_dolar * 1.15
         WHEN pro.nombre_proveedor = 'elit' THEN p.precio_dolar * 1.20
+        WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_dolar * 1.20
         WHEN pro.nombre_proveedor = 'air' THEN p.precio_dolar * 1.25
         ELSE p.precio_dolar
     END AS precio_dolar_ajustado,
     CASE
+    WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_dolar_iva * 1.15
         WHEN pro.nombre_proveedor = 'elit' THEN p.precio_dolar_iva * 1.20
+        WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_dolar_iva * 1.20
         WHEN pro.nombre_proveedor = 'air' THEN p.precio_dolar_iva * 1.25
         ELSE p.precio_dolar_iva
     END AS precio_dolar_iva_ajustado,
     p.iva, 
     CASE
+    WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_pesos * 1.15
         WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos * 1.2
+        WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_pesos * 1.20
         WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos * 1.25
         ELSE p.precio_pesos
     END AS precio_pesos_ajustado,
     CASE
+    WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_pesos_iva * 1.15
         WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos_iva * 1.2
+        WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_pesos_iva * 1.20
         WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos_iva * 1.25
         ELSE p.precio_pesos_iva
     END AS precio_pesos_iva_ajustado,
