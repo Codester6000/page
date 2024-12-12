@@ -10,7 +10,7 @@ import { useAuth } from "../Auth";
 import { Link } from "react-router-dom";
 
 const Login = () =>{
-    const url = 'https://modexwebpage.onrender.com'
+    const url = 'http://localhost:3000'
     const {register,handleSubmit,resetField,formState:{errors}} = useForm({
         resolver:zodResolver(formLoginSchema)
     })

@@ -13,7 +13,7 @@ import { useAuth } from "../Auth";
 import { Button, Input, TextField } from "@mui/material";
 
 export default function Carrito() {
-    const url = 'https://modexwebpage.onrender.com'
+    const url = 'http://localhost:3000'
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 30;

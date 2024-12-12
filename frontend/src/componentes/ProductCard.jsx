@@ -17,7 +17,7 @@ import ShoppingCart from "@mui/icons-material/ShoppingCart";
 import '../producto.css'
 
 export default function ProductCard() {
-    const url = 'https://modexwebpage.onrender.com'
+    const url = 'http://localhost:3000'
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 32;

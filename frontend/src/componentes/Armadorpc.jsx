@@ -24,7 +24,7 @@ import Delete from '@mui/icons-material/Delete'
 
 
 function ArmadorPc() {
-const url = 'https://modexwebpage.onrender.com'
+const url = 'http://localhost:3000'
 const { sesion } = useAuth();
 const [productos,setProductos] =useState({
     productos:{

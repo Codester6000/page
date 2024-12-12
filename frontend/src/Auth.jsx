@@ -8,7 +8,7 @@ import {Button } from "@mui/material";
 export const useAuth = () => {
   return useContext(AuthContext);
 };
-const url = 'https://modexwebpage.onrender.com'
+const url = 'http://localhost:3000'
 // Componente principal
 export const AuthProvider = ({ children }) => {
   const [sesion, setSesion] = useState(()=>{
