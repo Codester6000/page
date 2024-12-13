@@ -8,7 +8,7 @@ import {Button } from "@mui/material";
 export const useAuth = () => {
   return useContext(AuthContext);
 };
-const url = 'http://vps-4584768-x.dattaweb.com:3000'
+const url = 'https://api.modex.com.ar'
 // Componente principal
 export const AuthProvider = ({ children }) => {
   const [sesion, setSesion] = useState(()=>{

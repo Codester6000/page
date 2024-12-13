@@ -24,7 +24,7 @@ import Delete from '@mui/icons-material/Delete'
 
 
 function ArmadorPc() {
-const url = 'http://vps-4584768-x.dattaweb.com:3000'
+const url = 'https://api.modex.com.ar'
 const { sesion } = useAuth();
 const [productos,setProductos] =useState({
     productos:{

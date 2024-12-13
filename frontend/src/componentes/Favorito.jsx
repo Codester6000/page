@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useAuth } from "../Auth";
 
 export default function Favorito() {
-    const url = 'http://vps-4584768-x.dattaweb.com:3000'
+    const url = 'https://api.modex.com.ar'
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 30;
