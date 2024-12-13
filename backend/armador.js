@@ -70,7 +70,14 @@ let sql = `SELECT
     pr.garantia_meses, 
     pr.codigo_fabricante,
     GROUP_CONCAT(DISTINCT c.nombre_categoria SEPARATOR ', ') AS categorias,
-    GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
+    (SELECT JSON_ARRAYAGG(url_imagen)
+        FROM (
+            SELECT DISTINCT i.url_imagen
+            FROM productos_imagenes pi
+            INNER JOIN imagenes i ON pi.id_imagen = i.id_imagen
+            WHERE pi.id_producto = pr.id_producto
+        ) AS distinct_images
+       ) AS url_imagenes,
 CASE
     WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
         SELECT pc2.id_producto

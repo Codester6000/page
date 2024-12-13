@@ -103,7 +103,7 @@ export default function Favorito() {
                                 >
                                     <AspectRatio ratio="1" sx={{ width: 150 }}>
                                         <img
-                                            src={producto.url_imagenes}
+                                            src={producto.url_imagenes[producto.url_imagenes.length -1]}
                                             alt={producto.nombre}
                                             loading="lazy"
                                         />

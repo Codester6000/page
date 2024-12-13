@@ -270,7 +270,7 @@ return(
                                     <Card orientation='horizontal' sx={{ width: "95%", bgcolor: "#e0e0e0", height: 180 }} >
                                         <AspectRatio  ratio="1"  sx={{ width: 130 }}>
                                             <img
-                                                src={producto.url_imagenes}
+                                                src={producto.url_imagenes[producto.url_imagenes.length -1]}
                                                 alt={producto.nombre}
                                                 loading="lazy"
                                                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
