@@ -65,8 +65,7 @@ export const AuthPage = ({ children }) => {
 // Autorizar rol
 export const AuthRol = ({ rol, children }) => {
   const { sesion } = useAuth();
-
-  if (!sesion || sesion.rol !== rol) {
+  if (!sesion || sesion.rol != rol) {
     return null;
   }
 

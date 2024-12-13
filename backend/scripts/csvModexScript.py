@@ -11,9 +11,9 @@ from pathlib import Path
 load_dotenv()
 
 # Obtener las variables de entorno
-hostenv = os.getenv("DB_HOST")
-userenv= os.getenv("DB_USER")
-passwordenv = os.getenv("DB_PASS")
+hostenv = os.getenv("DB_HOST_DEV")
+userenv= os.getenv("DB_USER_DEV")
+passwordenv = os.getenv("DB_PASS_DEV")
 databasenv = os.getenv("DB_NAME")
 
 
