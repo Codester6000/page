@@ -10,7 +10,7 @@ import { formRegisterSchema } from '../validations/formlogin'
 import { useNavigate } from "react-router-dom";
 
 const Register = () =>{
-    const url = 'https://modexwebpage.onrender.com'
+    const url = 'http://vps-4584768-x.dattaweb.com:3000'
     const navigate = useNavigate();
     const [errores,setErrores] = useState("")
     const {register,handleSubmit,resetField,formState:{errors}} = useForm({

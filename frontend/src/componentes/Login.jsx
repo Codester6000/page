@@ -10,7 +10,7 @@ import { useAuth } from "../Auth";
 import { Link } from "react-router-dom";
 
 const Login = () =>{
-    const url = 'https://modexwebpage.onrender.com'
+    const url = 'http://vps-4584768-x.dattaweb.com:3000'
     const {register,handleSubmit,resetField,formState:{errors}} = useForm({
         resolver:zodResolver(formLoginSchema)
     })
