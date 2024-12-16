@@ -13,7 +13,7 @@ const HOST = '0.0.0.0'
 const app = express()
 conectarDB()
 let corsOptions = {
-    origin : ['http://modex.com.ar','www.modex.com.ar'],
+    origin : ['https://modex.com.ar','https://www.modex.com.ar'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Headers permitidos
  }
