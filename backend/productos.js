@@ -13,25 +13,88 @@ productosRouter.get("/", validarJwt, validarQuerysProducto(), verificarValidacio
     pr.peso,pr.garantia_meses,
     pr.codigo_fabricante,
     GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias,
-    GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
+    (SELECT JSON_ARRAYAGG(url_imagen)
+        FROM (
+            SELECT DISTINCT i.url_imagen
+            FROM productos_imagenes pi
+            INNER JOIN imagenes i ON pi.id_imagen = i.id_imagen
+            WHERE pi.id_producto = pr.id_producto
+        ) AS distinct_images
+       ) AS url_imagenes,
 CASE
+    WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_dolar * 1.15
         WHEN pro.nombre_proveedor = 'elit' THEN p.precio_dolar * 1.20
+        WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_dolar * 1.20
         WHEN pro.nombre_proveedor = 'air' THEN p.precio_dolar * 1.25
         ELSE p.precio_dolar
     END AS precio_dolar_ajustado,
     CASE
+    WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_dolar_iva * 1.15
         WHEN pro.nombre_proveedor = 'elit' THEN p.precio_dolar_iva * 1.20
+        WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_dolar_iva * 1.20
         WHEN pro.nombre_proveedor = 'air' THEN p.precio_dolar_iva * 1.25
         ELSE p.precio_dolar_iva
     END AS precio_dolar_iva_ajustado,
     p.iva, 
     CASE
+    WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_pesos * 1.15
         WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos * 1.2
+        WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_pesos * 1.20
         WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos * 1.25
         ELSE p.precio_pesos
     END AS precio_pesos_ajustado,
     CASE
+    WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_pesos_iva * 1.15
         WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos_iva * 1.2
+        WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_pesos_iva * 1.20
         WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos_iva * 1.25
         ELSE p.precio_pesos_iva
     END AS precio_pesos_iva_ajustado,
@@ -137,6 +200,16 @@ WHERE
 
 })
 
+productosRouter.post('/imagen/:id',validarJwt,validarRol(2),validarId,verificarValidaciones, async(req,res)=>{
+    const id = req.params.id
+    const {url} = req.body
+    const [resultado, fields] = await db.execute('CALL schemamodex.cargar_imagen(?,?)',[url,id])
+    if (resultado.affectedRows == 0) {
+        return res.status(400).send({ mensaje: "Prodcuto no encontrado" })
+    }
+    return res.status(200).send({ mensaje: "Imagen cargada con exito" })
+})
+
 productosRouter.get("/:id", validarJwt, validarId, verificarValidaciones, async (req, res) => {
     const id = req.params.id
     const [resultado, fields] = await db.execute(`SELECT pr.id_producto,
@@ -146,7 +219,14 @@ productosRouter.get("/:id", validarJwt, validarId, verificarValidaciones, async 
         pr.garantia_meses,
         pr.codigo_fabricante,
         GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias,
-        GROUP_CONCAT(DISTINCT i.url_imagen SEPARATOR ', ') AS url_imagenes,
+        (SELECT JSON_ARRAYAGG(url_imagen)
+        FROM (
+            SELECT DISTINCT i.url_imagen
+            FROM productos_imagenes pi
+            INNER JOIN imagenes i ON pi.id_imagen = i.id_imagen
+            WHERE pi.id_producto = pr.id_producto
+        ) AS distinct_images
+       ) AS url_imagenes,
         CASE
         WHEN pro.nombre_proveedor = 'elit' THEN p.precio_dolar * 1.20
         WHEN pro.nombre_proveedor = 'air' THEN p.precio_dolar * 1.25

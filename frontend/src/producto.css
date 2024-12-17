@@ -1,0 +1,30 @@
+.MuiCard-root{
+    position: relative;
+}
+.badge{
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+
+}
+.badge img{
+    width: 64px;
+    height: 64px;
+    z-index: 11;
+}
+
+.editar{
+    position: absolute;
+    z-index: 10;
+    top:15px;
+    left: 15px;
+}
+.editar img{
+    height: 34px;
+    width: 34px;
+    z-index: 11;
+}
+.editar img:hover{
+    scale: 1.1;
+}
