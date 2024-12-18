@@ -43,6 +43,15 @@ const Carousel = () => {
       <SwiperSlide>
         <img className='imgCR' src="/5.png" alt="Slide 5" />
       </SwiperSlide>
+      <SwiperSlide>
+        <img className='imgCR' src="/6.png" alt="Slide 6" />
+      </SwiperSlide>
+      <SwiperSlide>
+        <img className='imgCR' src="/7.png" alt="Slide 7" />
+      </SwiperSlide>
+      <SwiperSlide>
+        <img className='imgCR' src="/8.png" alt="Slide 8" />
+      </SwiperSlide>
     </Swiper>
   );
 };
