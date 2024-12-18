@@ -1,13 +1,44 @@
 import React, { useEffect, useState } from "react";
+const showModal = async () => {
+    try {
+      // Crear intención de pago desde el backend
+      const response = await fetch('http://192.168.1.8:3000/checkout/intencion-pago', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        
+      });
+      const data = await response.json();
 
-const Checkout = async () => {
-    const [productos, setProductos] = useState({})
+      // Mostrar el modal de MODO con la respuesta obtenida
+      const modalObject = {
+        qrString: data.qr,
+        checkoutId: data.checkoutId,
+        deeplink: {
+          url: data.deeplink,
+          callbackURL: 'https://myshop.com/checkout',
+          callbackURLSuccess: 'https://myshop.com/thank-you',
+        },
+        onSuccess: () => alert('Pago exitoso!'),
+        onFailure: () => alert('Pago fallido'),
+        onCancel: () => alert('Pago cancelado'),
+        refreshData: showModal, // Regenera el QR
+      };
+
+      ModoSDK.modoInitPayment(modalObject);
+    } catch (error) {
+      console.error('Error iniciando el pago:', error);
+    }
+  };
+
+
+const Checkout =  () => {
+    const [productos, setProductos] = useState(0)
     const [total,setTotal] = useState(0)
-
+    
 return (
     
     <div className="containerCheckout">
-        <script src="https://ecommerce-modal.modo.com.ar/bundle.js"></script>
+        
         <form className="formCheckout">
             <label htmlFor=""></label>
             <input type="email" name="" id="" />
@@ -41,7 +72,7 @@ return (
             <h2>Tu pedido</h2>
             <div className="lineaGris"></div>
 
-            {productos.map((producto) =>{
+            {/* {productos.map((producto) =>{
                 return (
                     <div className="bloqueProducto" id={producto.id_producto}>
                         <div className="productoCheckout" >
@@ -52,11 +83,13 @@ return (
                         <div className="lineaGris"></div>
                     </div>
                 )
-            })}
+            })} */}
 
             <div className="totalCheckout">{total}</div>
             <div className="lineaGris"></div>
-            <div className="botonPagaModo"></div>
+            <div className="botonPagaModo">
+            <button onClick={showModal}>Pagá con MODO</button>;
+            </div>
 
         </div>
     </div>
