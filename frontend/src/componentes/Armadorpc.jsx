@@ -24,7 +24,7 @@ import Delete from '@mui/icons-material/Delete'
 
 
 function ArmadorPc() {
-const url = 'https://api.modex.com.ar'
+const url = 'http://192.168.1.8:3000'
 const { sesion } = useAuth();
 const [productos,setProductos] =useState({
     productos:{

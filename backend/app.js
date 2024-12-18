@@ -7,6 +7,7 @@ import usuarioRouter from "./usuarios.js"
 import carritoRouter from './carrito.js'
 import authRouter, { authConfig } from "./auth.js"
 import favoritoRouter from "./favorito.js"
+import modoCheckoutRouter from "./checkout.js"
 
 const PUERTO = 3000
 const HOST = '0.0.0.0'
@@ -25,7 +26,7 @@ let corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
 };
-app.use(cors(corsOptions))
+app.use(cors())
 app.use(express.json())
 app.use("/auth",authRouter)
 
@@ -36,6 +37,7 @@ app.use("/armador",armadorRouter)
 app.use("/usuarios",usuarioRouter)
 app.use("/carrito",carritoRouter)
 app.use("/favorito",favoritoRouter)
+app.use("/checkout",modoCheckoutRouter)
 
 app.get("/", (req, res) => {
     res.send("hola mundo")
