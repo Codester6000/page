@@ -11,7 +11,7 @@ import IconButton from "@mui/joy/IconButton";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Pagination from "@mui/material/Pagination";
-import { Alert, AlertTitle, Box, Skeleton, Snackbar, TextField } from "@mui/material";
+import { Alert, AlertTitle, Box, MenuItem, Skeleton, Snackbar, TextField } from "@mui/material";
 import { useAuth } from "../Auth";
 import ShoppingCart from "@mui/icons-material/ShoppingCart";
 import '../producto.css'
@@ -154,8 +154,122 @@ export default function ProductCard() {
 
                     <Typography level="h3">Filtrar por: </Typography>
                     <br />
-                    <TextField label="Buscar por Nombre" name="nombre" variant="outlined" size="small" value={nombre} onChange={(e) => setNombre(e.target.value)} style={{ marginRight: "10px" }} />
-                    <TextField label="Buscar por Categoria" name="categoria" variant="outlined" size="small" value={categoria} onChange={(e) => setCategoria(e.target.value)} style={{ marginRight: "10px" }} />
+                    <TextField label="Buscar por Nombre" name="nombre" variant="outlined" size="small" value={nombre} onChange={(e) => setNombre(e.target.value)} style={{ marginRight: "10px"}} /> 
+                    <TextField select label="Buscar por Categoria" name="categoria" variant="outlined" size="small" value={categoria} onChange={(e) => setCategoria(e.target.value)} style={{ marginRight: "10px", minWidth:"200px"  }} >
+                        <MenuItem value="Computadoras">Computadoras</MenuItem>
+                        <MenuItem value="All In One">All In One</MenuItem>
+                        <MenuItem value="Hardware">Hardware</MenuItem>
+                        <MenuItem value="Coolers">Coolers</MenuItem>
+                        <MenuItem value="Seguridad">Seguridad</MenuItem>
+                        <MenuItem value="Camaras Wifi">Camaras Wifi</MenuItem>
+                        <MenuItem value="Imagen">Imagen</MenuItem>
+                        <MenuItem value="Accesorios">Accesorios</MenuItem>
+                        <MenuItem value="Conectividad">Conectividad</MenuItem>
+                        <MenuItem value="Extensores">Extensores</MenuItem>
+                        <MenuItem value="Fuentes">Fuentes</MenuItem>
+                        <MenuItem value="Audio">Audio</MenuItem>
+                        <MenuItem value="Auriculares">Auriculares</MenuItem>
+                        <MenuItem value="Base Notebook">Base Notebook</MenuItem>
+                        <MenuItem value="Insumos">Insumos</MenuItem>
+                        <MenuItem value="Botellas de Tinta">Botellas de Tinta</MenuItem>
+                        <MenuItem value="Gabinetes">Gabinetes</MenuItem>
+                        <MenuItem value="Camaras IP">Camaras IP</MenuItem>
+                        <MenuItem value="Candado">Candado</MenuItem>
+                        <MenuItem value="Cartuchos de Tinta">Cartuchos de Tinta</MenuItem>
+                        <MenuItem value="Cintas">Cintas</MenuItem>
+                        <MenuItem value="Software">Software</MenuItem>
+                        <MenuItem value="Garantia">Garantia</MenuItem>
+                        <MenuItem value="Almacenamiento">Almacenamiento</MenuItem>
+                        <MenuItem value="Discos Internos SSD">Discos Internos SSD</MenuItem>
+                        <MenuItem value="Placas de Video">Placas de Video</MenuItem>
+                        <MenuItem value="Perifericos">Perifericos</MenuItem>
+                        <MenuItem value="Camaras Web">Camaras Web</MenuItem>
+                        <MenuItem value="Discos Externos">Discos Externos</MenuItem>
+                        <MenuItem value="Discos Externos SSD">Discos Externos SSD</MenuItem>
+                        <MenuItem value="Discos Internos">Discos Internos</MenuItem>
+                        <MenuItem value="Docking">Docking</MenuItem>
+                        <MenuItem value="Proyectores">Proyectores</MenuItem>
+                        <MenuItem value="Estuches">Estuches</MenuItem>
+                        <MenuItem value="Fundas">Fundas</MenuItem>
+                        <MenuItem value="PC de Escritorio">PC de Escritorio</MenuItem>
+                        <MenuItem value="Notebooks Corporativo">Notebooks Corporativo</MenuItem>
+                        <MenuItem value="Networking">Networking</MenuItem>
+                        <MenuItem value="Hubs">Hubs</MenuItem>
+                        <MenuItem value="Impresoras">Impresoras</MenuItem>
+                        <MenuItem value="Impresoras Inkjet">Impresoras Inkjet</MenuItem>
+                        <MenuItem value="Impresoras de Sistema Continuo">Impresoras de Sistema Continuo</MenuItem>
+                        <MenuItem value="Impresoras Multifunción">Impresoras Multifunción</MenuItem>
+                        <MenuItem value="Impresoras de Tickets">Impresoras de Tickets</MenuItem>
+                        <MenuItem value="Impresoras Laser">Impresoras Laser</MenuItem>
+                        <MenuItem value="Impresoras Matricial">Impresoras Matricial</MenuItem>
+                        <MenuItem value="Joysticks">Joysticks</MenuItem>
+                        <MenuItem value="Notebooks Consumo">Notebooks Consumo</MenuItem>
+                        <MenuItem value="Accesorios Videojuegos">Accesorios Videojuegos</MenuItem>
+                        <MenuItem value="Maletines">Maletines</MenuItem>
+                        <MenuItem value="Memorias">Memorias</MenuItem>
+                        <MenuItem value="Memorias Notebook">Memorias Notebook</MenuItem>
+                        <MenuItem value="Memorias PC">Memorias PC</MenuItem>
+                        <MenuItem value="Microfonos">Microfonos</MenuItem>
+                        <MenuItem value="Mochilas">Mochilas</MenuItem>
+                        <MenuItem value="Monitores">Monitores</MenuItem>
+                        <MenuItem value="Motherboards">Motherboards</MenuItem>
+                        <MenuItem value="Mouses">Mouses</MenuItem>
+                        <MenuItem value="Mouse Pad">Mouse Pad</MenuItem>
+                        <MenuItem value="Nvrs">Nvrs</MenuItem>
+                        <MenuItem value="Parlantes">Parlantes</MenuItem>
+                        <MenuItem value="Pen Drive">Pen Drive</MenuItem>
+                        <MenuItem value="Procesadores">Procesadores</MenuItem>
+                        <MenuItem value="Toners">Toners</MenuItem>
+                        <MenuItem value="Papeleria">Papeleria</MenuItem>
+                        <MenuItem value="Rollos">Rollos</MenuItem>
+                        <MenuItem value="Routers">Routers</MenuItem>
+                        <MenuItem value="Switches">Switches</MenuItem>
+                        <MenuItem value="Muebles">Muebles</MenuItem>
+                        <MenuItem value="Sillas">Sillas</MenuItem>
+                        <MenuItem value="Memorias Flash">Memorias Flash</MenuItem>
+                        <MenuItem value="Teclados">Teclados</MenuItem>
+                        <MenuItem value="Volantes">Volantes</MenuItem>
+                        <MenuItem value="Electrodomesticos y tv">Electrodomesticos y tv</MenuItem>
+                        <MenuItem value="Limpieza y mantenimiento">Limpieza y mantenimiento</MenuItem>
+                        <MenuItem value="Repuestos">Repuestos</MenuItem>
+                        <MenuItem value="Punto de venta">Punto de venta</MenuItem>
+                        <MenuItem value="Domotica - smart house">Domotica - smart house</MenuItem>
+                        <MenuItem value="Disqueteras y lectores zip">Disqueteras y lectores zip</MenuItem>
+                        <MenuItem value="Fiscal epson">Fiscal epson</MenuItem>
+                        <MenuItem value="Imp. de aguja epson">Imp. de aguja epson</MenuItem>
+                        <MenuItem value="Estabilizadores">Estabilizadores</MenuItem>
+                        <MenuItem value="Maquinas, herram. y repuestos">Maquinas, herram. y repuestos</MenuItem>
+                        <MenuItem value="Fax">Fax</MenuItem>
+                        <MenuItem value="Bolsos fundas y maletines">Bolsos fundas y maletines</MenuItem>
+                        <MenuItem value="Grabadoras cd / dvd">Grabadoras cd / dvd</MenuItem>
+                        <MenuItem value="Discos rigidos hdd sata server">Discos rigidos hdd sata server</MenuItem>
+                        <MenuItem value="Pilas y cargadores">Pilas y cargadores</MenuItem>
+                        <MenuItem value="Backup">Backup</MenuItem>
+                        <MenuItem value="Lector de codigos">Lector de codigos</MenuItem>
+                        <MenuItem value="Imp laser negro">Imp laser negro</MenuItem>
+                        <MenuItem value="Mother + micro">Mother + micro</MenuItem>
+                        <MenuItem value="Imp mf c/sist. cont.">Imp mf c/sist. cont.</MenuItem>
+                        <MenuItem value="Imp mf laser negro">Imp mf laser negro</MenuItem>
+                        <MenuItem value="Rack">Rack</MenuItem>
+                        <MenuItem value="Pasta termica">Pasta termica</MenuItem>
+                        <MenuItem value="Streaming">Streaming</MenuItem>
+                        <MenuItem value="Escaner">Escaner</MenuItem>
+                        <MenuItem value="Servidores">Servidores</MenuItem>
+                        <MenuItem value="Sillas de oficina">Sillas de oficina</MenuItem>
+                        <MenuItem value="Iluminacion led">Iluminacion led</MenuItem>
+                        <MenuItem value="Ups">Ups</MenuItem>
+                        <MenuItem value="1700">1700</MenuItem>
+                        <MenuItem value="am4">am4</MenuItem>
+                        <MenuItem value="1200">1200</MenuItem>
+                        <MenuItem value="am5">am5</MenuItem>
+                        <MenuItem value="DDR4">DDR4</MenuItem>
+                        <MenuItem value="DDR5">DDR5</MenuItem>
+                        <MenuItem value="General">General</MenuItem>
+                        <MenuItem value="Notebook">Notebook</MenuItem>
+                        <MenuItem value="Impresora">Impresora</MenuItem>
+                        <MenuItem value="Monitor">Monitor</MenuItem>
+                        <MenuItem value="Consola">Consola</MenuItem>
+                    </TextField>
                     <TextField label="Minimo Precio" name="precioMin" variant="outlined" size="small" value={precioMin} onChange={(e) => setPrecioMin(e.target.value)} style={{ marginRight: "10px" }} />
                     <TextField label="Maximo Precio" name="precioMax" variant="outlined" size="small" value={precioMax} onChange={(e) => setPrecioMax(e.target.value)} style={{ marginRight: "10px" }} />
                     <Button variant="contained" sx={{ backgroundColor: "#a111ad" }} onClick={() => { setPagina(1); getProductos(); }}>

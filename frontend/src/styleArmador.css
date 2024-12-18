@@ -75,7 +75,7 @@
 .productoCarritoArmador{
     display: flex;
     flex-direction: row;
-    font-family: League Spartan;
+    font-family: "League Spartan";
     font-size: 15px;
     background-color: #e0e0e0;
     padding: 10px;
@@ -112,3 +112,5 @@
     color: #000; 
     
 }
+
+

@@ -8,6 +8,7 @@ import icono_hdd from "/iconos/armadorIconos/hdd.png"
 import icono_mother from "/iconos/armadorIconos/motherboard.png"
 import icono_gabinete from "/iconos/armadorIconos/gabinete.png"
 import icono_cooler from "/iconos/armadorIconos/cooler.png"
+import icono_monitor from "/iconos/armadorIconos/monitor.png"
 import { useAuth } from '../Auth'
 
 
@@ -183,7 +184,7 @@ return(
                     <div className="psu" onClick={()=>setTipo("fuentes")}><img src={icono_psu}  /></div>
                     <div className="gabinete" onClick={()=>setTipo("gabinetes")}><img src={icono_gabinete}  /></div>
                     <div className="coolers" onClick={()=>setTipo("coolers")}><img src={icono_cooler}  /></div>
-                    <div className="monitores" onClick={()=>setTipo("monitores")}><img src={icono_cooler}  /></div>
+                    <div className="monitores" onClick={()=>setTipo("monitores")}><img src={icono_monitor}  /></div>
                 </div>
                 <div className="elecciones">
 
