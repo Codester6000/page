@@ -19,6 +19,7 @@ import Carrito from "./componentes/Carrito";
 import Favorito from "./componentes/Favorito"
 import Armadorpc from "./componentes/Armadorpc";
 import NuevoProducto from "./componentes/nuevoProducto";
+import Checkout from "./componentes/Checkout";
 
 
 
@@ -39,6 +40,7 @@ function App() {
         <Route path="/carrito" element={<AuthPage><Carrito/></AuthPage>}/>
         <Route path="/favorito" element={<AuthPage><Favorito /></AuthPage>}/>
         <Route path="/cargar-producto" element={<AuthPage><NuevoProducto /></AuthPage>}/>
+        <Route path="/checkout" element={<Checkout />}/>
 
         </Routes>
         <a href="https://api.whatsapp.com/send/?phone=543804353826&text=Hola,+quiero+contactarme+con+ustedes!&type=phone_number&app_absent=0" className="bwsp" target="_blank"> <i><WhatsAppIcon sx={{fontSize: "35px"}}/></i> </a>
