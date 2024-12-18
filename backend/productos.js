@@ -1,5 +1,5 @@
 import express from "express";
-import { db } from "./database/connectionMySQL.js"
+import { db } from "./database/connectionMySQL.js";
 import { validarQuerysProducto, validarBodyProducto, verificarValidaciones, validarId } from "./middleware/validaciones.js";
 
 import passport from "passport";
