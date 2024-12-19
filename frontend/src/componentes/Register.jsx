@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { formRegisterSchema } from '../validations/formlogin'
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Register = () =>{
     const url = 'http://192.168.1.8:3000'
@@ -75,6 +76,7 @@ const Register = () =>{
             <div className="submit-contenedor">
                 <button type="submit" className="submit">Registrarse</button>
             </div>
+            <p>Ya tenes una cuenta? Haz clic <Link to="/login">Aquí!</Link></p>
             </form> 
             
         </div>

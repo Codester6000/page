@@ -32,7 +32,7 @@ export default function ProductCard() {
     const [precioMax, setPrecioMax] = useState("");
     const [precioMin, setPrecioMin] = useState("");
     const [favoritos, setFavoritos] = useState([])
-    const { sesion } = useAuth();
+    const { sesion,logout } = useAuth();
     const [alerta, setAlerta] = useState(false)
     const [alertaFav, setAlertaFav] = useState(false)
     const [carrito, setCarrito] = useState([]);
@@ -158,8 +158,9 @@ export default function ProductCard() {
                     console.error("Estructura de datos incorrecta:", data);
                 }
             } else {
+                
                 localStorage.removeItem('sesion')
-                console.log("aaa")
+                logout()
                 console.error("Error al obtener productos:", response.status);
             }
         } catch (error) {

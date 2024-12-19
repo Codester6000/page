@@ -13,8 +13,8 @@ async function initModoKeyStore() {
     const jwksUrl = 'https://merchants.playdigital.com.ar/.well-known/jwks.json';
     const response = await fetch(jwksUrl);
     const parsedResponse = await response.json();
-    console.log(parsedResponse)
     modoKeyStore = await JWK.asKeyStore(parsedResponse);
+    console.log('JWKs cargados correctamente:', modoKeyStore.all({}));
 }
 }
 await initModoKeyStore()
@@ -27,7 +27,6 @@ async function verifySignature(body) {
     const verificationResult = await JWS.createVerify(modoKeyStore).verify(
       body.signature
     );
-  
     delete body.signature;
     return isEqual(
       body,
