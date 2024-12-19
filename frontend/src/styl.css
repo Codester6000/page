@@ -66,3 +66,24 @@ html, body {
 .iconwsp{
     font-size: 4rem;
 }
+
+/* .mensWsp{
+    position: absolute;
+    padding: .5rem 1rem;
+    background-color: chocolate;
+    color: aliceblue;
+    font-size: larger;
+    white-space: nowrap;
+    font-weight: 700;
+    border-radius: .5rem;
+    pointer-events: none;
+}
+
+.mensWsp::after{
+    content: "";
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background-color: blue;
+    border-radius: 3px;
+} */

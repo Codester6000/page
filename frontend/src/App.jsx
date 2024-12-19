@@ -43,6 +43,12 @@ function App() {
         <Route path="/checkout" element={<Checkout />}/>
 
         </Routes>
+        {/* <div className="burWsp">
+          <div className="wsp-cont">
+            <a href="https://api.whatsapp.com/send/?phone=543804353826&text=Hola,+quiero+contactarme+con+ustedes!&type=phone_number&app_absent=0" className="bwsp" target="_blank"> <i><WhatsAppIcon sx={{fontSize: "35px"}}/></i> </a>
+            <div className="mensWsp">¿Quiere comunicarse con nosotros?</div>
+          </div>
+        </div> */}
         <a href="https://api.whatsapp.com/send/?phone=543804353826&text=Hola,+quiero+contactarme+con+ustedes!&type=phone_number&app_absent=0" className="bwsp" target="_blank"> <i><WhatsAppIcon sx={{fontSize: "35px"}}/></i> </a>
 
         <Footer></Footer>

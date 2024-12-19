@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 .containerArmador {
     padding: 10px;
@@ -74,7 +75,7 @@
 .productoCarritoArmador{
     display: flex;
     flex-direction: row;
-    font-family: League Spartan;
+    font-family: "League Spartan";
     font-size: 15px;
     background-color: #e0e0e0;
     padding: 10px;
@@ -87,10 +88,29 @@
 .elecciones p{
     display: flex;
     flex-direction: row;
-    font-family: League Spartan;
+    font-family: "League Spartan";
     font-size: 30px;
     margin-bottom: 10px;
     margin-left: 8px;
     margin-right: 2px;
-    font-weight:650;
+    font-weight:600;
 }
+
+.ordernarPor{
+    background: #a111ad;
+    color: white;
+    font-family: "League Spartan";
+    font-size: 25px;
+    margin-left: 20px;
+    border-radius: 10px;
+    padding: 5px;
+    margin-top: 20px;
+}
+
+.ordernarPor option{ 
+    background-color: #d4a5d7; 
+    color: #000; 
+    
+}
+
+

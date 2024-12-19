@@ -199,7 +199,6 @@ if (motherboard == undefined && motherboardDDR != undefined){
 }else{
     paramMotherboards = ['motherboards', 'test','test',1]
 }
-console.log(paramMotherboards)
 const [motherboards] = await db.execute(sql,paramMotherboards);
 
 const paramGpus = (gpu !=undefined) ?  ["Placas de Video",gpu,,'teest',2]:["Placas de Video","",'teest',1]
@@ -218,6 +217,10 @@ const paramCoolers = ["Coolers","test","test",1]
 const [coolers] = await db.execute(sql,paramCoolers)
 const paramMonitores = ["Monitores","test","test",1]
 const [monitores] = await db.execute(sql,paramMonitores)
+console.log(Date.now())
+console.log(motherboards)
+console.log('aaa')
+console.log(Date.now())
     res.status(200).send({ productos : {"procesadores": procesadores, "motherboards": motherboards, "gpus":gpus,"memorias": memorias, "fuentes": fuentes, "gabinetes": gabinetes, "almacenamiento": almacenamientos, 'coolers':coolers,'monitores':monitores }})
 })
 
