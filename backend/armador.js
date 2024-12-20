@@ -78,64 +78,11 @@ let sql = `SELECT
             WHERE pi.id_producto = pr.id_producto
         ) AS distinct_images
        ) AS url_imagenes,
-CASE
-    WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
-        SELECT pc2.id_producto
-        FROM productos_categorias pc2
-        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
-        WHERE c2.nombre_categoria IN ('procesadores')
-        GROUP BY pc2.id_producto
-    ) THEN p.precio_dolar * 1.15
-        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_dolar * 1.20
-        WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
-        SELECT pc2.id_producto
-        FROM productos_categorias pc2
-        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
-        WHERE c2.nombre_categoria IN ('procesadores')
-        GROUP BY pc2.id_producto
-    ) THEN p.precio_dolar * 1.20
-        WHEN pro.nombre_proveedor = 'air' THEN p.precio_dolar * 1.25
-        ELSE p.precio_dolar
-    END AS precio_dolar_ajustado,
-    CASE
-    WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
-        SELECT pc2.id_producto
-        FROM productos_categorias pc2
-        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
-        WHERE c2.nombre_categoria IN ('procesadores')
-        GROUP BY pc2.id_producto
-    ) THEN p.precio_dolar_iva * 1.15
-        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_dolar_iva * 1.20
-        WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
-        SELECT pc2.id_producto
-        FROM productos_categorias pc2
-        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
-        WHERE c2.nombre_categoria IN ('procesadores')
-        GROUP BY pc2.id_producto
-    ) THEN p.precio_dolar_iva * 1.20
-        WHEN pro.nombre_proveedor = 'air' THEN p.precio_dolar_iva * 1.25
-        ELSE p.precio_dolar_iva
-    END AS precio_dolar_iva_ajustado,
-    p.iva, 
-    CASE
-    WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
-        SELECT pc2.id_producto
-        FROM productos_categorias pc2
-        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
-        WHERE c2.nombre_categoria IN ('procesadores')
-        GROUP BY pc2.id_producto
-    ) THEN p.precio_pesos * 1.15
-        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos * 1.2
-        WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
-        SELECT pc2.id_producto
-        FROM productos_categorias pc2
-        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
-        WHERE c2.nombre_categoria IN ('procesadores')
-        GROUP BY pc2.id_producto
-    ) THEN p.precio_pesos * 1.20
-        WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos * 1.25
-        ELSE p.precio_pesos
-    END AS precio_pesos_ajustado,
+p.precio_dolar,
+		p.precio_dolar_iva,
+		p.iva, 
+		p.precio_pesos,
+        p.precio_pesos_iva,
     CASE
     WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
         SELECT pc2.id_producto
@@ -181,7 +128,7 @@ WHERE
         HAVING COUNT(DISTINCT c2.nombre_categoria) = ?
     )
 GROUP BY pr.id_producto, p.stock, p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva, pr.alto, pr.ancho, pr.largo, pro.nombre_proveedor
-ORDER BY precio_pesos_ajustado 
+ORDER BY precio_pesos_iva_ajustado
 `
 if(order != undefined){
     sql += order + ";"
@@ -217,10 +164,7 @@ const paramCoolers = ["Coolers","test","test",1]
 const [coolers] = await db.execute(sql,paramCoolers)
 const paramMonitores = ["Monitores","test","test",1]
 const [monitores] = await db.execute(sql,paramMonitores)
-console.log(Date.now())
-console.log(motherboards)
-console.log('aaa')
-console.log(Date.now())
+
     res.status(200).send({ productos : {"procesadores": procesadores, "motherboards": motherboards, "gpus":gpus,"memorias": memorias, "fuentes": fuentes, "gabinetes": gabinetes, "almacenamiento": almacenamientos, 'coolers':coolers,'monitores':monitores }})
 })
 

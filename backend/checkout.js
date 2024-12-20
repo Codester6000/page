@@ -41,7 +41,7 @@ async function verifySignature(body) {
 
 
 
-modoCheckoutRouter.post('/intencion-pago',validarJwt, getAuthToken, async (req, res) => {
+modoCheckoutRouter.post('/intencion-pago', getAuthToken, async (req, res) => {
     try {
       const token = req.authToken; // Obtener el token desde el middleware
       const {productName,price,quantity} = req.body
@@ -52,7 +52,7 @@ modoCheckoutRouter.post('/intencion-pago',validarJwt, getAuthToken, async (req, 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
         },
-        body:JSON.stringify({productName,price,quantity,currency:'ARS',storeId:'2e10e1e2-1046-47a9-b5aa-12f0749940f8',externalIntentionId:`Modex${timestamp}`})
+        body:JSON.stringify({productName:"test",price:12.0,quantity:1,currency:'ARS',storeId:'2e10e1e2-1046-47a9-b5aa-12f0749940f8',externalIntentionId:`Modex${timestamp}`})
       });
   
       const data = await response.json();
@@ -65,11 +65,12 @@ modoCheckoutRouter.post('/intencion-pago',validarJwt, getAuthToken, async (req, 
   });
 
 
-  modoCheckoutRouter.get('/estado-pago/:id', validarJwt,validarRol(2),getAuthToken,async(req,res) =>{
+  modoCheckoutRouter.get('/estado-pago/:id',getAuthToken,async(req,res) =>{
     try {
       const id = req.params.id;
+      console.log(id)
       const token = req.authToken; // Obtener el token desde el middleware
-      const response = await fetch(`https://merchants-api.playdigital.com.ar/merchants/ecommerce/payment-intention/${id}/data`,
+      const response = await fetch(`https://merchants.preprod.playdigital.com.ar/merchants/ecommerce/payment-intention/{id}/data`,
         {
           method: 'GET',
           headers:{
@@ -78,6 +79,11 @@ modoCheckoutRouter.post('/intencion-pago',validarJwt, getAuthToken, async (req, 
           }
         }
       )
+      if(!response.ok){
+        return res.status(400).send("Hubo un error en el fetch")
+      }
+      resultado = await response.json()
+      return res.status(200).send(resultado)
     } catch (error) {
       console.error(error)
       res.status(500).send("Error en el servidor")

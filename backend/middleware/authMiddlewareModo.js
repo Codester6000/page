@@ -32,6 +32,7 @@ try {
     }
 
     req.authToken = authToken; // Adjuntar el token al objeto `req`
+    console.log(authToken)
     next(); // Continuar con el siguiente middleware
   } catch (error) {
     console.error('Error autenticando token:', error);
