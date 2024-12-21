@@ -12,15 +12,17 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Pagination from "@mui/material/Pagination";
 import editSvg from '../assets/edit.svg'
-import { Alert, AlertTitle, Box, Snackbar, TextField } from "@mui/material";
-import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import { useAuth,AuthRol } from "../Auth";
+import { Alert, AlertTitle, Box, MenuItem, Skeleton, Snackbar, TextField } from "@mui/material";
+
 import ShoppingCart from "@mui/icons-material/ShoppingCart";
 import FormControl from '@mui/material/FormControl';
 import '../producto.css'
 import {motion} from 'framer-motion'
+import SkeletonProd from "./SkeletonProd";
+
 export default function ProductCard() {
     const url = 'https://api.modex.com.ar'
     const [productos, setProductos] = useState([]);
@@ -32,7 +34,7 @@ export default function ProductCard() {
     const [precioMax, setPrecioMax] = useState("");
     const [precioMin, setPrecioMin] = useState("");
     const [favoritos, setFavoritos] = useState([])
-    const { sesion } = useAuth();
+    const { sesion,logout } = useAuth();
     const [alerta, setAlerta] = useState(false)
     const [alertaFav, setAlertaFav] = useState(false)
     const [carrito, setCarrito] = useState([]);
@@ -158,8 +160,9 @@ export default function ProductCard() {
                     console.error("Estructura de datos incorrecta:", data);
                 }
             } else {
+                
                 localStorage.removeItem('sesion')
-                console.log("aaa")
+                logout()
                 console.error("Error al obtener productos:", response.status);
             }
         } catch (error) {
@@ -172,15 +175,14 @@ export default function ProductCard() {
     }, [pagina]);
     return (
         <Container sx={{}}>
+            {/* <SkeletonProd></SkeletonProd> */}
             <Card sx={{ bgcolor: "#FFfff", padding: 5, marginX: -10, marginY: 5 }}>
                 <Grid>
 
                     <Typography level="h3">Filtrar por: </Typography>
                     <br />
-                    <TextField label="Buscar por Nombre" name="nombre" variant="outlined" size="small" value={nombre} onChange={(e) => setNombre(e.target.value)} style={{ marginRight: "10px" }} />
-                    <FormControl size="small" variant="standard">
-                    <InputLabel htmlFor="categoria-s">Categoria</InputLabel>
-                    <Select labelId="categoria-s" label="Categoria" name="categoria" variant="outlined" size="small" value={categoria} sx={{minWidth:"200px"}} onChange={(e) => setCategoria(e.target.value)} style={{ marginRight: "10px" }} >
+                    <TextField label="Buscar por Nombre" name="nombre" variant="outlined" size="small" value={nombre} onChange={(e) => setNombre(e.target.value)} style={{ marginRight: "10px"}} /> 
+                    <TextField select label="Buscar por Categoria" name="categoria" variant="outlined" size="small" value={categoria} onChange={(e) => setCategoria(e.target.value)} style={{ marginRight: "10px", minWidth:"200px"  }} >
                         <MenuItem value="Computadoras">Computadoras</MenuItem>
                         <MenuItem value="All In One">All In One</MenuItem>
                         <MenuItem value="Hardware">Hardware</MenuItem>
@@ -294,8 +296,7 @@ export default function ProductCard() {
                         <MenuItem value="Impresora">Impresora</MenuItem>
                         <MenuItem value="Monitor">Monitor</MenuItem>
                         <MenuItem value="Consola">Consola</MenuItem>
-                    </Select>
-                    </FormControl>
+                    </TextField>
                     <TextField label="Minimo Precio" name="precioMin" variant="outlined" size="small" value={precioMin} onChange={(e) => setPrecioMin(e.target.value)} style={{ marginRight: "10px" }} />
                     <TextField label="Maximo Precio" name="precioMax" variant="outlined" size="small" value={precioMax} onChange={(e) => setPrecioMax(e.target.value)} style={{ marginRight: "10px" }} />
                     <Button variant="contained" sx={{ backgroundColor: "#a111ad" }} onClick={() => { setPagina(1); getProductos(); }}>
@@ -358,7 +359,10 @@ export default function ProductCard() {
                             </Grid>
                         ))
                     ) : (
-                        <Typography>Despues pongo un mensaje de error o skeleton</Typography>
+                
+                        <SkeletonProd></SkeletonProd>
+                        // <Typography>Despues pongo un mensaje de error o skeleton</Typography>
+
                     )}
                 </Grid>
                 <Snackbar

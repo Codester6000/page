@@ -78,7 +78,7 @@ export const AuthStatus = () => {
   const navigate = useNavigate();
 
   if (!sesion) {
-    return <Button variant="contained" size="large" startIcon={<PersonIcon/>} sx={{ml: 2, backgroundColor: "#a111ad", borderRadius: "20px", objectFit: "contain"}}>Ingresar</Button>
+    return <Button variant="contained" size="large" startIcon={<PersonIcon/>} sx={{ml: 2, backgroundColor: "#a111ad", borderRadius: "20px", objectFit: "contain"}} onClick={()=>navigate("/login")}>Ingresar</Button>
   }
 
   return (

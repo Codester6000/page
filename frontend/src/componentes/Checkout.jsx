@@ -1,94 +1,204 @@
 import React, { useEffect, useState } from "react";
-const showModal = async () => {
-    try {
-      // Crear intención de pago desde el backend
-      const response = await fetch('http://192.168.1.8:3000/checkout/intencion-pago', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        
-      });
-      const data = await response.json();
+import '../checkout.css'
+import logoModo from '../assets/Logo_modo.svg';
+import { useAuth } from "../Auth";
 
-      // Mostrar el modal de MODO con la respuesta obtenida
-      const modalObject = {
-        qrString: data.qr,
-        checkoutId: data.checkoutId,
-        deeplink: {
-          url: data.deeplink,
-          callbackURL: 'https://myshop.com/checkout',
-          callbackURLSuccess: 'https://myshop.com/thank-you',
-        },
-        onSuccess: () => alert('Pago exitoso!'),
-        onFailure: () => alert('Pago fallido'),
-        onCancel: () => alert('Pago cancelado'),
-        refreshData: showModal, // Regenera el QR
-      };
+async function createPaymentIntention(){
+  const res = await fetch('http://192.168.1.8:3000/checkout/intencion-pago', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
 
-      ModoSDK.modoInitPayment(modalObject);
-    } catch (error) {
-      console.error('Error iniciando el pago:', error);
-    }
+      }  
+  );    
+  const jsonRes = await res.json();
+  console.log(jsonRes.data)
+  return {
+    checkoutId: jsonRes.data.id,
+    qrString: jsonRes.data.qr,
+    deeplink: jsonRes.data.deeplink,
   };
+}
+async function showModal() {
+  const modalData = await createPaymentIntention();
+  var modalObject = {
+      qrString: modalData.qrString,
+      checkoutId: modalData.checkoutId,
+      deeplink:  {
+          url: modalData.deeplink,
+          callbackURL: 'https://tiendadeprueba.com/checkout',
+          callbackURLSuccess: 'https://tiendadeprueba/thankyou'
+      },
+      callbackURL: 'https://tiendadeprueba/thankyou',
+      refreshData: createPaymentIntention,
+      onSuccess: function () { console.log('onSuccess') },
+      onFailure: function () { console.log('onFailure') },
+      onCancel: function () { console.log('onCancel') },
+      onClose: function () { console.log('onClose') },
+  }
+  ModoSDK.modoInitPayment(modalObject);
+}
+
 
 
 const Checkout =  () => {
-    const [productos, setProductos] = useState(0)
+    const url = 'http://192.168.1.8:3000'
+    const [productos, setProductos] = useState([])
     const [total,setTotal] = useState(0)
+    const { sesion } = useAuth();
+    const getCarrito = async () => {
+      try {
+          const response = await fetch(
+              `${url}/carrito`,
+              {
+                  method: "GET",
+                  headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${sesion.token}`,
+                  },
+              }
+          );
+
+          if (response.ok) {
+              const data = await response.json();
+              if (data.carrito && Array.isArray(data.carrito)) {
+                  setProductos(data.carrito);
+                  const total = data.carrito.reduce((sum, producto) => sum + (parseFloat(producto.precio_pesos_iva_ajustado).toFixed(0) * producto.cantidad), 0);
+                  setTotal(total);
+              } else {
+                  console.error("Estructura de datos incorrecta:", data);
+              }
+          } else {
+              console.error("Error al obtener productos:", response.status);
+          }
+      } catch (error) {
+          console.error("Error en la solicitud:", error);
+      }
+  };
+      useEffect(() => {
+          getCarrito();
+      }, []);
     
 return (
     
     <div className="containerCheckout">
         
-        <form className="formCheckout">
-            <label htmlFor=""></label>
-            <input type="email" name="" id="" />
-
-            <label htmlFor=""></label>
-            <input type="text" />
-
-            <label htmlFor=""></label>
-            <input type="text" />
-
-            <label htmlFor=""></label>
-            <input type="text" />
-
-            <div className="wrapperFormCheckout">
-            <label htmlFor=""></label>
-            <input type="text" />
-            
-            <label htmlFor=""></label>
-            <input type="text" />
-
-            <label htmlFor=""></label>
-            <input type="text" />
-
-            <label htmlFor=""></label>
-            <input type="text" />
-
+        <div className="parteIzq">
+          <div className="wrapperCheckout">
+            <form className="formCheckout">
+                <div className="tituloYp">
+                  <h2 className="tituloC">Informacion</h2>
+                  <p>Deja tus datos asi podemos contactarte.</p>
+                </div>
+                <div className="labelInputC">
+                  <label htmlFor="">Email</label>
+                  <input type="email" name="email" id="email" />
+                </div>
+                <div className="labelInputC">
+                  <label htmlFor="">Nombre</label>
+                  <input type="text" name="nombreC" id="nombreC"/>
+                </div>
+                <div className="labelInputC">
+                  <label htmlFor="">Apellido</label>
+                  <input type="text" name="apellidoC" id="apellidoC" />
+                </div>
+                <div className="labelInputC">
+                  <label htmlFor="">Direccion</label>
+                  <input type="text" name="direccionC" id="direccionC"/>
+                </div>
+                <div className="labelInputC">
+                  <label htmlFor="">Telefono</label>
+                  <input type="text" name="telefonoC" id="telefonoC" />
+                </div>
+            </form>
+          </div>
+          <div className="lineaGris"></div>
+          <div className="pagoC">
+            <div className="wrapperCheckout">
+              <div className="tituloYp">
+                <h2>Pago</h2>
+                <p>Selecciona tu metodo de pago.</p>
+              </div>
+              <div className="opcionPago seleccionada">
+                MODO o App Bancaria
+                <img src={logoModo} alt="" className="logoModo" />
+              </div>
+              <div className="opcionPago">
+                Otra opcion Proximamente
+              </div>
             </div>
-        </form>
+            <div className="wrapperCheckout">
+              <div className="pagaModo">
+                <h2>Paga con</h2>
+                <img src={logoModo} alt="" className="logoModo" />
+              </div>
+          
+              <div className="cuadroPagoInfo">
+                <div className="paso">PASO 1</div>
+                <p>Al avanzar con el pago en la tienda <span>Se generara un QR.</span></p>
+              </div>
+              <div className="cuadroPagoInfo">
+              <div className="paso">PASO 2</div>
+              <p>En tu celular, <span>abri MODO</span> o la <span>App de tu banco</span> y <span>escanea</span> el QR.</p>
+              </div>
+              <div className="cuadroPagoInfo">
+              <div className="paso">PASO 3</div>
+              <p>Selecciona la tarjeda de <span>Debito</span> o  <span>Credito</span> que quieras usar.</p>
+              </div>
+              <div className="cuadroPagoInfo">
+              <div className="paso">PASO 4</div>
+              <p>Elegi la cantidad de <span>cuotas</span> que mas te convenga y <span>confirma tu pago!</span></p>
+              </div>
+
+              <div className="tarjetas">
+                <img src="/tarjetas/visa.png" alt="visaicon" className="tarjetaimg" />
+                <img src="/tarjetas/mastercard.png" alt="" className="tarjetaimg" />
+                <img src="/tarjetas/amex.png" alt="" className="tarjetaimg" />
+                <img src="/tarjetas/naranja.png" alt="" className="tarjetaimg" />
+                <img src="/tarjetas/maestro.png" alt="" className="tarjetaimg" />
+              </div>
+            </div>
+          </div>
+          
+        </div>
 
         <div className="detalle">
-            <h2>Tu pedido</h2>
-            <div className="lineaGris"></div>
+            <h2>Resumen de la compra</h2>
 
-            {/* {productos.map((producto) =>{
+            {productos.map((producto) =>{
                 return (
-                    <div className="bloqueProducto" id={producto.id_producto}>
+                    <div className="bloqueProducto" key={producto.id_producto}>
                         <div className="productoCheckout" >
-                            <div className="imgProductoCheckout"></div>
-                            <div className="infoProductoCheckout"></div>
-                            <div className="cantidadCheckout"></div>
+                            <img src={producto.url_imagenes[producto.url_imagenes.length -1]} alt="" className="productoCheckout" />
+                            <div className="infoNyP">
+                              <div className="infoProductoCheckout">{producto.nombre}</div>
+                              <div className="precioUnitario">{Number(producto.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
+    style: 'currency',
+    currency: 'ARS',
+    maximumFractionDigits:0
+})}</div>
+                            </div>
+                            <div className="cantidadCheckout"> {producto.cantidad}</div>
                         </div>
                         <div className="lineaGris"></div>
                     </div>
                 )
-            })} */}
+            })}
 
-            <div className="totalCheckout">{total}</div>
+            <div className="totalCheckout">
+              
+              <div className="totalC">Total :</div>
+              <div className="totalNum">
+              {Number(total).toLocaleString('es-ar', {
+                  style: 'currency',
+                  currency: 'ARS',
+                  maximumFractionDigits:0
+              })}
+            </div></div>
             <div className="lineaGris"></div>
             <div className="botonPagaModo">
-            <button onClick={showModal}>Pagá con MODO</button>;
+            <button onClick={showModal}>Pagá con QR</button>
             </div>
 
         </div>

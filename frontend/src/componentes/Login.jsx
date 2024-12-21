@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import '../Login.css'
 import icono_usuario from '/iconos/person.png'
 import icono_contraseña from '/iconos/password.png'
@@ -19,9 +19,8 @@ const Login = () =>{
     const location = useLocation();
 
     const from = location.state?.from?.pathname || "/";
-
+    const [error,setError] = useState('');
     const onSubmit = async (datos) => {
-        console.log(datos,"AAAA")
         const response = await fetch(`${url}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -31,14 +30,13 @@ const Login = () =>{
         if (response.ok) {
             resetField('username')
             resetField('password')
-            console.log(mensaje)
         
         }
         login(
             datos.username,
             datos.password,
             () =>navigate(from,{replace:true}),
-            () =>console.log('Error')
+            () =>setError('Contraseña o usuario incorrecto.')
         )
     };
     return (
@@ -66,6 +64,7 @@ const Login = () =>{
             <div className="submit-contenedor">
                 <button type="submit" className="submit">Iniciar sesión</button>
             </div>
+                {(error != '') && <p style={{color:"red"}}>{error}</p>}
             <p>No tienes una cuenta? Haz clic <Link to="/register">Aquí!</Link></p>
             </form>
             

@@ -6,7 +6,7 @@ const carritoRouter = express.Router()
 
 carritoRouter.get('/',validarJwt,async (req,res) =>{
     const id = req.user.userId
-    const sql = `SELECT pr.id_producto,pr.nombre,ca.cantidad,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
+    const sql = `SELECT pr.id_producto,pr.nombre,cd.cantidad,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
 ,(SELECT JSON_ARRAYAGG(url_imagen)
         FROM (
             SELECT DISTINCT i.url_imagen
@@ -15,64 +15,11 @@ carritoRouter.get('/',validarJwt,async (req,res) =>{
             WHERE pi.id_producto = pr.id_producto
         ) AS distinct_images
        ) AS url_imagenes,
-CASE
-    WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
-        SELECT pc2.id_producto
-        FROM productos_categorias pc2
-        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
-        WHERE c2.nombre_categoria IN ('procesadores')
-        GROUP BY pc2.id_producto
-    ) THEN p.precio_dolar * 1.15
-        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_dolar * 1.20
-        WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
-        SELECT pc2.id_producto
-        FROM productos_categorias pc2
-        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
-        WHERE c2.nombre_categoria IN ('procesadores')
-        GROUP BY pc2.id_producto
-    ) THEN p.precio_dolar * 1.20
-        WHEN pro.nombre_proveedor = 'air' THEN p.precio_dolar * 1.25
-        ELSE p.precio_dolar
-    END AS precio_dolar_ajustado,
-    CASE
-    WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
-        SELECT pc2.id_producto
-        FROM productos_categorias pc2
-        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
-        WHERE c2.nombre_categoria IN ('procesadores')
-        GROUP BY pc2.id_producto
-    ) THEN p.precio_dolar_iva * 1.15
-        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_dolar_iva * 1.20
-        WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
-        SELECT pc2.id_producto
-        FROM productos_categorias pc2
-        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
-        WHERE c2.nombre_categoria IN ('procesadores')
-        GROUP BY pc2.id_producto
-    ) THEN p.precio_dolar_iva * 1.20
-        WHEN pro.nombre_proveedor = 'air' THEN p.precio_dolar_iva * 1.25
-        ELSE p.precio_dolar_iva
-    END AS precio_dolar_iva_ajustado,
-    p.iva, 
-    CASE
-    WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
-        SELECT pc2.id_producto
-        FROM productos_categorias pc2
-        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
-        WHERE c2.nombre_categoria IN ('procesadores')
-        GROUP BY pc2.id_producto
-    ) THEN p.precio_pesos * 1.15
-        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos * 1.2
-        WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
-        SELECT pc2.id_producto
-        FROM productos_categorias pc2
-        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
-        WHERE c2.nombre_categoria IN ('procesadores')
-        GROUP BY pc2.id_producto
-    ) THEN p.precio_pesos * 1.20
-        WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos * 1.25
-        ELSE p.precio_pesos
-    END AS precio_pesos_ajustado,
+		p.precio_dolar,
+		p.precio_dolar_iva,
+		p.iva, 
+		p.precio_pesos,
+        p.precio_pesos_iva,
     CASE
     WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
         SELECT pc2.id_producto
@@ -102,7 +49,10 @@ INNER JOIN categorias c ON pc.id_categoria = c.id_categoria
 INNER JOIN productos_imagenes pi ON pi.id_producto = pr.id_producto
 INNER JOIN imagenes i ON pi.id_imagen = i.id_imagen
 INNER JOIN proveedores pro ON pro.id_proveedor = p.id_proveedor
-INNER JOIN carritos ca ON ca.id_producto = pr.id_producto
+INNER JOIN carrito_detalle cd 
+    ON cd.id_producto = pr.id_producto
+INNER JOIN carrito ca 
+    ON ca.id_carrito = cd.id_carrito
 INNER JOIN usuarios u ON u.id_usuario = ca.id_usuario
 WHERE 
     p.precio_dolar = (
@@ -110,7 +60,7 @@ WHERE
         FROM precios 
         WHERE id_producto = pr.id_producto
         ) AND ca.id_usuario = ?
-group by pr.id_producto,ca.cantidad,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pro.nombre_proveedor;`
+group by pr.id_producto,cd.cantidad,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pro.nombre_proveedor;`
     const [resultado,fields] = await db.execute(sql,[id])
 
     res.status(200).send({carrito:resultado})
@@ -119,7 +69,7 @@ group by pr.id_producto,ca.cantidad,p.precio_dolar, p.precio_dolar_iva,p.iva,p.p
 carritoRouter.post('/',validarJwt,validarBodyCarrito(),verificarValidaciones, async (req,res) =>{
     const {id_producto } = req.body;
     const parametros = [req.user.userId,id_producto];
-    const sql = 'INSERT INTO carritos (id_usuario,id_producto) VALUES (?,?);';
+    const sql = 'call schemamodex.cargar_carrito(?, ?);'
     const [resul, fields] = await db.execute(sql,parametros)
     res.status(201).send({resultado:resul})
 })
@@ -127,7 +77,7 @@ carritoRouter.put('/',validarJwt,validarBodyPutCarrito(),async (req,res)=>{
     const {id_producto,cantidad} = req.body;
     try {
         const parametros = [cantidad,id_producto,req.user.userId]
-        const sql = "UPDATE carritos SET cantidad = ? WHERE id_producto = ? AND id_usuario = ?;"
+        const sql = "UPDATE carrito SET cantidad = ? WHERE id_producto = ? AND id_usuario = ?;"
         const resultado = db.execute(sql,parametros)
         if(resultado.affectedRows == 0){
             res.status(400).send({mensaje:"Id producto o id usuario invalido"})
@@ -153,4 +103,6 @@ carritoRouter.delete('/',validarJwt,validarBodyCarrito(),async (req, res) => {
         res.status(500).send({error:"Error al eliminar el producto"})
     }
 })
+
+carritoRouter.get("/c")
 export default carritoRouter;

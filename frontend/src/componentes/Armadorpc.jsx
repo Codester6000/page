@@ -8,6 +8,7 @@ import icono_hdd from "/iconos/armadorIconos/hdd.png"
 import icono_mother from "/iconos/armadorIconos/motherboard.png"
 import icono_gabinete from "/iconos/armadorIconos/gabinete.png"
 import icono_cooler from "/iconos/armadorIconos/cooler.png"
+import icono_monitor from "/iconos/armadorIconos/monitor.png"
 import { useAuth } from '../Auth'
 
 
@@ -183,7 +184,7 @@ return(
                     <div className="psu" onClick={()=>setTipo("fuentes")}><img src={icono_psu}  /></div>
                     <div className="gabinete" onClick={()=>setTipo("gabinetes")}><img src={icono_gabinete}  /></div>
                     <div className="coolers" onClick={()=>setTipo("coolers")}><img src={icono_cooler}  /></div>
-                    <div className="monitores" onClick={()=>setTipo("monitores")}><img src={icono_cooler}  /></div>
+                    <div className="monitores" onClick={()=>setTipo("monitores")}><img src={icono_monitor}  /></div>
                 </div>
                 <div className="elecciones">
 
@@ -192,6 +193,7 @@ return(
                         if(valor == 0){
                             return null
                         }
+                        console.log(typeof(valor))
                         if(typeof(valor) == "object"){
                             return valor.map((productoArreglo,index) =>{
                                 const producArreglo = buscarPorId(productoArreglo)
@@ -258,7 +260,7 @@ return(
             </div>
             <div className="productos">
                 <form className='filtrosArmador'>
-                    <select name="ordernar Por" value={order} onChange={(e)=>setOrder(e.target.value)}>
+                    <select className='ordernarPor' name="ordernar Por" value={order} onChange={(e)=>setOrder(e.target.value)}>
                         <option value="ASC">Precio menor a mayor</option>
                         <option value="DESC">Precio mayor a menor</option>
                     </select>

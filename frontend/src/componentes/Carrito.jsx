@@ -122,7 +122,7 @@ export default function Carrito() {
         <Container>
 
             <Card sx={{ width: "100%", bgcolor: "#e0e0e0", my: "20px", paddingLeft: 10 }}>
-                <Typography starIcon level="h1" id="card-description" sx={{ fontWeight: 'bold' }}> Carrito de {sesion.username}</Typography>
+                <Typography  level="h1" id="card-description" sx={{ fontWeight: 'bold' }}> Carrito de {sesion.username}</Typography>
                 <Grid container spacing={3} style={{ marginTop: "10px" }}>
                     {//aca hay que conectar los los botones con sus respectivas funciones eliminar , y un put para el + - 
                     }

@@ -50,30 +50,36 @@ body("password").isStrongPassword({
         res.status(400).send({errores:errores.array()})
         return
     }
-
-    const {username,password} = req.body
+    try {
+        const {username,password} = req.body
+        
+        const [usuarios] = await db.execute("SELECT * FROM usuarios WHERE username = ?",[username])
+        
+        if(usuarios == 0) {
+            res.status(400).send({error:"Usuario o contraseña incorrecta"})
+            return
+        }
+        //verificar usuario y contraseña
+        const passwrodCompared = await bcrypt.compare(
+            password,
+            usuarios[0].
+            password);
     
-    const [usuarios] = await db.execute("SELECT * FROM usuarios WHERE username = ?",[username])
-    
-    if(usuarios == 0) {
-        res.status(400).send({error:"Usuario o contraseña incorrecta"})
-        return
+        if(!passwrodCompared){
+            res.status(400).send({error:"Usuario o contraseña incorrecta"})
+            return
+        }
+        
+        //crear jwt
+        const payload = {username, rol:usuarios[0].id_rol,userId:usuarios[0].id_usuario}
+        const token = jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:"2h"})
+        //enviar jwt
+        res.send({username:usuarios[0].username,rol:usuarios[0].id_rol,token})
+        return;
+    } catch (error) {
+        console.log(error)
+        res.status(500).send('Error en el servidor')
+        return;
     }
-    //verificar usuario y contraseña
-    const passwrodCompared = await bcrypt.compare(
-        password,
-        usuarios[0].
-        password);
-
-    if(!passwrodCompared){
-        res.status(400).send({error:"Usuario o contraseña incorrecta"})
-        return
-    }
-    
-    //crear jwt
-    const payload = {username, rol:usuarios[0].id_rol,userId:usuarios[0].id_usuario}
-    const token = jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:"2h"})
-    //enviar jwt
-    res.send({username:usuarios[0].username,rol:usuarios[0].id_rol,token})
 })
 export default router;
