@@ -43,7 +43,7 @@ async function showModal() {
 
 
 const Checkout =  () => {
-    const url = 'http://192.168.1.8:3000'
+    const url = 'https://api.modex.com.ar'
     const [productos, setProductos] = useState([])
     const [total,setTotal] = useState(0)
     const { sesion } = useAuth();
