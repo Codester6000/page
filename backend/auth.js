@@ -75,9 +75,11 @@ body("password").isStrongPassword({
         const token = jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:"2h"})
         //enviar jwt
         res.send({username:usuarios[0].username,rol:usuarios[0].id_rol,token})
+        return;
     } catch (error) {
         console.log(error)
         res.status(500).send('Error en el servidor')
+        return;
     }
 })
 export default router;
