@@ -14,7 +14,7 @@ carritoRouter.get('/',validarJwt,async (req,res) =>{
             INNER JOIN imagenes i ON pi.id_imagen = i.id_imagen
             WHERE pi.id_producto = pr.id_producto
         ) AS distinct_images
-       ) AS url_imagenes,
+    ) AS url_imagenes,
 		p.precio_dolar,
 		p.precio_dolar_iva,
 		p.iva, 
@@ -76,8 +76,8 @@ carritoRouter.post('/',validarJwt,validarBodyCarrito(),verificarValidaciones, as
 carritoRouter.put('/',validarJwt,validarBodyPutCarrito(),async (req,res)=>{
     const {id_producto,cantidad} = req.body;
     try {
-        const parametros = [cantidad,id_producto,req.user.userId]
-        const sql = "UPDATE carrito SET cantidad = ? WHERE id_producto = ? AND id_usuario = ?;"
+        const parametros = [id_producto,cantidad,req.user.userId]
+        const sql = "call schemamodex.alterar_carrito(?, ?, ?);"
         const resultado = db.execute(sql,parametros)
         if(resultado.affectedRows == 0){
             res.status(400).send({mensaje:"Id producto o id usuario invalido"})
@@ -92,8 +92,8 @@ carritoRouter.delete('/',validarJwt,validarBodyCarrito(),async (req, res) => {
     const {id_producto } = req.body;
     try {
         const parametros = [id_producto,req.user.userId];
-        const sql = 'DELETE FROM carritos WHERE id_producto = ? and id_usuario = ?';
-        const [resultado, fields] = await db.execute(sql,parametros)
+        const sql = 'call schemamodex.borrar_producto_carrito(?, ?);';
+        const [resultado, fields] = await db.execute(sql,parametros);
         if(resultado.affectedRows == 0) {
             return res.status(404).send({mensaje:"Producto no encontrado en el carrito"})
         }
