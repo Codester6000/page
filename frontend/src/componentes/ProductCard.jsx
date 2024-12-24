@@ -177,12 +177,12 @@ export default function ProductCard() {
         <Container sx={{}}>
             {/* <SkeletonProd></SkeletonProd> */}
             <Card sx={{ bgcolor: "#FFfff", padding: 5, marginX: -10, marginY: 5 }}>
-                <Grid>
+                <Grid className='filtros'>
 
                     <Typography level="h3">Filtrar por: </Typography>
                     <br />
-                    <TextField label="Buscar por Nombre" name="nombre" variant="outlined" size="small" value={nombre} onChange={(e) => setNombre(e.target.value)} style={{ marginRight: "10px"}} /> 
-                    <TextField select label="Buscar por Categoria" name="categoria" variant="outlined" size="small" value={categoria} onChange={(e) => setCategoria(e.target.value)} style={{ marginRight: "10px", minWidth:"200px"  }} >
+                    <TextField label="Buscar por Nombre" name="nombre" variant="outlined" size="small" value={nombre} onChange={(e) => setNombre(e.target.value)} style={{ marginRight: "10px"}} className='inputFiltro' /> 
+                    <TextField select label="Buscar por Categoria" name="categoria" variant="outlined" size="small" value={categoria} onChange={(e) => setCategoria(e.target.value)} style={{ marginRight: "10px", minWidth:"200px"  }} className='inputFiltro' >
                         <MenuItem value="Computadoras">Computadoras</MenuItem>
                         <MenuItem value="All In One">All In One</MenuItem>
                         <MenuItem value="Hardware">Hardware</MenuItem>
@@ -297,16 +297,16 @@ export default function ProductCard() {
                         <MenuItem value="Monitor">Monitor</MenuItem>
                         <MenuItem value="Consola">Consola</MenuItem>
                     </TextField>
-                    <TextField label="Minimo Precio" name="precioMin" variant="outlined" size="small" value={precioMin} onChange={(e) => setPrecioMin(e.target.value)} style={{ marginRight: "10px" }} />
-                    <TextField label="Maximo Precio" name="precioMax" variant="outlined" size="small" value={precioMax} onChange={(e) => setPrecioMax(e.target.value)} style={{ marginRight: "10px" }} />
+                    <TextField label="Minimo Precio" name="precioMin" variant="outlined" size="small" value={precioMin} onChange={(e) => setPrecioMin(e.target.value)} style={{ marginRight: "10px" }} className='inputFiltro'/>
+                    <TextField label="Maximo Precio" name="precioMax" variant="outlined" size="small" value={precioMax} onChange={(e) => setPrecioMax(e.target.value)} style={{ marginRight: "10px" }} className='inputFiltro'/>
                     <Button variant="contained" sx={{ backgroundColor: "#a111ad" }} onClick={() => { setPagina(1); getProductos(); }}>
                         Aplicar Filtros
                     </Button>
                 </Grid>
-                <Grid container spacing={5} style={{ marginTop: "20px" }}>
+                <Grid container spacing={5} style={{ marginTop: "20px" }} >
                     {productos.length > 0 ? (
                         productos.map((producto, index) => (
-                            <Grid xs={12} sm={6} md={4} lg={3} key={producto.id_producto}>
+                            <Grid xs={12} sm={6} md={4} lg={3} key={producto.id_producto} className='productosLista'>
                                 <Card sx={{ width: 280, bgcolor: "#e0e0e0", height: 350 }}>
                                     <div className="badge">{(producto.nombre_proveedor == 'air') ? <img src="/badges/24HS.png" alt="" /> : (producto.nombre_proveedor == 'elit') ? <img src="/badges/5_DIAS.png" alt="" /> : <img src="/badges/LOCAL.png" alt="" />} </div>
                                     <AuthRol rol="2">

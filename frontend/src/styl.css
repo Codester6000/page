@@ -87,3 +87,29 @@ html, body {
     background-color: blue;
     border-radius: 3px;
 } */
+
+
+@media (max-width: 800px) {
+    .productosLista{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .filtros{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+    }
+    .inputFiltro{
+        width: 95vw;
+    }
+    .navBar{
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 5px;
+        padding-bottom: 20px;
+        }
+  }

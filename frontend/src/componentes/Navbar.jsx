@@ -20,7 +20,7 @@ export default function Navbar() {
     return (
         <>
             <AppBar position="static" style={{ background: "#FF7d21"}}>
-                <Toolbar>
+                <Toolbar className="navBar" >
                     <IconButton onClick={()=> setAbierto(true)} sx={{ml: 1,height: "55px", width: "55px" , padding: "5px", objectFit: "cover", color: "white"}}
                     ><MenuIcon></MenuIcon></IconButton>
                     <Drawer open={abierto} anchor="left" onClose={()=> setAbierto(false)} sx={{

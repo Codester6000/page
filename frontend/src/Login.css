@@ -116,3 +116,18 @@
     color: #676767;
 }
 
+@media (max-width: 800px) {
+    .loginForm,.registerForm{
+        width: 95vw;
+        }
+
+        .inputs{
+            width: 85vw;   
+        }
+        .input{
+            width: 100%;
+        }
+        .texto{
+            text-align: center;
+        }
+}
