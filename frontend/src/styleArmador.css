@@ -67,6 +67,8 @@
     height: 64px;
 }
 .total{
+    display: flex;
+    align-items: center;
     font-size: large;
     font-weight: 600;
     
@@ -114,3 +116,12 @@
 }
 
 
+@media (max-width: 800px) {
+    .armador{
+        flex-direction: column;
+    }
+    .tipo{
+        width: 90vw;
+        margin: 0;
+    }
+  }

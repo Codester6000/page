@@ -1,8 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 const BASE_URL = 'https://merchants.preprod.playdigital.com.ar/merchants/middleman/token';
-const USERNAME = 'sdkmodostage';
-const PASSWORD = 'sdkmodostage';
+
 
 let authToken = null; // Cachear el token.
 let tokenExpiry = null; // Tiempo de expiración del token.
@@ -17,11 +16,11 @@ try {
             'User-Agent': 'Modex.com.ar', // Obligatorio
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username: USERNAME, password: PASSWORD }),
+        body: JSON.stringify({ username: 'modextest1', password:'modextest1'}),
     });
 
     const data = await response.json();
-
+    console.log(data.user.stores)
     if (!response.ok) {
         throw new Error(`Error al generar token: ${data.message}`);
     }
@@ -32,7 +31,6 @@ try {
     }
 
     req.authToken = authToken; // Adjuntar el token al objeto `req`
-    console.log(authToken)
     next(); // Continuar con el siguiente middleware
   } catch (error) {
     console.error('Error autenticando token:', error);
