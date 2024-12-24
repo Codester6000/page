@@ -11,9 +11,9 @@ from pathlib import Path
 load_dotenv()
 
 # Obtener las variables de entorno
-hostenv = os.getenv("DB_HOST_DEV")
-userenv= os.getenv("DB_USER_DEV")
-passwordenv = os.getenv("DB_PASS_DEV")
+hostenv = os.getenv("DB_HOST")
+userenv= os.getenv("DB_USER")
+passwordenv = os.getenv("DB_PASS")
 databasenv = os.getenv("DB_NAME")
 
 
@@ -237,7 +237,7 @@ def extraer_columnas_csv(ruta_csv):
                 precio_dolares_iva = float(fila['Precio Final'].replace('.','').replace(',','.'))
                 precio_pesos = float(fila["Precio Compra"].replace('.','').replace(',','.')) * float(dolar_venta)
                 precio_pesos_iva = float(fila['Precio Final'].replace('.','').replace(',','.')) * float(dolar_venta)
-            if (categoria != 0 and stock > 0):
+            if (categoria != 0 ):
                 parametros = (nombre,stock,garantia_meses,detalle,largo,alto,ancho,peso,codigo_fabricante,marca,categoria,sub_categoria,proveedor,precio_dolares,precio_dolares_iva,iva,precio_pesos,precio_pesos_iva,url_imagen)
                 print(parametros)
                 try:
