@@ -121,15 +121,15 @@ export default function Carrito() {
     return (
         <Container>
 
-            <Card sx={{ width: "100%", bgcolor: "#e0e0e0", my: "20px", paddingLeft: 10 }}>
+            <Card sx={{ width: "100%", bgcolor: "#e0e0e0", my: "20px", paddingLeft: 10}} >
                 <Typography  level="h1" id="card-description" sx={{ fontWeight: 'bold' }}> Carrito de {sesion.username}</Typography>
-                <Grid container spacing={3} style={{ marginTop: "10px" }}>
+                <Grid container spacing={3} style={{ marginTop: "10px" }}  >
                     {//aca hay que conectar los los botones con sus respectivas funciones eliminar , y un put para el + - 
                     }
                     {productos.length > 0 ? (
                         productos.map((producto, index) => (
-                            <Grid key={index} xs={12}>
-                                <Card
+                            <Grid key={index} xs={12} > 
+                                <Card 
                                     variant="outlined"
                                     orientation="horizontal"
                                     sx={{
@@ -145,7 +145,7 @@ export default function Carrito() {
                                         />
                                          <div className="badge">{(producto.nombre_proveedor == 'air') ? <img src="/badges/24HS.png" alt="" /> : (producto.nombre_proveedor == 'elit') ? <img src="/badges/5_DIAS.png" alt="" /> : <img src="/badges/LOCAL.png" alt="" />} </div>
                                     </AspectRatio>
-                                    <CardContent>
+                                    <CardContent >
                                         <Typography level="h2" id="card-description" sx={{ fontWeight: 'bold' }}>
                                             {producto.nombre}
                                         </Typography>
