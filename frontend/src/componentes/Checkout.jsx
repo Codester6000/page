@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import '../checkout.css'
 import logoModo from '../assets/Logo_modo.svg';
 import { useAuth } from "../Auth";
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { formCheckoutSchema } from '../validations/formcheckout'
 
 async function createPaymentIntention(total,nombre_producto){
   const res = await fetch('http://192.168.1.8:3000/checkout/intencion-pago', {
@@ -45,6 +48,11 @@ async function showModal(total,nombre_producto) {
 
 const Checkout =  () => {
     const url = 'http://192.168.1.8:3000'
+
+    const {register,handleSubmit,formState:{errors}} = useForm({
+            resolver:zodResolver(formCheckoutSchema)
+        })
+
     const [productos, setProductos] = useState([])
     const [total,setTotal] = useState(0)
     const { sesion } = useAuth();
@@ -94,23 +102,23 @@ return (
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Email</label>
-                  <input type="email" name="email" id="email" />
+                  <input type="email" name="email" id="email" {...register("email")}/>
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Nombre</label>
-                  <input type="text" name="nombreC" id="nombreC"/>
+                  <input type="text" name="nombreC" id="nombreC" {...register("nombre")}/>
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Apellido</label>
-                  <input type="text" name="apellidoC" id="apellidoC" />
+                  <input type="text" name="apellidoC" id="apellidoC" {...register("apellido")} />
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Direccion</label>
-                  <input type="text" name="direccionC" id="direccionC"/>
+                  <input type="text" name="direccionC" id="direccionC" {...register("direccion")} />
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Telefono</label>
-                  <input type="text" name="telefonoC" id="telefonoC" />
+                  <input type="text" name="telefonoC" id="telefonoC" {...register("telefono")} />
                 </div>
             </form>
           </div>

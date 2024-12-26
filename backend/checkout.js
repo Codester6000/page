@@ -123,14 +123,17 @@ modoCheckoutRouter.post('/intencion-pago',validarBodyCheckout(),verificarValidac
           console.log('se scaneo un qr')
           break;
         case 'PROCESSING':
+          console.log('procesando')
           //TODO
           //Actualizar base de datos
           break;
         case 'ACCEPTED':
+          console.log('aceptado')
           //TODO
           //Actualizar base de datos
           break;
         case 'REJECTED':
+          console.log('rechazado')
           //TODO
           //Actualizar base de datos
           break;
