@@ -3,25 +3,26 @@ import '../checkout.css'
 import logoModo from '../assets/Logo_modo.svg';
 import { useAuth } from "../Auth";
 
-async function createPaymentIntention(){
+async function createPaymentIntention(total,nombre_producto){
   const res = await fetch('http://192.168.1.8:3000/checkout/intencion-pago', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
           },
+          body: JSON.stringify({price:total,productName:nombre_producto})
 
       }  
   );    
   const jsonRes = await res.json();
-  console.log(jsonRes.data)
+  console.log(jsonRes)
   return {
     checkoutId: jsonRes.data.id,
     qrString: jsonRes.data.qr,
     deeplink: jsonRes.data.deeplink,
   };
 }
-async function showModal() {
-  const modalData = await createPaymentIntention();
+async function showModal(total,nombre_producto) {
+  const modalData = await createPaymentIntention(total,nombre_producto);
   var modalObject = {
       qrString: modalData.qrString,
       checkoutId: modalData.checkoutId,
@@ -198,7 +199,7 @@ return (
             </div></div>
             <div className="lineaGris"></div>
             <div className="botonPagaModo">
-            <button onClick={showModal}>Pagá con QR</button>
+            <button onClick={()=>showModal(total,'HOLA')}>Pagá con QR</button>
             </div>
 
         </div>
