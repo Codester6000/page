@@ -2,26 +2,30 @@ import React, { useEffect, useState } from "react";
 import '../checkout.css'
 import logoModo from '../assets/Logo_modo.svg';
 import { useAuth } from "../Auth";
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { formCheckoutSchema } from '../validations/formcheckout'
 
-async function createPaymentIntention(){
+async function createPaymentIntention(total,nombre_producto){
   const res = await fetch('http://192.168.1.8:3000/checkout/intencion-pago', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
           },
+          body: JSON.stringify({price:total,productName:nombre_producto})
 
       }  
   );    
   const jsonRes = await res.json();
-  console.log(jsonRes.data)
+  console.log(jsonRes)
   return {
     checkoutId: jsonRes.data.id,
     qrString: jsonRes.data.qr,
     deeplink: jsonRes.data.deeplink,
   };
 }
-async function showModal() {
-  const modalData = await createPaymentIntention();
+async function showModal(total,nombre_producto) {
+  const modalData = await createPaymentIntention(total,nombre_producto);
   var modalObject = {
       qrString: modalData.qrString,
       checkoutId: modalData.checkoutId,
@@ -93,23 +97,23 @@ return (
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Email</label>
-                  <input type="email" name="email" id="email" />
+                  <input type="email" name="email" id="email" {...register("email")}/>
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Nombre</label>
-                  <input type="text" name="nombreC" id="nombreC"/>
+                  <input type="text" name="nombreC" id="nombreC" {...register("nombre")}/>
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Apellido</label>
-                  <input type="text" name="apellidoC" id="apellidoC" />
+                  <input type="text" name="apellidoC" id="apellidoC" {...register("apellido")} />
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Direccion</label>
-                  <input type="text" name="direccionC" id="direccionC"/>
+                  <input type="text" name="direccionC" id="direccionC" {...register("direccion")} />
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Telefono</label>
-                  <input type="text" name="telefonoC" id="telefonoC" />
+                  <input type="text" name="telefonoC" id="telefonoC" {...register("telefono")} />
                 </div>
             </form>
           </div>
@@ -198,7 +202,7 @@ return (
             </div></div>
             <div className="lineaGris"></div>
             <div className="botonPagaModo">
-            <button onClick={showModal}>Pagá con QR</button>
+            <button onClick={()=>showModal(total,'HOLA')}>Pagá con QR</button>
             </div>
 
         </div>

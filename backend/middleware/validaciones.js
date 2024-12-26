@@ -76,6 +76,11 @@ export const validarBodyPutCarrito = () => [
 ]
 export const validarId = param("id").isInt({min:1})
 
+export const validarBodyCheckout = () => [
+    body('price').isFloat({min:0}).withMessage('Hay un error en el precio'),
+    body('productName').isString().notEmpty().isLength({min:1}).withMessage('Hay un error en el productName')
+
+]
 export const verificarValidaciones = (req, res, next) => {
     // Enviar errores de validacion en caso de ocurrir alguno.
     const validacion = validationResult(req);

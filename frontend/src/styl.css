@@ -112,4 +112,11 @@ html, body {
         gap: 5px;
         padding-bottom: 20px;
         }
+        .containerCarrito{
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
   }

@@ -6,6 +6,11 @@ const BASE_URL = 'https://merchants.preprod.playdigital.com.ar/merchants/middlem
 let authToken = null; // Cachear el token.
 let tokenExpiry = null; // Tiempo de expiración del token.
 
+const username_test = process.env.CLIENT_ID
+const password_test = process.env.CLIENT_SECRET
+
+
+
 export const getAuthToken = async (req, res, next) => {
 try {
     // Si el token no existe o ya expiró
@@ -16,7 +21,7 @@ try {
             'User-Agent': 'Modex.com.ar', // Obligatorio
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username: 'modextest1', password:'modextest1'}),
+        body: JSON.stringify({ username: username_test, password:password_test}),
     });
 
     const data = await response.json();

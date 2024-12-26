@@ -2,6 +2,7 @@ import express from "express"
 import { db } from "./database/connectionMySQL.js"
 import { validarJwt,validarRol } from "./auth.js"
 import { getAuthToken } from "./middleware/authMiddlewareModo.js";
+import { validarBodyCheckout,verificarValidaciones } from "./middleware/validaciones.js";
 import  pkg from 'node-jose';
 const {JWS, JWK } = pkg;
 const modoCheckoutRouter = express.Router()
@@ -41,10 +42,11 @@ async function verifySignature(body) {
 
 
 
-modoCheckoutRouter.post('/intencion-pago', getAuthToken, async (req, res) => {
+modoCheckoutRouter.post('/intencion-pago',validarBodyCheckout(),verificarValidaciones, getAuthToken, async (req, res) => {
+  const {productName,price} = req.body
+  console.log(price)
     try {
       const token = req.authToken; // Obtener el token desde el middleware
-      const {productName,price,quantity} = req.body
       const timestamp = Date.now();
         const response = await fetch('https://merchants.preprod.playdigital.com.ar/merchants/ecommerce/payment-intention', {
         method: 'POST',
@@ -52,7 +54,7 @@ modoCheckoutRouter.post('/intencion-pago', getAuthToken, async (req, res) => {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
         },
-        body:JSON.stringify({productName:"test",price:12.0,quantity:1,currency:'ARS',storeId:'713dd1d5-3507-44d5-9a25-913b21ad0d63',externalIntentionId:`Modex${timestamp}`})
+        body:JSON.stringify({productName:productName,price:price,quantity:1,currency:'ARS',storeId:'713dd1d5-3507-44d5-9a25-913b21ad0d63',externalIntentionId:`Modex${timestamp}`})
       });
   
       const data = await response.json();
@@ -116,21 +118,22 @@ modoCheckoutRouter.post('/intencion-pago', getAuthToken, async (req, res) => {
         return res.status(400).send({ error: "Firma inválida." });
     }
     try{
-      
       switch (body.status) {
         case 'SCANNED':
-          //TODO
-          //Actualizar base de datos
+          console.log('se scaneo un qr')
           break;
         case 'PROCESSING':
+          console.log('procesando')
           //TODO
           //Actualizar base de datos
           break;
         case 'ACCEPTED':
+          console.log('aceptado')
           //TODO
           //Actualizar base de datos
           break;
         case 'REJECTED':
+          console.log('rechazado')
           //TODO
           //Actualizar base de datos
           break;
