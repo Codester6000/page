@@ -100,6 +100,7 @@ modoCheckoutRouter.post('/intencion-pago',validarBodyCheckout(),verificarValidac
   modoCheckoutRouter.post('/modo/webhook', async (req,res) => {
 
     const body = req.body
+    console.log('webhook reached')
     if (!modoKeyStore) {
       console.error("KeyStore no inicializado.");
       return res.status(500).send({ error: "KeyStore no inicializado." });
