@@ -25,7 +25,7 @@ try {
     });
 
     const data = await response.json();
-    console.log(data.user.stores)
+    console.log(data)
     if (!response.ok) {
         throw new Error(`Error al generar token: ${data.message}`);
     }

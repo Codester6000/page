@@ -6,13 +6,13 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { formCheckoutSchema } from '../validations/formcheckout'
 
-async function createPaymentIntention(total,nombre_producto){
+async function createPaymentIntention(total,nombre_producto,id_carrito,total_a_pagar){
   const res = await fetch('http://192.168.1.8:3000/checkout/intencion-pago', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
           },
-          body: JSON.stringify({price:total,productName:nombre_producto})
+          body: JSON.stringify({price:total,productName:nombre_producto,id_carrito:id_carrito,total:total_a_pagar})
 
       }  
   );    
@@ -24,14 +24,14 @@ async function createPaymentIntention(total,nombre_producto){
     deeplink: jsonRes.data.deeplink,
   };
 }
-async function showModal(total,nombre_producto) {
-  const modalData = await createPaymentIntention(total,nombre_producto);
+async function showModal(total,nombre_producto,id_carrito,total_a_pagar) {
+  const modalData = await createPaymentIntention(total,nombre_producto,id_carrito,total_a_pagar);
   var modalObject = {
       qrString: modalData.qrString,
       checkoutId: modalData.checkoutId,
       deeplink:  {
           url: modalData.deeplink,
-          callbackURL: 'https://tiendadeprueba.com/checkout',
+          callbackURL: 'https://api.modex.com.ar/checkout/modo/webhook',
           callbackURLSuccess: 'https://tiendadeprueba/thankyou'
       },
       callbackURL: 'https://tiendadeprueba/thankyou',
@@ -54,6 +54,7 @@ const Checkout =  () => {
         })
 
     const [productos, setProductos] = useState([])
+    const [idCarrito, setIdCarrito] = useState(0)
     const [total,setTotal] = useState(0)
     const { sesion } = useAuth();
     const getCarrito = async () => {
@@ -75,6 +76,10 @@ const Checkout =  () => {
                   setProductos(data.carrito);
                   const total = data.carrito.reduce((sum, producto) => sum + (parseFloat(producto.precio_pesos_iva_ajustado).toFixed(0) * producto.cantidad), 0);
                   setTotal(total);
+                  
+                  setIdCarrito(data.carrito[0]?.id_carrito)
+                  console.log(idCarrito)
+                  
               } else {
                   console.error("Estructura de datos incorrecta:", data);
               }
@@ -207,7 +212,7 @@ return (
             </div></div>
             <div className="lineaGris"></div>
             <div className="botonPagaModo">
-            <button onClick={()=>showModal(total,'HOLA')}>Pagá con QR</button>
+            <button onClick={()=>showModal(total,'HOLA',idCarrito,total)}>Pagá con QR</button>
             </div>
 
         </div>
