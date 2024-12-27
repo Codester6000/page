@@ -78,7 +78,9 @@ export const validarId = param("id").isInt({min:1})
 
 export const validarBodyCheckout = () => [
     body('price').isFloat({min:0}).withMessage('Hay un error en el precio'),
-    body('productName').isString().notEmpty().isLength({min:1}).withMessage('Hay un error en el productName')
+    body('productName').isString().notEmpty().isLength({min:1}).withMessage('Hay un error en el productName'),
+    body('id_carrito').isInt({ min: 0 }).withMessage("El id debe ser entero positivo"),
+    body("total").isDecimal({min:0}).withMessage("el total debe ser decimal y positivo")
 
 ]
 export const verificarValidaciones = (req, res, next) => {

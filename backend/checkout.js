@@ -43,8 +43,7 @@ async function verifySignature(body) {
 
 
 modoCheckoutRouter.post('/intencion-pago',validarBodyCheckout(),verificarValidaciones, getAuthToken, async (req, res) => {
-  const {productName,price} = req.body
-  console.log(price)
+  const {productName,price,id_carrito,total} = req.body
     try {
       const token = req.authToken; // Obtener el token desde el middleware
       const timestamp = Date.now();
@@ -56,8 +55,12 @@ modoCheckoutRouter.post('/intencion-pago',validarBodyCheckout(),verificarValidac
         },
         body:JSON.stringify({productName:productName,price:price,quantity:1,currency:'ARS',storeId:'713dd1d5-3507-44d5-9a25-913b21ad0d63',externalIntentionId:`Modex${timestamp}`})
       });
-  
+
+      
       const data = await response.json();
+      const sql = `UPDATE carrito SET id_intencion_pago = ?, total_a_pagar = ? WHERE (id_carrito = ?);`
+      const [resultadoId] = await db.execute(sql,[data.id,total,id_carrito])
+
       res.status(201).send({data});
     } catch (error) {
       console.error('Error en intención de pago:', error);
@@ -97,6 +100,7 @@ modoCheckoutRouter.post('/intencion-pago',validarBodyCheckout(),verificarValidac
   modoCheckoutRouter.post('/modo/webhook', async (req,res) => {
 
     const body = req.body
+    console.log('webhook reached')
     if (!modoKeyStore) {
       console.error("KeyStore no inicializado.");
       return res.status(500).send({ error: "KeyStore no inicializado." });
