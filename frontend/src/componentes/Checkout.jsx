@@ -48,6 +48,11 @@ async function showModal(total,nombre_producto,id_carrito,total_a_pagar) {
 
 const Checkout =  () => {
     const url = 'https://api.modex.com.ar'
+
+    const {register,handleSubmit,formState:{errors}} = useForm({
+      resolver:zodResolver(formCheckoutSchema)
+  })
+
     const [productos, setProductos] = useState([])
     const [idCarrito, setIdCarrito] = useState(0)
     const [total,setTotal] = useState(0)
