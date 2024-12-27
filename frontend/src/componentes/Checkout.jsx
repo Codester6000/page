@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { formCheckoutSchema } from '../validations/formcheckout'
 
 async function createPaymentIntention(total,nombre_producto,id_carrito,total_a_pagar){
-  const res = await fetch('http://192.168.1.8:3000/checkout/intencion-pago', {
+  const res = await fetch('https://api.modex.com.ar/checkout/intencion-pago', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
