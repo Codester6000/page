@@ -4,7 +4,7 @@ import Navbar from "./componentes/Navbar"
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper-bundle.css';
 import { Route, Routes } from "react-router-dom";
-import { AuthPage } from "./Auth";
+import { AuthPage,AuthRol } from "./Auth";
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 
 
@@ -20,6 +20,7 @@ import Favorito from "./componentes/Favorito"
 import Armadorpc from "./componentes/Armadorpc";
 import NuevoProducto from "./componentes/nuevoProducto";
 import Checkout from "./componentes/Checkout";
+import Ventas from "./componentes/ventas";
 
 
 
@@ -41,6 +42,7 @@ function App() {
         <Route path="/favorito" element={<AuthPage><Favorito /></AuthPage>}/>
         <Route path="/cargar-producto" element={<AuthPage><NuevoProducto /></AuthPage>}/>
         <Route path="/checkout" element={<Checkout />}/>
+        <Route path="/ventas" element={<AuthPage><AuthRol rol="2"><Ventas /></AuthRol></AuthPage>}/>
 
         </Routes>
         {/* <div className="burWsp">

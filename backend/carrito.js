@@ -1,6 +1,6 @@
 import express from "express"
 import { db } from "./database/connectionMySQL.js"
-import { validarJwt } from "./auth.js"
+import { validarJwt, validarRol } from "./auth.js"
 import { validarBodyCarrito,validarId,verificarValidaciones,validarBodyPutCarrito} from "./middleware/validaciones.js"
 const carritoRouter = express.Router()
 
@@ -59,7 +59,7 @@ WHERE
         SELECT MIN(precio_dolar) 
         FROM precios 
         WHERE id_producto = pr.id_producto
-        ) AND ca.id_usuario = ?
+        ) AND ca.id_usuario = ? AND ca.estado = "activo"
 group by pr.id_producto,ca.id_carrito,cd.cantidad,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pro.nombre_proveedor;`
     const [resultado,fields] = await db.execute(sql,[id])
 
@@ -104,5 +104,43 @@ carritoRouter.delete('/',validarJwt,validarBodyCarrito(),async (req, res) => {
     }
 })
 
-carritoRouter.get("/c")
+carritoRouter.get("/ventas",validarJwt,validarRol(2), async(req ,res) =>{
+    try {
+        const sql =`SELECT 
+    c.id_carrito AS id, 
+    u.username, 
+    c.fecha_finalizada, 
+    c.estado, 
+    c.total_a_pagar,
+    (
+        SELECT GROUP_CONCAT(CONCAT(p.nombre, ' x', cd.cantidad) SEPARATOR '\n')
+        FROM carrito_detalle cd
+        INNER JOIN productos p ON p.id_producto = cd.id_producto
+        WHERE cd.id_carrito = c.id_carrito
+    ) AS productos
+FROM carrito c
+INNER JOIN usuarios u ON u.id_usuario = c.id_usuario
+WHERE c.estado = 'completado';`
+
+    const [resultado] = await db.execute(sql)
+
+    res.status(200).send(resultado)
+    } catch (error) {
+        
+    }
+})
+
+carritoRouter.get('/stats',validarJwt,validarRol(2),async(req,res)=>{
+    try {
+        const sql = `SELECT sum(c.total_a_pagar) AS total_vendido,
+count(c.id_carrito) AS pedidos,
+count(distinct c.id_usuario) AS clientes
+FROM carrito c 
+WHERE c.estado = 'completado';`
+        const [resultado] = await db.execute(sql)
+        res.status(200).send(resultado)
+    } catch (error) {
+        
+    }
+})
 export default carritoRouter;

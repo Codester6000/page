@@ -1,0 +1,35 @@
+.ventasContainer{
+    display: flex;
+    flex-direction: column;
+    margin-left: 5rem;
+    padding-top: 2rem;
+    gap: 2rem;
+    height: 100%;
+}
+.cardsVentas{
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+}
+
+.cardventa{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgb(196, 196, 196);
+    padding: 1.5rem;
+    width: 16rem;
+    border-radius: 6px;
+    box-shadow: 1px 1px 2px gainsboro;
+    font-size: 1.2rem;
+}
+.cardventa h3{
+    font-size: 2rem;
+}
+
+.iconoCardVenta{
+    position: absolute;
+    height: 25px;
+    right: 5px;
+    top: 5px;
+}

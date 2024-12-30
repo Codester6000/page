@@ -8,6 +8,7 @@ import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 import { useState } from "react";
 import data from "./MenuData.json"
 import { useNavigate } from 'react-router-dom';
+import { AuthRol } from "../Auth";
 
 // JSON con las categorías y subcategorías
 // const data = {
@@ -114,11 +115,28 @@ export default function MenuNavbar() {
                                             </ListItemButton>
                                         </ListItem>
                                     ))}
+
+
                                 </List>
                             )}
                         </div>
                     </ListItem>
                 ))}
+                <AuthRol rol="2">
+                                    <ListItem key='123'>
+                                            <ListItemButton
+                                                sx={{
+                                                    
+                                                    backgroundColor: '#e66c1d',
+                                                    color: '#ffff',
+                                                    borderRadius: "10px",
+                                                }}
+
+                                            onClick={()=>navigate(`/ventas`)}>
+                                                Ventas
+                                            </ListItemButton>
+                                        </ListItem>
+                </AuthRol>
             </List>
         </Box>
     );

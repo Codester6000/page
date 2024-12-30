@@ -154,4 +154,8 @@ modoCheckoutRouter.post('/intencion-pago',validarBodyCheckout(),verificarValidac
 
   })
 
+  modoCheckoutRouter.get('/modo/webhook', async (req,res) => {
+    console.log('era con get gorria')
+    res.status(200).send('Recibido con exito')
+  })
 export default modoCheckoutRouter;
