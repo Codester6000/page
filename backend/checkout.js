@@ -154,8 +154,56 @@ modoCheckoutRouter.post('/intencion-pago',validarBodyCheckout(),verificarValidac
 
   })
 
-  modoCheckoutRouter.get('/modo/webhook', async (req,res) => {
-    console.log('era con get gorria')
-    res.status(200).send('Recibido con exito')
-  })
+
+  modoCheckoutRouter.get('/modo/exito/:id',getAuthToken,async(req,res)=>{
+    try {
+      const id = req.params.id;
+      const token = req.authToken; // Obtener el token desde el middleware
+      const response = await fetch(`https://merchants.preprod.playdigital.com.ar/merchants/ecommerce/payment-intention/${id}/data`,
+        {
+          method: 'GET',
+          headers:{
+            'Authorization': `Bearer ${token}`,
+            'User-Agent': 'modex.com.ar',
+          }
+        }
+      )
+      
+      if(!response.ok){
+        return res.status(400).send("Hubo un error en el fetch")
+      }
+      
+      const resultado = await response.json()
+      switch (resultado.status) {
+        case 'SCANNED':
+          console.log('se scaneo un qr')
+          break;
+        case 'PROCESSING':
+          console.log('procesando')
+          //TODO
+          //Actualizar base de datos
+          break;
+        case 'ACCEPTED':
+          const sql = `UPDATE carrito SET estado = 'completado' WHERE (id_intencion_pago = ?);`
+          const [resultadoId] = await db.execute(sql,[id])
+          
+          console.log('pago aceptado')
+          return res.status(201).send({resultadoId});
+          break;
+        case 'REJECTED':
+          console.log('rechazado')
+          //TODO
+          //Actualizar base de datos
+          break;
+        
+        default:
+          console.log('Status desconocido')
+          break;
+      }
+      return res.status(200).send(resultado)
+    } catch (error) {
+      console.error(error)
+      res.status(500).send("Error en el servidor")
+    }
+  } )
 export default modoCheckoutRouter;

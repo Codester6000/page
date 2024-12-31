@@ -21,6 +21,7 @@ import Armadorpc from "./componentes/Armadorpc";
 import NuevoProducto from "./componentes/nuevoProducto";
 import Checkout from "./componentes/Checkout";
 import Ventas from "./componentes/ventas";
+import ThankYou from "./componentes/ThankYou";
 
 
 
@@ -33,7 +34,7 @@ function App() {
           <Navbar></Navbar>
         </header>
         <Routes>
-        <Route path="/" element={<AuthPage><Inicio /></AuthPage>}/>
+        <Route path="/" element={<Inicio />}/>
         <Route path="/armador" element={<AuthPage><Armadorpc /></AuthPage>} />
         <Route path="/busqueda" element={<Busqueda/>} />
         <Route path="/login" element={<Login/>}/>
@@ -43,6 +44,7 @@ function App() {
         <Route path="/cargar-producto" element={<AuthPage><NuevoProducto /></AuthPage>}/>
         <Route path="/checkout" element={<Checkout />}/>
         <Route path="/ventas" element={<AuthPage><AuthRol rol="2"><Ventas /></AuthRol></AuthPage>}/>
+        <Route path="/thank-you" element={<ThankYou />} />
 
         </Routes>
         {/* <div className="burWsp">
