@@ -4,6 +4,8 @@ import { validarJwt,validarRol } from "./auth.js"
 import { getAuthToken } from "./middleware/authMiddlewareModo.js";
 import { validarBodyCheckout,verificarValidaciones } from "./middleware/validaciones.js";
 import  pkg from 'node-jose';
+import pkg2 from 'lodash';
+const {isEqual} = pkg2;
 const {JWS, JWK } = pkg;
 const modoCheckoutRouter = express.Router()
 
@@ -28,6 +30,7 @@ async function verifySignature(body) {
     const verificationResult = await JWS.createVerify(modoKeyStore).verify(
       body.signature
     );
+  
     delete body.signature;
     return isEqual(
       body,
@@ -53,12 +56,14 @@ modoCheckoutRouter.post('/intencion-pago',validarBodyCheckout(),verificarValidac
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
         },
-        body:JSON.stringify({productName:productName,price:price,quantity:1,currency:'ARS',storeId:'713dd1d5-3507-44d5-9a25-913b21ad0d63',externalIntentionId:`Modex${timestamp}`})
+        body:JSON.stringify({productName:productName,price:price,quantity:1,currency:'ARS',storeId:'da9c324e-730c-4bf9-90b6-a3d1c3844d85',externalIntentionId:`Modex${timestamp}`})
       });
 
       
       const data = await response.json();
+      console.log(data)
       const sql = `UPDATE carrito SET id_intencion_pago = ?, total_a_pagar = ? WHERE (id_carrito = ?);`
+      console.log(data.id, total,id_carrito)
       const [resultadoId] = await db.execute(sql,[data.id,total,id_carrito])
 
       res.status(201).send({data});
