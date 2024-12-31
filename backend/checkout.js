@@ -11,7 +11,7 @@ const modoCheckoutRouter = express.Router()
 let modoKeyStore;
 async function initModoKeyStore() {
   if(!modoKeyStore){
-    const jwksUrl = 'https://merchants.preprod.playdigital.com.ar/.well-known/jwks.json';
+    const jwksUrl = 'https://merchants.playdigital.com.ar/.well-known/jwks.json';
     const response = await fetch(jwksUrl);
     const parsedResponse = await response.json();
     modoKeyStore = await JWK.asKeyStore(parsedResponse);
@@ -47,7 +47,7 @@ modoCheckoutRouter.post('/intencion-pago',validarBodyCheckout(),verificarValidac
     try {
       const token = req.authToken; // Obtener el token desde el middleware
       const timestamp = Date.now();
-        const response = await fetch('https://merchants.preprod.playdigital.com.ar/merchants/ecommerce/payment-intention', {
+        const response = await fetch('https://merchants.playdigital.com.ar/merchants/ecommerce/payment-intention', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -73,7 +73,7 @@ modoCheckoutRouter.post('/intencion-pago',validarBodyCheckout(),verificarValidac
     try {
       const id = req.params.id;
       const token = req.authToken; // Obtener el token desde el middleware
-      const response = await fetch(`https://merchants.preprod.playdigital.com.ar/merchants/ecommerce/payment-intention/${id}/data`,
+      const response = await fetch(`https://merchants.playdigital.com.ar/merchants/ecommerce/payment-intention/${id}/data`,
         {
           method: 'GET',
           headers:{
@@ -159,7 +159,7 @@ modoCheckoutRouter.post('/intencion-pago',validarBodyCheckout(),verificarValidac
     try {
       const id = req.params.id;
       const token = req.authToken; // Obtener el token desde el middleware
-      const response = await fetch(`https://merchants.preprod.playdigital.com.ar/merchants/ecommerce/payment-intention/${id}/data`,
+      const response = await fetch(`https://merchants.playdigital.com.ar/merchants/ecommerce/payment-intention/${id}/data`,
         {
           method: 'GET',
           headers:{
