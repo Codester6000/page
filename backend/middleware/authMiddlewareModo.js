@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const BASE_URL = 'https://merchants.preprod.playdigital.com.ar/merchants/middleman/token';
+const BASE_URL = 'https://merchants.playdigital.com.ar/merchants/middleman/token';
 
 
 let authToken = null; // Cachear el token.
