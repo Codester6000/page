@@ -16,12 +16,14 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import { useAuth,AuthRol } from "../Auth";
 import { Alert, AlertTitle, Box, MenuItem, Skeleton, Snackbar, TextField } from "@mui/material";
+import {useLocation, useNavigate} from "react-router-dom"
 
 import ShoppingCart from "@mui/icons-material/ShoppingCart";
 import FormControl from '@mui/material/FormControl';
 import '../producto.css'
 import {motion} from 'framer-motion'
 import SkeletonProd from "./SkeletonProd";
+
 
 export default function ProductCard() {
     const url = 'https://api.modex.com.ar'
@@ -98,6 +100,7 @@ export default function ProductCard() {
                 console.log(producto_id)
             }
         } catch (error) {
+            navigate("/login")
             console.log("aaaa")
             console.log(error)
         }
@@ -130,6 +133,7 @@ export default function ProductCard() {
                 console.log(producto_id)
             }
         } catch (error) {
+            navigate("/login")
             console.log("aaaa")
             console.log(error)
         }
@@ -146,7 +150,6 @@ export default function ProductCard() {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${sesion.token}`,
                     },
                 }
             );

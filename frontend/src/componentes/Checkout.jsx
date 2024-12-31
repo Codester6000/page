@@ -6,6 +6,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { formCheckoutSchema } from '../validations/formcheckout'
 
+
+
 async function createPaymentIntention(total,nombre_producto,id_carrito,total_a_pagar){
   const res = await fetch('https://api.modex.com.ar/checkout/intencion-pago', {
           method: 'POST',
@@ -31,15 +33,35 @@ async function showModal(total,nombre_producto,id_carrito,total_a_pagar) {
       checkoutId: modalData.checkoutId,
       deeplink:  {
           url: modalData.deeplink,
-          callbackURL: 'https://api.modex.com.ar/checkout/modo/webhook',
-          callbackURLSuccess: 'https://tiendadeprueba/thankyou'
+          callbackURL: 'https://modex.com.ar/checkout',
+          callbackURLSuccess: 'https://modex.com.ar/thank-you'
       },
-      callbackURL: 'https://tiendadeprueba/thankyou',
+      callbackURL: 'https://modex.com.ar/thank-you',
       refreshData: createPaymentIntention,
-      onSuccess: function () { console.log('onSuccess') },
+      onSuccess: async function () { 
+        const res = await fetch(`https://api.modex.com.ar/checkout/modo/exito/${modalData.checkoutId}`, {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+
+      }  
+  );    
+  const jsonRes = await res.json();
+  console.log(jsonRes)
+      },
       onFailure: function () { console.log('onFailure') },
       onCancel: function () { console.log('onCancel') },
-      onClose: function () { console.log('onClose') },
+      onClose: async function () {  const res = await fetch(`https://api.modex.com.ar/checkout/modo/exito/${modalData.checkoutId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+
+    }  
+);    
+const jsonRes = await res.json();
+console.log(jsonRes) },
   }
   ModoSDK.modoInitPayment(modalObject);
 }
@@ -49,9 +71,14 @@ async function showModal(total,nombre_producto,id_carrito,total_a_pagar) {
 const Checkout =  () => {
     const url = 'https://api.modex.com.ar'
 
-    const {register,handleSubmit,formState:{errors}} = useForm({
-      resolver:zodResolver(formCheckoutSchema)
-  })
+    const {register,handleSubmit,formState:{errors,isValid},trigger} = useForm({
+            resolver:zodResolver(formCheckoutSchema),
+            mode:'onChange'
+        })
+
+    const handleHover = async () => {
+      await trigger(); // Valida todos los campos al pasar el mouse sobre el botón
+    };
 
     const [productos, setProductos] = useState([])
     const [idCarrito, setIdCarrito] = useState(0)
@@ -108,22 +135,27 @@ return (
                 <div className="labelInputC">
                   <label htmlFor="">Email</label>
                   <input type="email" name="email" id="email" {...register("email")}/>
+                  { errors.email?.message && <p style={{color:"red"}}>{errors.email.message}</p>}
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Nombre</label>
                   <input type="text" name="nombreC" id="nombreC" {...register("nombre")}/>
+                  { errors.nombre?.message && <p style={{color:"red"}}>{errors.nombre.message}</p>}
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Apellido</label>
                   <input type="text" name="apellidoC" id="apellidoC" {...register("apellido")} />
+                  { errors.apellido?.message && <p style={{color:"red"}}>{errors.apellido.message}</p>}
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Direccion</label>
                   <input type="text" name="direccionC" id="direccionC" {...register("direccion")} />
+                  { errors.direccion?.message && <p style={{color:"red"}}>{errors.direccion.message}</p>}
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Telefono</label>
                   <input type="text" name="telefonoC" id="telefonoC" {...register("telefono")} />
+                  { errors.telefono?.message && <p style={{color:"red"}}>{errors.telefono.message}</p>}
                 </div>
             </form>
           </div>
@@ -212,7 +244,7 @@ return (
             </div></div>
             <div className="lineaGris"></div>
             <div className="botonPagaModo">
-            <button onClick={()=>showModal(total,'HOLA',idCarrito,total)}>Pagá con QR</button>
+            <div onMouseEnter={handleHover}><button  disabled={!isValid}  onClick={()=>showModal(total,'HOLA',idCarrito,total)}>Pagá con QR</button></div>
             </div>
 
         </div>

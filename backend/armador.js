@@ -34,6 +34,11 @@ const handleSeleccionar = async (id_producto) =>{
                 procesador='1700'
                 motherboard='1700'
                 break;
+
+            case '1151':
+                procesador='1151'
+                motherboard='1151'
+                break;
             case 'DDR3':
                 memoria='DDR3'
                 motherboardDDR='DDR3'
@@ -148,7 +153,7 @@ if (motherboard == undefined && motherboardDDR != undefined){
 }
 const [motherboards] = await db.execute(sql,paramMotherboards);
 
-const paramGpus = (gpu !=undefined) ?  ["Placas de Video",gpu,,'teest',2]:["Placas de Video","",'teest',1]
+const paramGpus = (gpu !=undefined) ?  ["Placas de Video",gpu,'teest',2]:["Placas de Video","",'teest',1]
 const [gpus] = await db.execute(sql,paramGpus);
 const paramMemorias = (memoria != undefined) ? ["memorias pc",memoria,'teest',2] : ["memorias pc","",'teest',1];
 const [memorias] = await db.execute(sql,paramMemorias);

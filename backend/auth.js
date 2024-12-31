@@ -28,7 +28,6 @@ export const validarJwt = passport.authenticate("jwt", {
     });
 
 export const validarRol = (rol) => (req, res, next) => {
-    console.log(req.user.rol)
     if (req.user.rol !== rol) {
         return res
         .status(400)

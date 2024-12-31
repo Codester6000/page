@@ -179,6 +179,9 @@ span{
     overflow: hidden;
     position: relative;
 }
+.botonPagaModo button:disabled{
+    background: linear-gradient(90deg, #cccccc, #ccccff);
+}
 .botonPagaModo button::before{
     content: '';
     position: absolute;

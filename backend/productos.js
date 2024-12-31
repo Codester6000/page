@@ -6,8 +6,8 @@ import passport from "passport";
 import { validarJwt, validarRol } from "./auth.js";
 export const productosRouter = express.Router()
 
+productosRouter.get("/",validarQuerysProducto(), verificarValidaciones, async (req, res) => {
 
-productosRouter.get("/", validarJwt, validarQuerysProducto(), verificarValidaciones, async (req, res) => {
     let sql = `SELECT pr.id_producto,
     pr.nombre,p.stock,
     pr.peso,pr.garantia_meses,
