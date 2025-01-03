@@ -67,11 +67,15 @@ group by pr.id_producto,ca.id_carrito,cd.cantidad,p.precio_dolar, p.precio_dolar
 })
 
 carritoRouter.post('/',validarJwt,validarBodyCarrito(),verificarValidaciones, async (req,res) =>{
-    const {id_producto } = req.body;
-    const parametros = [req.user.userId,id_producto];
-    const sql = 'call schemamodex.cargar_carrito(?, ?);'
+    const {id_producto,cantidad } = req.body;
+    const parametros = [req.user.userId,id_producto,cantidad];
+    const sql = 'call schemamodex.cargar_carrito(?, ?, ?);'
     const [resul, fields] = await db.execute(sql,parametros)
     res.status(201).send({resultado:resul})
+})
+
+carritoRouter.post('/armador',validarJwt,async (req,res) =>{
+
 })
 carritoRouter.put('/',validarJwt,validarBodyPutCarrito(),async (req,res)=>{
     const {id_producto,cantidad} = req.body;

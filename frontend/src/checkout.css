@@ -204,3 +204,59 @@ span{
     justify-content: center;
     align-items: center;
 }
+@media screen and (max-width: 768px){
+    .containerCheckout{
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .bloqueProducto{
+        width: 100%;
+    }
+    .productoCheckout{
+        width: 100%;
+    }
+    .infoNyP{
+        width: 100%;
+    }
+    .totalCheckout{
+        width: 100%;
+    }
+    .botonPagaModo button{
+        width: 100%;
+    }
+    .wrapperCheckout{
+        width: 100%;
+    }
+    .cuadroPagoInfo{
+        width: 100%;
+    }
+    .pagoC{
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .pagaModo{
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .labelInputC label{
+        font-size: 12px;
+    }
+    .formCheckout input{
+        height: 35px;
+    }
+    .paso{
+        top: -13px;
+        left: 5px;
+        width: 50px; 
+    }
+    .cuadroPagoInfo{
+        padding: .3rem;
+    }
+    .botonPagaModo button{
+        padding: 10px 20px;
+    }
+    .detalle{
+        width: 100%;
+    }
+    
+}

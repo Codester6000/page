@@ -2,7 +2,7 @@ import express from "express"
 import { body, validationResult } from "express-validator";
 import { db } from "./database/connectionMySQL.js";
 import bcrypt from "bcrypt"
-import { validarBodyRegister } from "./middleware/validaciones.js";
+import { validarBodyInfoUsuario, validarBodyRegister } from "./middleware/validaciones.js";
 import { validarJwt, validarRol } from "./auth.js";
 const usuarioRouter = express.Router();
 
@@ -38,4 +38,19 @@ usuarioRouter.post("/",validarBodyRegister(),async (req,res) => {
     }
 })
 
+usuarioRouter.post("/agregar-info",validarJwt,validarBodyInfoUsuario(),async (req,res) => {
+    const id = req.user.userId;
+    const { nombre,apellido,direccion,telefono } = req.body;
+    const parametros = [nombre,apellido,direccion,telefono,id];
+    console.log(parametros)
+    try {
+        const [result] = await db.execute("UPDATE usuarios SET nombre = ?, apellido = ?, direccion = ?, telefono = ? WHERE id_usuario = ?;",parametros)
+        res.status(200).send({result})
+        return;
+    } catch (error) {
+        console.log(error)
+        res.status(500).send('Error en el servidor')
+        return;
+    }
+})
 export default usuarioRouter;

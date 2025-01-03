@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import '../checkout.css'
 import logoModo from '../assets/Logo_modo.svg';
 import { useAuth } from "../Auth";
@@ -6,10 +6,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { formCheckoutSchema } from '../validations/formcheckout'
 
-
+const url = "http://192.168.1.8:3000"
 
 async function createPaymentIntention(total,nombre_producto,id_carrito,total_a_pagar){
-  const res = await fetch('http://192.168.1.8:3000/checkout/intencion-pago', {
+  const res = await fetch(`${url}/checkout/intencion-pago`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
@@ -33,13 +33,13 @@ async function showModal(total,nombre_producto,id_carrito,total_a_pagar) {
       checkoutId: modalData.checkoutId,
       deeplink:  {
           url: modalData.deeplink,
-          callbackURL: 'http://localhost:5173/checkout',
-          callbackURLSuccess: 'http://localhost:5173/thank-you'
+          callbackURL: `${url}/checkout`,
+          callbackURLSuccess: `${url}/thank-you`
       },
-      callbackURL: 'http://localhost:5173/thank-you',
+      callbackURL: `${url}/thank-you`,
       refreshData: createPaymentIntention,
       onSuccess: async function () { 
-        const res = await fetch(`http://192.168.1.8:3000/checkout/modo/exito/${modalData.checkoutId}`, {
+        const res = await fetch(`${url}/checkout/modo/exito/${modalData.checkoutId}`, {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json'
@@ -52,7 +52,7 @@ async function showModal(total,nombre_producto,id_carrito,total_a_pagar) {
       },
       onFailure: function () { console.log('onFailure') },
       onCancel: function () { console.log('onCancel') },
-      onClose: async function () {  const res = await fetch(`http://192.168.1.8:3000/checkout/modo/exito/${modalData.checkoutId}`, {
+      onClose: async function () {  const res = await fetch(`${url}/checkout/modo/exito/${modalData.checkoutId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -69,13 +69,12 @@ console.log(jsonRes) },
 
 
 const Checkout =  () => {
-    const url = 'http://192.168.1.8:3000'
 
     const {register,handleSubmit,formState:{errors,isValid},trigger} = useForm({
             resolver:zodResolver(formCheckoutSchema),
             mode:'onChange'
         })
-
+    const formRef = useRef(null);
     const handleHover = async () => {
       await trigger(); // Valida todos los campos al pasar el mouse sobre el botón
     };
@@ -84,6 +83,23 @@ const Checkout =  () => {
     const [idCarrito, setIdCarrito] = useState(0)
     const [total,setTotal] = useState(0)
     const { sesion } = useAuth();
+    const onSubmit = async (data) => {
+      console.log("entre")
+      const res = await fetch(`${url}/usuarios/agregar-info`, {
+        method: "POST",
+        headers: { 
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sesion.token}`
+        }
+        , body: JSON.stringify(data) });
+        console.log(res);
+        console.log("eeee")
+        const resJson = await res.json();
+        console.log(resJson);
+        if (!res.ok) {
+          console.error("Error al enviar la información:", res.status);
+        }
+      }
     const getCarrito = async () => {
       try {
           const response = await fetch(
@@ -121,13 +137,18 @@ const Checkout =  () => {
           getCarrito();
       }, []);
     
+      const handleExternalSubmit =  () => {
+        if (formRef.current) {
+            formRef.current.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+        }
+    };
 return (
     
     <div className="containerCheckout">
         
         <div className="parteIzq">
           <div className="wrapperCheckout">
-            <form className="formCheckout">
+            <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="formCheckout">
                 <div className="tituloYp">
                   <h2 className="tituloC">Informacion</h2>
                   <p>Deja tus datos asi podemos contactarte.</p>
@@ -244,7 +265,11 @@ return (
             </div></div>
             <div className="lineaGris"></div>
             <div className="botonPagaModo">
-            <div onMouseEnter={handleHover}><button  disabled={!isValid}  onClick={()=>showModal(total,'HOLA',idCarrito,total)}>Pagá con QR</button></div>
+            <div onMouseEnter={handleHover}><button  disabled={!isValid}  onClick={()=>{
+              handleExternalSubmit();
+              showModal(total,'HOLA',idCarrito,total)
+              
+              }}>Pagá con QR</button></div>
             </div>
 
         </div>

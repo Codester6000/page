@@ -97,8 +97,11 @@
     margin-right: 2px;
     font-weight:600;
 }
-
-.ordernarPor{
+.filtrosArmador{
+    display: flex;
+    align-items: center;
+}
+.ordernarPor,.siguiente{
     background: #a111ad;
     color: white;
     font-family: "League Spartan";
@@ -107,6 +110,10 @@
     border-radius: 10px;
     padding: 5px;
     margin-top: 20px;
+}
+.siguiente:hover{
+    scale: 1.1;
+    cursor: pointer;
 }
 
 .ordernarPor option{ 

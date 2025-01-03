@@ -11,8 +11,10 @@ import Pagination from "@mui/material/Pagination";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useAuth } from "../Auth";
 import { Button, Input, TextField } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export default function Carrito() {
+    const navigate = useNavigate();
     const url = 'http://192.168.1.8:3000'
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
@@ -198,12 +200,13 @@ export default function Carrito() {
                     )}
                 </Grid>
 
-                <Typography level="h3" sx={{ mt: 3, fontWeight: 'bold', textAlign: 'right', color: 'orange' }}>
+                <Typography className="divComprar" level="h3" sx={{ mt: 3, fontWeight: 'bold', textAlign: 'right', color: 'orange',display:'flex',flexDirection:'column' }}>
                     Total: {totales.toLocaleString('es-ar', {
     style: 'currency',
     currency: 'ARS',
     maximumFractionDigits:0
 })}
+    <button style={{width:'100px',alignSelf:"flex-end",border:"none", backgroundColor:"#a111ad", padding:"7px", color:"#ffffff",borderRadius:'12px', cursor:"pointer", marginTop:"5px"}} onClick={()=>navigate('/checkout')}>Comprar</button>
                 </Typography>
 
                 <Pagination count={Math.ceil(productos.length / itemPorPagina)} pagina={pagina} onChange={(e, value) => setPagina(value)} color="primary" sx={{
