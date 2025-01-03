@@ -315,11 +315,13 @@ return(
                         <option value="ASC">Precio menor a mayor</option>
                         <option value="DESC">Precio mayor a menor</option>
                     </select>
-                    {((tipo =='memorias' && elecciones.memorias.length > 0) || (tipo =='almacenamiento' && elecciones.almacenamiento.length > 0)) && <div className="siguiente" onClick={()=>{
+                    {((tipo =='memorias' && elecciones.memorias.length > 0) || (tipo =='almacenamiento' && elecciones.almacenamiento.length > 0) || (tipo =='coolers' && elecciones.coolers.length > 0) ) && <div className="siguiente" onClick={()=>{
                         if(tipo == "almacenamiento"){
                             setTipo("fuentes")}
                             else if(tipo == "memorias"){
-                                setTipo("almacenamiento")}
+                                setTipo("almacenamiento")}else if(tipo == "coolers"){
+                                    setTipo("monitores");
+                                }
                     }}> Siguiente </div>}
                 </form>
                 <Grid container spacing={2} style={{ marginTop: "10px", justifyContent: "center"}}>
