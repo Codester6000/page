@@ -22,11 +22,13 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/joy/IconButton";
 
 import Delete from '@mui/icons-material/Delete'
+import { useNavigate } from 'react-router-dom'
 
 
 function ArmadorPc() {
 const url = 'https://api.modex.com.ar'
 const { sesion } = useAuth();
+const navigate = useNavigate();
 const [productos,setProductos] =useState({
     productos:{
         "procesadores":[],
@@ -136,7 +138,6 @@ const handleSeleccionar = (id_producto) =>{
             setTipo('memorias')
             break;
         case 'memorias':
-            console.log(elecciones.memorias.length)
             if(elecciones.memorias.length < 4){
                 setElecciones({...elecciones,memorias:[...elecciones.memorias,id_producto]})
                 if(elecciones.memorias.length == 4){
@@ -156,6 +157,7 @@ const handleSeleccionar = (id_producto) =>{
             break;
         case 'gabinetes':
             setElecciones({...elecciones,gabinete:id_producto})
+            setTipo('coolers')
             break;
         case 'coolers':
             setElecciones({...elecciones,coolers:[...elecciones.coolers, id_producto]})
@@ -170,6 +172,55 @@ const handleSeleccionar = (id_producto) =>{
 
 
 }
+const handleAgregarCarrito = async () => {
+    if(total == 0){
+        return
+    }
+    const carritoObj = {}; // Objeto para agrupar productos por id y sumar cantidades
+
+    Object.entries(elecciones).forEach(([categoria, valor]) => {
+        if (valor === 0 || valor === "" || (Array.isArray(valor) && valor.length === 0)) {
+            // Ignorar valores vacíos, 0 o arreglos vacíos
+            return;
+        }
+
+        if (Array.isArray(valor)) {
+            // Procesar cada elemento del arreglo
+            valor.forEach((producto) => {
+                if (producto && typeof producto === "number") {
+                    // Asegurarse de que el ID sea un número válido
+                    carritoObj[producto] = (carritoObj[producto] || 0) + 1;
+                }
+            });
+        } else if (typeof valor === "number" && valor > 0) {
+            // Agregar IDs numéricos no pertenecientes a arreglos
+            carritoObj[valor] = (carritoObj[valor] || 0) + 1;
+        }
+    });
+
+    Object.entries(carritoObj).forEach(async([id_producto, cantidad]) => {
+        try {
+            const response = await fetch(
+                `${url}/carrito`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${sesion.token}`,
+                    },
+                    body: JSON.stringify({ "id_producto": id_producto,"cantidad":cantidad })
+                }
+            );
+            if(response.ok){
+                console.log("Producto agregado al carrito")}
+        } catch (error) {
+            console.error(error)
+        }
+    })
+
+    navigate('/checkout')
+};
+
 return(
 
     <div className="containerArmador">
@@ -193,7 +244,6 @@ return(
                         if(valor == 0){
                             return null
                         }
-                        console.log(typeof(valor))
                         if(typeof(valor) == "object"){
                             return valor.map((productoArreglo,index) =>{
                                 const producArreglo = buscarPorId(productoArreglo)
@@ -256,6 +306,7 @@ return(
     currency: 'ARS',
     maximumFractionDigits:0
 })}</span></p>
+<Button variant="contained" onClick={()=>handleAgregarCarrito()} size="" sx={{ ml: 2, my:1.5, backgroundColor: "#a111ad", height: 40, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Comprar</Button>
                 </div>
             </div>
             <div className="productos">
@@ -264,6 +315,12 @@ return(
                         <option value="ASC">Precio menor a mayor</option>
                         <option value="DESC">Precio mayor a menor</option>
                     </select>
+                    {((tipo =='memorias' && elecciones.memorias.length > 0) || (tipo =='almacenamiento' && elecciones.almacenamiento.length > 0)) && <div className="siguiente" onClick={()=>{
+                        if(tipo == "almacenamiento"){
+                            setTipo("fuentes")}
+                            else if(tipo == "memorias"){
+                                setTipo("almacenamiento")}
+                    }}> Siguiente </div>}
                 </form>
                 <Grid container spacing={2} style={{ marginTop: "10px", justifyContent: "center"}}>
             {

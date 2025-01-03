@@ -88,7 +88,7 @@ export default function ProductCard() {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${sesion.token}`,
                     },
-                    body: JSON.stringify({ "id_producto": producto_id })
+                    body: JSON.stringify({ "id_producto": producto_id,"cantidad":1 })
                 }
             );
             if (response.ok) {

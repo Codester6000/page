@@ -61,7 +61,6 @@ modoCheckoutRouter.post('/intencion-pago',validarBodyCheckout(),verificarValidac
 
       
       const data = await response.json();
-      console.log(data)
       const sql = `UPDATE carrito SET id_intencion_pago = ?, total_a_pagar = ? WHERE (id_carrito = ?);`
       console.log(data.id, total,id_carrito)
       const [resultadoId] = await db.execute(sql,[data.id,total,id_carrito])

@@ -69,6 +69,7 @@ export const validarBodyLogin = () => [
 
 export const validarBodyCarrito = () => [
     body("id_producto").isAlphanumeric().notEmpty().isLength({min:1}).withMessage("Ingrese un id producto valido"),
+    body("cantidad").isInt({min:1}).notEmpty().withMessage("Pasar un numero entero")
 ]
 export const validarBodyPutCarrito = () => [
     body("id_producto").isAlphanumeric().notEmpty().isLength({min:1}).withMessage("Ingrese un id producto valido"),
@@ -82,6 +83,13 @@ export const validarBodyCheckout = () => [
     body('id_carrito').isInt({ min: 0 }).withMessage("El id debe ser entero positivo"),
     body("total").isDecimal({min:0}).withMessage("el total debe ser decimal y positivo")
 
+]
+
+export const validarBodyInfoUsuario = () =>[
+    body("nombre").isString().notEmpty().isLength({max:25}).withMessage("El nombre es obligatorio"),
+    body("apellido").isString().notEmpty().isLength({max:25}).withMessage("El apellido es obligatorio"),
+    body("direccion").isString().notEmpty().withMessage("La dirección es obligatoria"),
+    body("telefono").isString().notEmpty().withMessage("El teléfono es obligatorio")
 ]
 export const verificarValidaciones = (req, res, next) => {
     // Enviar errores de validacion en caso de ocurrir alguno.
