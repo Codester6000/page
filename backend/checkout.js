@@ -136,9 +136,10 @@ modoCheckoutRouter.post('/intencion-pago',validarBodyCheckout(),verificarValidac
           //Actualizar base de datos
           break;
         case 'ACCEPTED':
-          console.log('aceptado')
-          //TODO
-          //Actualizar base de datos
+          const sql = "UPDATE carrito SET estado = 'completado', fecha_finalizada = CURRENT_TIMESTAMP() WHERE (id_intencion_pago = ?);"
+          const id_pago = body.id
+
+          const result = await db.execute(sql,[id_pago]);
           break;
         case 'REJECTED':
           console.log('rechazado')
