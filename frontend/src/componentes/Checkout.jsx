@@ -1,15 +1,18 @@
 import React, { useEffect, useState, useRef } from "react";
 import '../checkout.css'
 import logoModo from '../assets/Logo_modo.svg';
+import logoMP from '../assets/mplogo.svg';
 import { useAuth } from "../Auth";
-import { useForm } from 'react-hook-form'
+import { set, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { formCheckoutSchema } from '../validations/formcheckout'
+import { initMercadoPago, Wallet } from '@mercadopago/sdk-react'
 
-const url = 'https://api.modex.com.ar'
+const urlBack = 'http://192.168.1.8:3000'
+const urlFront = 'http://192.168.1.8:5173'
 
 async function createPaymentIntention(total,nombre_producto,id_carrito,total_a_pagar){
-  const res = await fetch(`${url}/checkout/intencion-pago`, {
+  const res = await fetch(`${urlBack}/checkout/intencion-pago`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
@@ -33,13 +36,13 @@ async function showModal(total,nombre_producto,id_carrito,total_a_pagar) {
       checkoutId: modalData.checkoutId,
       deeplink:  {
           url: modalData.deeplink,
-          callbackURL: `${url}/checkout`,
-          callbackURLSuccess: `${url}/thank-you`
+          callbackURL: `${urlFront}/checkout`,
+          callbackURLSuccess: `${urlFront}/thank-you`
       },
-      callbackURL: `${url}/thank-you`,
+      callbackURL: `${urlFront}/thank-you`,
       refreshData: createPaymentIntention,
       onSuccess: async function () { 
-        const res = await fetch(`${url}/checkout/modo/exito/${modalData.checkoutId}`, {
+        const res = await fetch(`${urlBack}/checkout/modo/exito/${modalData.checkoutId}`, {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json'
@@ -52,7 +55,7 @@ async function showModal(total,nombre_producto,id_carrito,total_a_pagar) {
       },
       onFailure: function () { console.log('onFailure') },
       onCancel: function () { console.log('onCancel') },
-      onClose: async function () {  const res = await fetch(`${url}/checkout/modo/exito/${modalData.checkoutId}`, {
+      onClose: async function () {  const res = await fetch(`${urlBack}/checkout/modo/exito/${modalData.checkoutId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -78,14 +81,19 @@ const Checkout =  () => {
     const handleHover = async () => {
       await trigger(); // Valida todos los campos al pasar el mouse sobre el botón
     };
-
+    const [metodoPago,setMetodoPago] = useState("modo")
+    initMercadoPago('YOUR_PUBLIC_KEY',{
+      locale: 'es-AR',
+    });
+    const [preferenciaMP, setPreferenciaMP] = useState(null);
     const [productos, setProductos] = useState([])
     const [idCarrito, setIdCarrito] = useState(0)
     const [total,setTotal] = useState(0)
+    const [nombreCompra,setNombreCompra] = useState("")
     const { sesion } = useAuth();
     const onSubmit = async (data) => {
       console.log("entre")
-      const res = await fetch(`${url}/usuarios/agregar-info`, {
+      const res = await fetch(`${urlBack}/usuarios/agregar-info`, {
         method: "POST",
         headers: { 
         "Content-Type": "application/json",
@@ -103,7 +111,7 @@ const Checkout =  () => {
     const getCarrito = async () => {
       try {
           const response = await fetch(
-              `${url}/carrito`,
+              `${urlBack}/carrito`,
               {
                   method: "GET",
                   headers: {
@@ -133,14 +141,52 @@ const Checkout =  () => {
           console.error("Error en la solicitud:", error);
       }
   };
+
+  const createPreferenceMP = async () => {
+    try {
+      const response = await fetch(`${urlBack}/checkoutMP/crear-preferencia-mercadopago`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: "Insumos Informaticos Modex",
+          quantity: 1,
+          price: total,
+        }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        const id = data.id
+        return id;
+      } else {
+        console.error("Error al crear la preferencia de Mercado Pago:", response.status);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+   
+  }
+
+  const handleBuyMP = async () => {
+    const id = await createPreferenceMP();
+    if(id){
+      setPreferenciaMP(id);
+    }
+  };
       useEffect(() => {
           getCarrito();
       }, []);
     
       const handleExternalSubmit =  () => {
+        productos.map((producto) => {
+          setNombreCompra(producto.categorias + " "+ producto.cantidad + " "  + nombreCompra)
+        })
         if (formRef.current) {
             formRef.current.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
         }
+        console.log(nombreCompra)
     };
 return (
     
@@ -187,13 +233,29 @@ return (
                 <h2>Pago</h2>
                 <p>Selecciona tu metodo de pago.</p>
               </div>
-              <div className="opcionPago seleccionada">
+              <div 
+                className={`opcionPago ${metodoPago === "modo" ? "seleccionada" : ""}`} 
+                onClick={() => setMetodoPago("modo")}
+              >
                 MODO o App Bancaria
                 <img src={logoModo} alt="" className="logoModo" />
               </div>
-              <div className="opcionPago">
+              <div 
+                className={`opcionPago ${metodoPago === "mercadoPago" ? "seleccionada" : ""}`} 
+                onClick={() => {
+                  setMetodoPago("mercadoPago")
+                  handleBuyMP();
+                }}
+              >
+                Mercado Pago
+                <img src={logoMP} alt="" className="logoMP" />
+              </div>
+              <div 
+                className='opcionPago'
+              >
                 Otra opcion Proximamente
               </div>
+              
             </div>
             <div className="wrapperCheckout">
               <div className="pagaModo">
@@ -234,6 +296,7 @@ return (
             <h2>Resumen de la compra</h2>
 
             {productos.map((producto) =>{
+              
                 return (
                     <div className="bloqueProducto" key={producto.id_producto}>
                         <div className="productoCheckout" >
@@ -265,11 +328,19 @@ return (
             </div></div>
             <div className="lineaGris"></div>
             <div className="botonPagaModo">
-            <div onMouseEnter={handleHover}><button  disabled={!isValid}  onClick={()=>{
-              handleExternalSubmit();
-              showModal(total,'HOLA',idCarrito,total)
+            <div onMouseEnter={handleHover}>
               
-              }}>Pagá con QR</button></div>
+              
+              {(metodoPago == 'modo') && <button  disabled={!isValid}  onClick={()=>{
+                handleExternalSubmit();
+                showModal(total,'HOLA',idCarrito,total)
+                }}>Pagá con QR
+              </button>}
+              
+              {(metodoPago == 'mercadoPago') && preferenciaMP &&
+<Wallet initialization={{ preferenceId: preferenciaMP }} customization={{ texts:{ valueProp: 'smart_option'}}}/>
+}
+              </div>
             </div>
 
         </div>

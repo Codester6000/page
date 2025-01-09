@@ -14,7 +14,8 @@ import { Button, Input, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 export default function Carrito() {
-    const url = 'https://api.modex.com.ar'
+    const url = 'http://192.168.1.8:3000'
+    const navigate = useNavigate(); 
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 30;

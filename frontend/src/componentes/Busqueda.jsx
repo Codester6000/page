@@ -16,7 +16,7 @@ import { Chip, TextField } from "@mui/material";
 import { useAuth } from "../Auth";
 import {SearchContext} from "../searchContext"
 export default function ProductCard() {
-    const url = 'https://api.modex.com.ar'
+    const url = 'http://192.168.1.8:3000'
     const { searchTerm } = useContext(SearchContext)
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
@@ -34,7 +34,7 @@ export default function ProductCard() {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${sesion.token}`,
                     },
-                    body: JSON.stringify({ "id_producto": producto_id })
+                    body: JSON.stringify({ "id_producto": producto_id ,"cantidad":1})
                 }
             );
             if (response.ok) {

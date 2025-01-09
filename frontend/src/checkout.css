@@ -65,6 +65,10 @@
     height: 22px;
     width: 110px;
 }
+.logoMP{
+    height: 30px;
+    margin-right: 10px;
+}
 .pagaModo{
     display: flex;
     justify-content: center;
@@ -77,7 +81,7 @@
     border: 1px solid hsla(0, 1%, 68%, 0.575);
     border-radius: 2px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 }
 .seleccionada{
