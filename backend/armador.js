@@ -68,7 +68,8 @@ if (memoria_id != undefined){
     await handleSeleccionar(memoria_id)
 }
 let sql = `SELECT
-    pr.id_producto, 
+    pr.id_producto,
+    pr.consumo,
     pr.nombre, 
     p.stock, 
     pr.peso, 
