@@ -8,8 +8,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { formCheckoutSchema } from '../validations/formcheckout'
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react'
 
-const urlBack = 'http://192.168.1.8:3000'
-const urlFront = 'http://192.168.1.8:5173'
+const urlBack = 'https://api.modex.com.ar'
+const urlFront = 'https://modex.com.ar'
 
 async function createPaymentIntention(total,nombre_producto,id_carrito,total_a_pagar){
   const res = await fetch(`${urlBack}/checkout/intencion-pago`, {

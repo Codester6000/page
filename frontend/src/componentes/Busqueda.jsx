@@ -16,7 +16,7 @@ import { Chip, TextField } from "@mui/material";
 import { useAuth } from "../Auth";
 import {SearchContext} from "../searchContext"
 export default function ProductCard() {
-    const url = 'http://192.168.1.8:3000'
+    const url = 'https://api.modex.com.ar'
     const { searchTerm } = useContext(SearchContext)
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);
