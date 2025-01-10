@@ -82,7 +82,7 @@ const Checkout =  () => {
       await trigger(); // Valida todos los campos al pasar el mouse sobre el botón
     };
     const [metodoPago,setMetodoPago] = useState("modo")
-    initMercadoPago('YOUR_PUBLIC_KEY',{
+    initMercadoPago('APP_USR-868c1d1d-2922-496f-bf87-56b0aafe44a2',{
       locale: 'es-AR',
     });
     const [preferenciaMP, setPreferenciaMP] = useState(null);
@@ -150,12 +150,13 @@ const Checkout =  () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          title: "Insumos Informaticos Modex",
+          title: `Insumos Informaticos Modex, ${idCarrito}`,
           quantity: 1,
           price: total,
+          id_carrito: idCarrito,
         }),
       });
-  
+      console.log(response)
       if (response.ok) {
         const data = await response.json();
         const id = data.id
@@ -171,6 +172,7 @@ const Checkout =  () => {
 
   const handleBuyMP = async () => {
     const id = await createPreferenceMP();
+    console.log(id)
     if(id){
       setPreferenciaMP(id);
     }
@@ -337,13 +339,18 @@ return (
                 }}>Pagá con QR
               </button>}
               
-              {(metodoPago == 'mercadoPago') && preferenciaMP &&
-<Wallet initialization={{ preferenceId: preferenciaMP }} customization={{ texts:{ valueProp: 'smart_option'}}}/>
-}
+
+
               </div>
             </div>
+            {preferenciaMP &&
+               <div id="wallet_container">
 
+<Wallet initialization={{ preferenceId: preferenciaMP }} />
+               </div>
+}
         </div>
+
     </div>
 )
 }

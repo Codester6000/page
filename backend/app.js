@@ -9,12 +9,9 @@ import authRouter, { authConfig } from "./auth.js"
 import favoritoRouter from "./favorito.js"
 import modoCheckoutRouter from "./checkout.js"
 
-import { MercadoPagoConfig } from 'mercadopago'
 import routerMP from "./checkoutMP.js"
 
-const client = new MercadoPagoConfig({
-    accessToken: 'TEST-747',
-})
+
 const PUERTO = 3000
 const HOST = '0.0.0.0'
 const app = express()
