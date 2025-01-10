@@ -58,7 +58,7 @@ const crearIndice = (productos) => {
 
   // Búsqueda rápida
   const buscarPorId = (id) => indiceProductos[id] || null;
-
+const [watts,setWatts] = useState(0)
 const [tipo,setTipo] = useState("procesadores")
 const [elecciones, setElecciones] = useState({procesador:"",mother:"",placa:"",memorias:[],almacenamiento:[],coolers:[],fuente:"",gabinete:"",monitores:[]});
 const [total,setTotal] = useState(0)
@@ -101,9 +101,11 @@ const getArmador = async () => {
     }
 };
 let totalaux = 0;
+let wattsAux = 0;
 useEffect(() => {
     getArmador();
     setTotal(Number(totalaux))
+    setWatts(Number(wattsAux))
 }, [elecciones,order]);
 const eliminarID = (id) => {
   setElecciones((prevElecciones) => {
@@ -248,6 +250,7 @@ return(
                             return valor.map((productoArreglo,index) =>{
                                 const producArreglo = buscarPorId(productoArreglo)
                                 totalaux = Number(totalaux) + Number(producArreglo.precio_pesos_iva_ajustado)
+                                wattsAux = Number(wattsAux) + Number(producArreglo.consumo !== null ? producArreglo.consumo : 0);
                                 return (
                                     <div className="productoCarritoArmador" key={`${productoArreglo}+${index}`}> 
                                         {producArreglo.nombre} :<br></br>  {Number(producArreglo.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
@@ -274,6 +277,7 @@ return(
 
                             const produc = buscarPorId(valor)
                             totalaux = Number(totalaux) + Number(produc.precio_pesos_iva_ajustado)
+                            wattsAux = Number(wattsAux) + Number(produc.consumo !== null ? produc.consumo : 0);
                             return (
                                 <div className="productoCarritoArmador" key={categoria}>
                                 {produc.nombre}: <br></br> {Number(produc.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
@@ -306,6 +310,7 @@ return(
     currency: 'ARS',
     maximumFractionDigits:0
 })}</span></p>
+<p className='consumo'>{watts} W</p>
 <Button variant="contained" onClick={()=>handleAgregarCarrito()} size="" sx={{ ml: 2, my:1.5, backgroundColor: "#a111ad", height: 40, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Comprar</Button>
                 </div>
             </div>
