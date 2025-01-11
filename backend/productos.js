@@ -62,7 +62,7 @@ WHERE
         WHERE id_producto = pr.id_producto AND p.stock > 0
     ) `
 
-    let sqlParteFinal = ` group by pr.id_producto, p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor`
+    let sqlParteFinal = ` group by pr.id_producto,pro.id_proveedor, p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor`
     const filtros = []
     const parametros = []
 
@@ -140,7 +140,7 @@ WHERE
 
     sql += sqlParteFinal
 
-    sql += " LIMIT ? , ?;"
+    sql += " ORDER BY pro.id_proveedor DESC LIMIT ? , ? ;"
 
     const [resultado, fields] = await db.execute(sql, parametros)
     return res.status(200).send({ productos: resultado, cantidadProductos: cuenta[0].cuenta })
@@ -214,7 +214,7 @@ WHERE
         FROM precios 
         WHERE id_producto = pr.id_producto
         ) AND pr.id_producto = ?
-        group by pr.id_producto, p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor;`, [id])
+        group by pr.id_producto ,p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor;`, [id])
 
     res.status(200).send({ datos: resultado })
 })
