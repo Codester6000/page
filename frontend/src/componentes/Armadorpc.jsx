@@ -77,6 +77,9 @@ const getArmador = async () => {
         if (order != ""){
             query += `&order=${order}`;
         }
+        if (watts > 0){
+            query += `&consumoW=${watts}`
+        }
         
 
     try {
