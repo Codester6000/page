@@ -6,12 +6,17 @@ import {query} from "express-validator"
 const armadorRouter = express.Router()
 
 armadorRouter.get("/", validarQueryArmador(),verificarValidaciones, async (req, res) => {
-const {procesador_id,motherboard_id,gpu_id,memoria_id,gabinete_id,almacenamiento_id,order} = req.query
+const {procesador_id,motherboard_id,gpu_id,memoria_id,gabinete_id,almacenamiento_id,consumoW,order} = req.query
 let procesador = undefined
 let motherboard = undefined
 let motherboardDDR = undefined
 let gpu = undefined
 let memoria = undefined
+let wRecomendado = 0
+if(consumoW != undefined){
+    wRecomendado = Number(consumoW) * 1.85
+}
+
 
 const handleSeleccionar = async (id_producto) =>{
     const listaRestricciones = []
@@ -136,6 +141,76 @@ WHERE
 GROUP BY pr.id_producto, p.stock, p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva, pr.alto, pr.ancho, pr.largo, pro.nombre_proveedor
 ORDER BY precio_pesos_iva_ajustado
 `
+let sqlFuente = `SELECT
+    pr.id_producto,
+    pr.consumo,
+    pr.nombre, 
+    p.stock, 
+    pr.peso, 
+    pr.garantia_meses, 
+    pr.codigo_fabricante,
+    GROUP_CONCAT(DISTINCT c.nombre_categoria SEPARATOR ', ') AS categorias,
+    (SELECT JSON_ARRAYAGG(url_imagen)
+        FROM (
+            SELECT DISTINCT i.url_imagen
+            FROM productos_imagenes pi
+            INNER JOIN imagenes i ON pi.id_imagen = i.id_imagen
+            WHERE pi.id_producto = pr.id_producto
+        ) AS distinct_images
+       ) AS url_imagenes,
+p.precio_dolar,
+		p.precio_dolar_iva,
+		p.iva, 
+		p.precio_pesos,
+        p.precio_pesos_iva,
+    CASE
+    WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_pesos_iva * 1.15
+        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos_iva * 1.2
+        WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN ('procesadores')
+        GROUP BY pc2.id_producto
+    ) THEN p.precio_pesos_iva * 1.20
+        WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos_iva * 1.25
+        ELSE p.precio_pesos_iva
+    END AS precio_pesos_iva_ajustado,
+    pr.alto, 
+    pr.ancho, 
+    pr.largo, 
+    pro.nombre_proveedor
+FROM productos pr
+INNER JOIN precios p ON pr.id_producto = p.id_producto
+INNER JOIN productos_categorias pc ON pr.id_producto = pc.id_producto
+INNER JOIN categorias c ON pc.id_categoria = c.id_categoria
+INNER JOIN productos_imagenes pi ON pi.id_producto = pr.id_producto
+INNER JOIN imagenes i ON pi.id_imagen = i.id_imagen
+INNER JOIN proveedores pro ON pro.id_proveedor = p.id_proveedor
+WHERE 
+    p.precio_dolar = (
+        SELECT MIN(precio_dolar) 
+        FROM precios 
+        WHERE id_producto = pr.id_producto AND stock > 0
+    )
+    AND pr.id_producto IN (
+        SELECT pc2.id_producto
+        FROM productos_categorias pc2
+        INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+        WHERE c2.nombre_categoria IN (?, ?, ?)
+        GROUP BY pc2.id_producto
+        HAVING COUNT(DISTINCT c2.nombre_categoria) = ?
+    )
+    AND pr.consumo > ?   
+GROUP BY pr.id_producto, p.stock, p.precio_dolar, p.precio_dolar_iva, p.iva, p.precio_pesos, p.precio_pesos_iva, pr.alto, pr.ancho, pr.largo, pro.nombre_proveedor
+ORDER BY precio_pesos_iva_ajustado
+`
 if(order != undefined){
     sql += order + ";"
 }
@@ -159,9 +234,8 @@ const [gpus] = await db.execute(sql,paramGpus);
 const paramMemorias = (memoria != undefined) ? ["memorias pc",memoria,'teest',2] : ["memorias pc","",'teest',1];
 const [memorias] = await db.execute(sql,paramMemorias);
 
-const paramFuente = ["fuentes","",'teest',1]
-const [fuentes] = await db.execute(sql,paramFuente)
-
+const paramFuente = ["fuentes","",'teest',1,wRecomendado]
+const [fuentes] = await db.execute(sqlFuente,paramFuente)
 const paramGabinente = ["gabinetes","",'test',1];
 const [gabinetes] = await db.execute(sql,paramGabinente)
 const paramAlmacenamiento = ["discos internos","discos internos ssd",'teest',1];
