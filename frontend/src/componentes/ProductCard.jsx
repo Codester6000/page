@@ -197,21 +197,19 @@ export default function ProductCard() {
 
     const getProductoById = async (id_producto_seleccionado) =>{
         try {
-            console.log('aa')
             const response = await fetch(
                 `${url}/productos/${id_producto_seleccionado}`,
                 {
                     method:"GET",
                     headers:{
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${sesion.token}`,
+                        
                     },
                 }
             )
 
             if (response.ok){
                 const resultado = await response.json()
-                console.log(resultado.datos[0])
                 setProductoSeleccionado(resultado.datos[0])
 
             }
@@ -357,11 +355,8 @@ export default function ProductCard() {
                 <Grid container spacing={5} style={{ marginTop: "20px" }} >
                     {productos.length > 0 ? (
                         productos.map((producto, index) => (
-                            <Grid xs={12} sm={6} md={4} lg={3} key={producto.id_producto} className='productosLista' >
-                                <Card sx={{ width: 280, bgcolor: "#e0e0e0", height: 350 }}onClick={()=>{
-                                    getProductoById(producto.id_producto)
-                                }
-                                    } >
+                            <Grid xs={12} sm={6} md={4} lg={3} key={producto.id_producto} className='productosLista' onClick={()=>{getProductoById(producto.id_producto)}} >
+                                <Card sx={{ width: 280, bgcolor: "#e0e0e0", height: 350 }}  >
                                     <div className="badge">{(producto.nombre_proveedor == 'air') ? <img src="/badges/24HS.png" alt="" /> : (producto.nombre_proveedor == 'elit') ? <img src="/badges/5_DIAS.png" alt="" /> : <img src="/badges/LOCAL.png" alt="" />} </div>
                                     <AuthRol rol="2">
                                         <div className="editar">
@@ -420,8 +415,8 @@ export default function ProductCard() {
 
                   
                 </Grid>
-                <div className="productoSeleccionado">
-                    {productoSeleccionado != "" && <div className="prSeleccionadoCard" on>
+                <div className="productoSeleccionado" >
+                    {productoSeleccionado != "" && <div className="prSeleccionadoCard" >
                         <div className="prImagen">
                             <img src={productoSeleccionado.url_imagenes[productoSeleccionado.url_imagenes.length -1]} alt="" />
                         </div>
@@ -443,7 +438,7 @@ export default function ProductCard() {
                                         <div className="editarDetalle">
                                             <img src={editSvg} alt="" onClick={()=>handleAgregarDetalle(productoSeleccionado.id_producto)}/>
                                         </div>
-                                    </AuthRol>
+                            </AuthRol>
                            </p>
                            
                            <button className="prAddCarrito" onClick={() => {agregarCarrito(productoSeleccionado.id_producto); setAlerta(true)}}>
