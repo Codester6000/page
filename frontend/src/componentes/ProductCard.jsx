@@ -12,6 +12,8 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Pagination from "@mui/material/Pagination";
 import editSvg from '../assets/edit.svg'
+import carritoSVG from '../assets/carrito.svg'
+import corazonSVG from '../assets/corazon.svg'
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import { useAuth,AuthRol } from "../Auth";
@@ -41,6 +43,7 @@ export default function ProductCard() {
     const [alertaFav, setAlertaFav] = useState(false)
     const [carrito, setCarrito] = useState([]);
     const [favorito, setFavorito] = useState([]);
+    const [productoSeleccionado,setProductoSeleccionado] = useState("");
 
 
 
@@ -73,6 +76,25 @@ export default function ProductCard() {
         }
     }
 
+    const handleAgregarDetalle = async (producto_id) =>{
+        const detalle = window.prompt("Ingresa el detalle nuevo")
+        if (detalle.length > 5){
+            try{
+                const response = await fetch(
+                    `${url}/productos/detalle/${producto_id}`,{
+                        method:"POST",
+                        headers:{
+                            "Content-Type":"application/json",
+                        Authorization: `Bearer ${sesion.token}`,
+                        },
+                        body:JSON.stringify({"detalle":detalle})
+                    }
+                )
+            }catch(error){
+                console.error(error)
+            }
+        }
+    }
     const agregarCarrito = async (producto_id) => {
         if (carrito.includes(producto_id)) {
             console.log("El producto ya está en el carrito");
@@ -121,7 +143,7 @@ export default function ProductCard() {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${sesion.token}`,
                     },
-                    body: JSON.stringify({ "id_producto": producto_id })
+                    body: JSON.stringify({ "id_producto": producto_id,"cantidad":1 })
                 }
             );
             if (response.ok) {
@@ -172,6 +194,32 @@ export default function ProductCard() {
             console.error("Error en la solicitud:", error);
         }
     };
+
+    const getProductoById = async (id_producto_seleccionado) =>{
+        try {
+            console.log('aa')
+            const response = await fetch(
+                `${url}/productos/${id_producto_seleccionado}`,
+                {
+                    method:"GET",
+                    headers:{
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${sesion.token}`,
+                    },
+                }
+            )
+
+            if (response.ok){
+                const resultado = await response.json()
+                console.log(resultado.datos[0])
+                setProductoSeleccionado(resultado.datos[0])
+
+            }
+        } catch (error) {
+            console.error(error)
+        }
+
+    }
 
     useEffect(() => {
         getProductos();
@@ -309,8 +357,11 @@ export default function ProductCard() {
                 <Grid container spacing={5} style={{ marginTop: "20px" }} >
                     {productos.length > 0 ? (
                         productos.map((producto, index) => (
-                            <Grid xs={12} sm={6} md={4} lg={3} key={producto.id_producto} className='productosLista'>
-                                <Card sx={{ width: 280, bgcolor: "#e0e0e0", height: 350 }}>
+                            <Grid xs={12} sm={6} md={4} lg={3} key={producto.id_producto} className='productosLista' >
+                                <Card sx={{ width: 280, bgcolor: "#e0e0e0", height: 350 }}onClick={()=>{
+                                    getProductoById(producto.id_producto)
+                                }
+                                    } >
                                     <div className="badge">{(producto.nombre_proveedor == 'air') ? <img src="/badges/24HS.png" alt="" /> : (producto.nombre_proveedor == 'elit') ? <img src="/badges/5_DIAS.png" alt="" /> : <img src="/badges/LOCAL.png" alt="" />} </div>
                                     <AuthRol rol="2">
                                         <div className="editar">
@@ -329,7 +380,6 @@ export default function ProductCard() {
                                     <CardContent orientation="horizontal" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                                         <div>
                                             <Typography level="h4" sx={{ display: "-webkit-box", overflow: "hidden", WebkitBoxOrient: "vertical", WebkitLineClamp: 2, height:'65px',textOverflow: "ellipsis", fontWeight: "bold", }}>{producto.nombre}</Typography>
-                                            <Typography>{producto.descripcion}</Typography>
                                             <Typography level="h3" sx={{ fontWeight: "xl", mt: 0.8 }}>{Number(producto.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
     style: 'currency',
     currency: 'ARS',
@@ -367,7 +417,47 @@ export default function ProductCard() {
                         // <Typography>Despues pongo un mensaje de error o skeleton</Typography>
 
                     )}
+
+                  
                 </Grid>
+                <div className="productoSeleccionado">
+                    {productoSeleccionado != "" && <div className="prSeleccionadoCard" on>
+                        <div className="prImagen">
+                            <img src={productoSeleccionado.url_imagenes[productoSeleccionado.url_imagenes.length -1]} alt="" />
+                        </div>
+                       <div className="prInfo">
+                           <button className="cerrar" onClick={()=>setProductoSeleccionado("")}>X</button>
+                           <h2 className="nombreProducto">
+                               {productoSeleccionado.nombre}
+                           </h2>
+                           <p className="prPrecio">
+                           {Number(productoSeleccionado.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
+                               style: 'currency',
+                               currency: 'ARS',
+                               maximumFractionDigits:0
+                           })}
+                           </p>
+                           <p className="prDescripcion">
+                           {productoSeleccionado.detalle}
+                           <AuthRol rol="2">
+                                        <div className="editarDetalle">
+                                            <img src={editSvg} alt="" onClick={()=>handleAgregarDetalle(productoSeleccionado.id_producto)}/>
+                                        </div>
+                                    </AuthRol>
+                           </p>
+                           
+                           <button className="prAddCarrito" onClick={() => {agregarCarrito(productoSeleccionado.id_producto); setAlerta(true)}}>
+                            <img src={carritoSVG} alt="" />
+                            <p>agregar al carrito</p>
+                           </button>
+                           <button className="prAddFav" onClick={() => {agregarFavorito(productoSeleccionado.id_producto); setAlertaFav(true)}}>
+                           <img src={corazonSVG} alt="" />
+                           <p>agregar a favoritos</p>
+                           </button>
+                       </div>
+
+                    </div> }
+                </div>
                 <Snackbar
                         open={alerta}
                         autoHideDuration={2000}
