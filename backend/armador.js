@@ -132,7 +132,7 @@ WHERE
     p.precio_dolar = (
         SELECT MIN(precio_dolar) 
         FROM precios 
-        WHERE id_producto = pr.id_producto AND stock > 0
+        WHERE id_producto = pr.id_producto AND stock > 0 AND p.deshabilitado = 0
     )
     AND pr.id_producto IN (
         SELECT pc2.id_producto
@@ -201,7 +201,7 @@ WHERE
     p.precio_dolar = (
         SELECT MIN(precio_dolar) 
         FROM precios 
-        WHERE id_producto = pr.id_producto AND stock > 0
+        WHERE id_producto = pr.id_producto AND stock > 0 AND p.deshabilitado = 0
     )
     AND pr.id_producto IN (
         SELECT pc2.id_producto

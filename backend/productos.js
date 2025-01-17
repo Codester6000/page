@@ -59,7 +59,7 @@ WHERE
     p.precio_dolar = (
         SELECT MIN(precio_dolar) 
         FROM precios 
-        WHERE id_producto = pr.id_producto AND p.stock > 0
+        WHERE id_producto = pr.id_producto AND p.stock > 0 AND p.deshabilitado = 0
     ) `
 
     let sqlParteFinal = ` group by pr.id_producto,pro.id_proveedor, p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor`
@@ -118,7 +118,7 @@ WHERE
     p.precio_dolar = (
         SELECT MIN(precio_dolar) 
         FROM precios 
-        WHERE id_producto = pr.id_producto AND p.stock > 0
+        WHERE id_producto = pr.id_producto AND p.stock > 0 AND p.deshabilitado = 0
         ) `
 
     if (filtros.length > 0) {
@@ -157,12 +157,21 @@ productosRouter.post('/imagen/:id',validarJwt,validarRol(2),validarId,verificarV
     return res.status(200).send({ mensaje: "Imagen cargada con exito" })
 })
 
+productosRouter.post('/detalle/:id',validarJwt,validarRol(2),validarId,verificarValidaciones, async (req,res) => {
+    const id = req.params.id
+    const detalle = req.body.detalle
+    const sql = 'UPDATE productos SET detalle = ? WHERE (id_producto = ?);'
+    const [resultado, fields] = await db.execute(sql,[detalle,id])
+    res.status(201).send("detalle cargado")
+})
+
 productosRouter.get("/:id", validarJwt, validarId, verificarValidaciones, async (req, res) => {
     const id = req.params.id
     const [resultado, fields] = await db.execute(`SELECT pr.id_producto,
         pr.nombre,
         p.stock,
         pr.peso,
+        pr.detalle,
         pr.garantia_meses,
         pr.codigo_fabricante,
         GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias,
@@ -213,10 +222,10 @@ WHERE
         SELECT MIN(precio_dolar) 
         FROM precios 
         WHERE id_producto = pr.id_producto
-        ) AND pr.id_producto = ?
+        ) AND pr.id_producto = ? AND p.deshabilitado = 0
         group by pr.id_producto ,p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor;`, [id])
 
-    res.status(200).send({ datos: resultado })
+    res.status(200).send({ datos:resultado })
 })
 
 productosRouter.post("/", validarJwt, validarRol(2), validarBodyProducto(), verificarValidaciones, async (req, res) => {

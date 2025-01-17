@@ -20,11 +20,118 @@
     top:15px;
     left: 15px;
 }
-.editar img{
+.editarDetalle{
+    position: absolute;
+    z-index: 10;
+    right: 20px;
+}
+.editar img,.editarDetalle img{
     height: 34px;
     width: 34px;
     z-index: 11;
+    cursor: pointer;
 }
-.editar img:hover{
+.editar img:hover,.editarDetalle img:hover{
     scale: 1.1;
+}
+
+
+.prSeleccionadoCard{
+    background-color:#e0e0e0 ;
+    padding: 2rem;
+    position: fixed;
+    display: flex;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    border-radius: 10px;
+    gap: 20px;
+    box-shadow: 1px 2px 1px 3px hwb(0 40% 60% / 0.623);
+
+}
+.prImagen {
+    height: fit-content;
+    width: 400px;
+    
+}
+
+.prImagen img{
+    height: 100%;
+    width: 400px;
+    object-fit: cover;
+    object-position: bottom;
+    border: 3px solid #ff7d21;
+    border-radius: 10px;
+}
+.prInfo{
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    gap: 5px;
+}
+
+.prAddCarrito, .prAddFav{
+    all: unset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 300px;
+    border-radius: 4px;
+    justify-self: end;
+    color: #ff7d21;
+    font-weight: 700;
+    padding: 3px;
+    cursor: pointer;
+}
+.prAddCarrito{
+    background-color: #A111AD;
+}
+.prAddFav{
+    background-color: #ffffff;
+}
+
+.prAddCarrito:hover, .prAddFav:hover{
+    box-shadow: 0px 0px 1px 2px #000000;
+}
+
+.prInfo button img {
+    height: 50px;
+}
+.cerrar{
+    all: unset;
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    font-size: 2rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+.prDescripcion{
+    min-height: 120px;
+    margin-bottom: 2rem;
+}
+.prPrecio{
+    font-size: 2rem;
+    color: #646464;
+}
+
+@media (max-width: 800px) {
+    .prSeleccionadoCard {
+        width: 90%;
+        padding: 1rem;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .prImagen {
+        width: 100%;
+    }
+    .prImagen img {
+        width: 100%;
+    }
+    .prAddCarrito, .prAddFav {
+        width: 100%;
+        gap: 10px;
+    }
 }

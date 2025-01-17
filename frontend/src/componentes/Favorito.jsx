@@ -88,7 +88,7 @@ export default function Favorito() {
         <Container>
 
             <Card sx={{ width: "100%", bgcolor: "#e0e0e0", my: "20px", paddingLeft: 10 }}>
-                <Typography starIcon level="h1" id="card-description" sx={{ fontWeight: 'bold' }}> Favoritos de {sesion.username}</Typography>
+                <Typography level="h1" id="card-description" sx={{ fontWeight: 'bold' }}> Favoritos de {sesion.username}</Typography>
                 <Grid container spacing={3} style={{ marginTop: "10px" }}>
                     {productos.length > 0 ? (
                         productos.map((producto, index) => (
