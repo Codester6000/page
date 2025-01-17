@@ -165,7 +165,7 @@ productosRouter.post('/detalle/:id',validarJwt,validarRol(2),validarId,verificar
     res.status(201).send("detalle cargado")
 })
 
-productosRouter.get("/:id", validarJwt, validarId, verificarValidaciones, async (req, res) => {
+productosRouter.get("/:id", validarId, verificarValidaciones, async (req, res) => {
     const id = req.params.id
     const [resultado, fields] = await db.execute(`SELECT pr.id_producto,
         pr.nombre,
