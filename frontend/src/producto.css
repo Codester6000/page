@@ -112,7 +112,15 @@
 .prDescripcion{
     min-height: 120px;
     margin-bottom: 2rem;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
+
+.prDescripcion::-webkit-scrollbar {
+    display: none;
+  }
 .prPrecio{
     font-size: 2rem;
     color: #646464;
