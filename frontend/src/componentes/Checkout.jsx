@@ -7,6 +7,7 @@ import { set, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { formCheckoutSchema } from '../validations/formcheckout'
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react'
+import {motion} from 'framer-motion'
 
 const urlBack = 'https://api.modex.com.ar'
 const urlFront = 'https://modex.com.ar'
@@ -344,10 +345,12 @@ return (
               </div>
             </div>
             {preferenciaMP &&
-               <div id="wallet_container">
-
-<Wallet initialization={{ preferenceId: preferenciaMP }} />
-               </div>
+               <motion.div className="mpcontainer" animate={(!isValid) ? {opacity:0, pointerEvents:"none"} : {opacity:1, disabled:false}} onClick={()=>handleExternalSubmit()} >
+                 <div id="wallet_container">
+                 
+                 <Wallet initialization={{ preferenceId: preferenciaMP }} />
+                 </div>
+               </motion.div>
 }
         </div>
 

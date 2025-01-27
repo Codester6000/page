@@ -352,11 +352,11 @@ export default function ProductCard() {
                         Aplicar Filtros
                     </Button>
                 </Grid>
-                <Grid container spacing={5} style={{ marginTop: "20px" }} >
+                <Grid container spacing={5} style={{ marginTop: "20px" }} className='productosLista'>
                     {productos.length > 0 ? (
                         productos.map((producto, index) => (
-                            <Grid xs={12} sm={6} md={4} lg={3} key={producto.id_producto} className='productosLista' onClick={()=>{getProductoById(producto.id_producto)}} >
-                                <Card sx={{ width: 280, bgcolor: "#e0e0e0", height: 350 }}  >
+                            <Grid xs={12} sm={6} md={4} lg={3} key={producto.id_producto}  onClick={()=>{getProductoById(producto.id_producto)}} className='productoCarta'>
+                                <Card sx={{ width: 280, bgcolor: "#e0e0e0", height: 350 }}   >
                                     <div className="badge">{(producto.nombre_proveedor == 'air') ? <img src="/badges/24HS.png" alt="" /> : (producto.nombre_proveedor == 'elit') ? <img src="/badges/5_DIAS.png" alt="" /> : <img src="/badges/LOCAL.png" alt="" />} </div>
                                     <AuthRol rol="2">
                                         <div className="editar">
@@ -479,7 +479,7 @@ export default function ProductCard() {
                         El producto fué Añadido a Favorito
                     </Alert>
                 </Snackbar>
-                <Pagination count={Math.ceil(totales / itemPorPagina)} pagina={pagina} onChange={(e, value) => setPagina(value)} color="primary" sx={{
+                <Pagination className="paginador" count={Math.ceil(totales / itemPorPagina)} pagina={pagina} onChange={(e, value) => setPagina(value)} color="primary" sx={{
                     mt: 3, display: "flex", justifyContent: "center",
                     "& .MuiPaginationItem-root": {
                         color: "#a111ad",

@@ -92,8 +92,19 @@ html, body {
 @media (max-width: 800px) {
     .productosLista{
         display: flex;
-        justify-content: center;
-        align-items: center;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+        height: fit-content;
+        padding-bottom: 3rem;
+
+    }
+    .productoCarta{
+        scale: .6;
+        max-width: 200px;
+        max-height: 230px;
+        margin-left: -10px;
+
     }
     .filtros{
         display: flex;
@@ -118,5 +129,6 @@ html, body {
             justify-content: center;
             align-items: center;
         }
-        
+      
+
   }
