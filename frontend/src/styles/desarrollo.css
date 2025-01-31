@@ -137,3 +137,44 @@ a{
 #vales:hover{
     background-image: linear-gradient(#46464683, #0000004d),url('../images/vales.png');
 }
+
+@media (max-width: 800px) {
+    .containerDesarrolloWeb {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        gap: 15px;
+    }
+
+    .saludoDesarrollo {
+        font-size: 1.2rem;
+    }
+
+    .tituloDesarrollo {
+        font-size: 2.5rem;
+        line-height: .9;
+        padding-bottom: 1em;
+        padding-top: 1em;
+    }
+
+    .cardProyecto p{
+        color: #000;
+        background-color: #f1f2f3;
+        border-radius: 6px;
+        padding-bottom: 3px;
+        padding-top: 3px;
+    }
+    .hola{
+        background-color: #ff335f;
+        border-radius: 6px;
+        padding-bottom: 3px;
+        padding-top: 3px;
+      }
+
+    .cardProyecto h4 {
+        font-size: 1.5rem;
+    }
+    .proyectosWeb,.software{
+        flex-direction: column;
+    }
+  
+}

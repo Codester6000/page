@@ -154,7 +154,15 @@ const handleSeleccionar = (id_producto) =>{
 
             break;
         case 'almacenamiento':
-            setElecciones({...elecciones,almacenamiento:[...elecciones.almacenamiento,id_producto]})
+            if(elecciones.memorias.length < 4){
+                setElecciones({...elecciones,almacenamiento:[...elecciones.almacenamiento,id_producto]})
+                if(elecciones.memorias.length == 4){
+                    setTipo('fuentes')
+                }
+            }else{
+                setTipo('fuentes')
+            }
+            
             break;
         case 'fuentes':
             setElecciones({...elecciones,fuente:id_producto})
@@ -253,7 +261,8 @@ return(
                             return valor.map((productoArreglo,index) =>{
                                 const producArreglo = buscarPorId(productoArreglo)
                                 totalaux = Number(totalaux) + Number(producArreglo.precio_pesos_iva_ajustado)
-                                wattsAux = Number(wattsAux) + Number(producArreglo.consumo !== null ? producArreglo.consumo : 0);
+                                
+                                wattsAux = Number(wattsAux) + Number((producArreglo.consumo !== null && !(producArreglo.nombre.toLowerCase().includes("fuente"))) ? producArreglo.consumo : 0);
                                 return (
                                     <div className="productoCarritoArmador" key={`${productoArreglo}+${index}`}> 
                                         {producArreglo.nombre} :<br></br>  {Number(producArreglo.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
@@ -280,7 +289,7 @@ return(
 
                             const produc = buscarPorId(valor)
                             totalaux = Number(totalaux) + Number(produc.precio_pesos_iva_ajustado)
-                            wattsAux = Number(wattsAux) + Number(produc.consumo !== null ? produc.consumo : 0);
+                            wattsAux = Number(wattsAux) + Number((produc.consumo !== null && !(produc.nombre.toLowerCase().includes("fuente"))) ? produc.consumo : 0);
                             return (
                                 <div className="productoCarritoArmador" key={categoria}>
                                 {produc.nombre}: <br></br> {Number(produc.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
