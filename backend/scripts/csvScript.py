@@ -99,7 +99,7 @@ categorias_final_air = {
 "001-0610": "Fiscal epson",
 "001-610": "Fiscales kretz",
 "001-0529": "Fuentes alimentacion servers",
-"001-0556": "Botellas de Tinta",
+"001-0556": "Fuentes",
 "001-0190": "Gabinetes",
 "001-0200": "Grabadoras cd / dvd",
 "908-957": "Iluminacion led",
@@ -257,3 +257,5 @@ def extraer_columnas_csv(ruta_csv):
 ruta_csv = './arituc.csv'  # Cambia esto por pya ruta a tu archivo CSV
 columnas_interes = ['nombre', 'edad', 'correo']  # Cambia esto por las columnas que quieras extraer
 extraer_columnas_csv(ruta_csv)
+
+print("Terminado")

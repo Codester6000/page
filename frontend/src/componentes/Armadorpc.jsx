@@ -13,7 +13,6 @@ import { useAuth } from '../Auth'
 
 
 import Card from "@mui/joy/Card";
-import Container from "@mui/material/Container";
 import Grid from "@mui/joy/Grid";
 import CardContent from "@mui/joy/CardContent";
 import Typography from "@mui/joy/Typography";
@@ -101,14 +100,12 @@ const getArmador = async () => {
             console.error("Error al obtener productos:", response.status);
         }
     } catch (error) {
+        console.error(error)
     }
 };
-let totalaux = 0;
-let wattsAux = 0;
 useEffect(() => {
     getArmador();
-    setTotal(Number(totalaux))
-    setWatts(Number(wattsAux))
+// eslint-disable-next-line react-hooks/exhaustive-deps
 }, [elecciones,order]);
 const eliminarID = (id) => {
   setElecciones((prevElecciones) => {
@@ -191,6 +188,7 @@ const handleAgregarCarrito = async () => {
     }
     const carritoObj = {}; // Objeto para agrupar productos por id y sumar cantidades
 
+    // eslint-disable-next-line no-unused-vars
     Object.entries(elecciones).forEach(([categoria, valor]) => {
         if (valor === 0 || valor === "" || (Array.isArray(valor) && valor.length === 0)) {
             // Ignorar valores vacíos, 0 o arreglos vacíos
@@ -234,6 +232,45 @@ const handleAgregarCarrito = async () => {
     navigate('/checkout')
 };
 
+// Agregar nuevo useEffect para manejar el cálculo de totales
+useEffect(() => {
+    const calcularTotales = () => {
+        let nuevoTotal = 0;
+        let nuevoWatts = 0;
+
+        Object.entries(elecciones).forEach(([, valor]) => {
+            if (valor) {
+                if (Array.isArray(valor)) {
+                    valor.forEach(productoId => {
+                        const producto = buscarPorId(productoId);
+                        if (producto) {
+                            nuevoTotal += Number(producto.precio_pesos_iva_ajustado);
+                            // Solo suma watts si no es una fuente y tiene consumo
+                            if (producto.consumo && !producto.nombre.toLowerCase().includes("fuente")) {
+                                nuevoWatts += Number(producto.consumo);
+                            }
+                        }
+                    });
+                } else {
+                    const producto = buscarPorId(valor);
+                    if (producto) {
+                        nuevoTotal += Number(producto.precio_pesos_iva_ajustado);
+                        // Solo suma watts si no es una fuente y tiene consumo
+                        if (producto.consumo && !producto.nombre.toLowerCase().includes("fuente")) {
+                            nuevoWatts += Number(producto.consumo);
+                        }
+                    }
+                }
+            }
+        });
+
+        setTotal(nuevoTotal);
+        setWatts(nuevoWatts);
+    };
+
+    calcularTotales();
+}, [elecciones]);
+
 return(
 
     <div className="containerArmador">
@@ -260,9 +297,6 @@ return(
                         if(typeof(valor) == "object"){
                             return valor.map((productoArreglo,index) =>{
                                 const producArreglo = buscarPorId(productoArreglo)
-                                totalaux = Number(totalaux) + Number(producArreglo.precio_pesos_iva_ajustado)
-                                
-                                wattsAux = Number(wattsAux) + Number((producArreglo.consumo !== null && !(producArreglo.nombre.toLowerCase().includes("fuente"))) ? producArreglo.consumo : 0);
                                 return (
                                     <div className="productoCarritoArmador" key={`${productoArreglo}+${index}`}> 
                                         {producArreglo.nombre} :<br></br>  {Number(producArreglo.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
@@ -270,7 +304,6 @@ return(
     currency: 'ARS',
     maximumFractionDigits:0
 })} <br />
-                                        {/* <button type="button" onClick={()=>eliminarID(producArreglo.id_producto)}>X</button>  */}
                                         <IconButton variant='contained' onClick={()=>eliminarID(producArreglo.id_producto)} sx={{height: 20, width: 20, backgroundColor: "#a111ad", borderRadius: "10px", objectFit: "contain", color: "white",
                                                 "&:active": {
                                                     transform: "scale(0.95)",
@@ -288,8 +321,6 @@ return(
 
 
                             const produc = buscarPorId(valor)
-                            totalaux = Number(totalaux) + Number(produc.precio_pesos_iva_ajustado)
-                            wattsAux = Number(wattsAux) + Number((produc.consumo !== null && !(produc.nombre.toLowerCase().includes("fuente"))) ? produc.consumo : 0);
                             return (
                                 <div className="productoCarritoArmador" key={categoria}>
                                 {produc.nombre}: <br></br> {Number(produc.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
@@ -298,8 +329,6 @@ return(
     maximumFractionDigits:0
 })}
                                 
-                                {/* <button type="button" onClick={()=>eliminarID(produc.id_producto)}><Delete></Delete></button> */}
-                                    
                                 <div>
                                 <IconButton  onClick={()=>eliminarID(produc.id_producto)} sx={{height: 20, width: 20, backgroundColor: "#a111ad", borderRadius: "10px", objectFit: "contain", color: "white",
                                                 "&:active": {
@@ -343,6 +372,7 @@ return(
                 </form>
                 <Grid container spacing={2} style={{ marginTop: "10px", justifyContent: "center"}}>
             {
+                            // eslint-disable-next-line no-unused-vars
                             productos.productos[`${tipo}`].map((producto, index) => (
                                 <Grid lg={3.9} key={producto.id_producto}>
                                     <Card orientation='horizontal' sx={{ width: "95%", bgcolor: "#e0e0e0", height: 180 }} >
