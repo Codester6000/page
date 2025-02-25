@@ -34,7 +34,7 @@ body {
 
 
 
-@media (min-width: 1024px) {
+@media (min-width: 1394px) {
     .swiperR {
     border-radius: 45px;
     margin-top: 50px;
@@ -42,9 +42,9 @@ body {
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
     }
     .imgCR {
-        height: 440px;
+        height: 100%;
         width: 100%;
-        object-fit: cover;
+        
     }
 
 }
