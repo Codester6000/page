@@ -1,8 +1,10 @@
 import '../styles/portada.css';
+import Carousel from './Carousel';
 export default function Portada(){
     return(
         <div>
-            <div className="banner"></div>
+            
+            <Carousel/>
             <div className="marcas">
                 <div className="marca"><img src="/iconos/nvidia.png" alt="" className="margalogo" width={"100%"} /></div>
                 <div className="marca"><img src="/iconos/radeon.png" alt="" className="margalogo"  width={"100%"}/></div>

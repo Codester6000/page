@@ -8,8 +8,9 @@ body {
 
 .swiperR {
     width: 100%;
-
+    
     position: relative;
+    
 }
 
 
@@ -31,25 +32,21 @@ body {
     z-index: 2; 
 }
 
-.swiper-slide::before {
-    left: 0;
-    background: linear-gradient(to right, rgb(253, 253, 253), transparent);
-    /* background: linear-gradient(to right, rgb(255, 125, 33), transparent); */
-}
-
-.swiper-slide::after {
-    right: 0;
-    background: linear-gradient(to left, rgb(253, 253, 253), transparent);
-    /* background: linear-gradient(to left, rgb(255, 125, 33), transparent); */
-}
 
 
 @media (min-width: 1024px) {
+    .swiperR {
+    border-radius: 45px;
+    margin-top: 50px;
+    width: 1400px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+    }
     .imgCR {
         height: 440px;
         width: 100%;
         object-fit: cover;
     }
+
 }
 
 .swiper-button-next,
@@ -78,4 +75,8 @@ body {
 .swiper-button-prev {
     border-radius: 0 35px 35px 0;
     left: -5px;
+}
+.swiper-button-next,
+.swiper-button-prev{
+    display: none;
 }
