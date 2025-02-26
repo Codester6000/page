@@ -5,6 +5,7 @@ import { Autoplay} from 'swiper/modules';
 import "swiper/css";
 import { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function Portada(){
     const url = 'http://192.168.1.8:3000'
@@ -12,6 +13,7 @@ export default function Portada(){
     const [armados, setArmados] = useState([]);
     const [nuevosIngresos, setNuevosIngresos] = useState([]);
     const [isMobile, setIsMobile] = useState(true);
+    const navigate = useNavigate();
     const getNotebooks = async () => {
         const response = await fetch(`${url}/productos?offset=0&limit=12&categoria=Notebook`)
         const data = await response.json()
@@ -54,10 +56,11 @@ export default function Portada(){
             
             <Carousel/>
             <motion.div className="marcas" initial={{ opacity: 0, rotateX: 100 }} whileInView={{ opacity: 1, rotateX: 0 }} transition={{ duration: 0.5 }}>
-                <div className="marca"><img src="/iconos/nvidia.png" alt="" className="margalogo" width={"100%"} /></div>
-                <div className="marca"><img src="/iconos/radeon.png" alt="" className="margalogo"  width={"100%"}/></div>
-                <div className="marca"><img src="/iconos/intel.png" alt="" className="margalogo" width={"60%"}/></div>
-                <div className="marca"><img src="/iconos/amd.png" alt="" className="margalogo" width={"100%"}/></div>
+                
+                <div className="marca" onClick={() => navigate('/productos?categoria=nvidia')}><img src="/iconos/nvidia.png" alt="" className="margalogo" width={"100%"} /></div>
+                <div className="marca" onClick={() => navigate('/productos?categoria=amdrx')}><img src="/iconos/radeon.png" alt="" className="margalogo"  width={"100%"}/></div>
+                <div className="marca" onClick={() => navigate('/productos?categoria=intel')}><img src="/iconos/intel.png" alt="" className="margalogo" width={"60%"}/></div>
+                <div className="marca" onClick={() => navigate('/productos?categoria=amd')}><img src="/iconos/amd.png" alt="" className="margalogo" width={"100%"}/></div>
             </motion.div>
 
             <div className="nuevosIngresos">

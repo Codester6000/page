@@ -18,14 +18,12 @@ const Carousel = () => {
   
   return (
     <Swiper
-      className='swiperR'
+      className='swiperRR'
       pagination={true}
       modules={[Pagination, Autoplay]}
       spaceBetween={0} 
       slidesPerView={1} 
-      navigation 
       loop={true} 
-      autoplay={{ delay : 5000}}
     >
       <SwiperSlide>
         <img className='imgCR' src="/1.png" alt="Slide 1" />

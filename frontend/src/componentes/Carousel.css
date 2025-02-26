@@ -7,18 +7,13 @@ body {
 }
 
 .swiperR {
-    width: 100%;
-    
     position: relative;
-    
+    width: 100%;
 }
 
 
 .imgCR {
     height: 350px;
-    width: 100%;
-    object-fit: cover;
-    position: relative; 
 }
 
 /* Degradado a los costados */
@@ -31,23 +26,13 @@ body {
     width: 15%;
     z-index: 2; 
 }
-
-
-
-@media (min-width: 1394px) {
-    .swiperR {
-    border-radius: 45px;
-    margin-top: 50px;
-    width: 1400px;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
-    }
-    .imgCR {
-        height: 100%;
-        width: 100%;
-        
-    }
-
+.swiperRR img{
+    object-fit: cover;
+    width: 100%;
 }
+
+
+
 
 .swiper-button-next,
 .swiper-button-prev {
@@ -64,7 +49,7 @@ body {
 
 :hover .swiper-button-next,
 :hover .swiper-button-prev {
- opacity: 1;
+ opacity: 0;
 }
 
 .swiper-button-next {
@@ -79,4 +64,22 @@ body {
 .swiper-button-next,
 .swiper-button-prev{
     display: none;
+}
+.swiperRR .swiper-wrapper{
+    gap: 0px;
+}
+@media (min-width: 1394px) {
+    .swiperR {
+    border-radius: 45px;
+    margin-top: 50px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+    }
+    .imgCR {
+        height: 100%;
+        width: 100%;
+        border-radius: 45px;
+        object-position: 0 20;
+
+    }
+
 }

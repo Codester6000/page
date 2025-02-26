@@ -36,8 +36,8 @@ function App() {
           <Navbar></Navbar>
         </header>
         <Routes>
-        <Route path="/" element={<Inicio />}/>
-        <Route path="/portada" element={<Portada />}/>
+        <Route path="/productos" element={<Inicio />}/>
+        <Route path="/" element={<Portada />}/>
         <Route path="/armador" element={<AuthPage><Armadorpc /></AuthPage>} />
         <Route path="/busqueda" element={<Busqueda/>} />
         <Route path="/login" element={<Login/>}/>
