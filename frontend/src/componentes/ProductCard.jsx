@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 
 import Card from "@mui/joy/Card";
 import Container from "@mui/material/Container";
@@ -14,14 +14,10 @@ import Pagination from "@mui/material/Pagination";
 import editSvg from '../assets/edit.svg'
 import carritoSVG from '../assets/carrito.svg'
 import corazonSVG from '../assets/corazon.svg'
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
 import { useAuth,AuthRol } from "../Auth";
-import { Alert, AlertTitle, Box, MenuItem, Skeleton, Snackbar, TextField } from "@mui/material";
-import {useLocation, useNavigate} from "react-router-dom"
+import { Alert, MenuItem, Snackbar, TextField } from "@mui/material";
+import {useLocation, useNavigate, useSearchParams} from "react-router-dom"
 
-import ShoppingCart from "@mui/icons-material/ShoppingCart";
-import FormControl from '@mui/material/FormControl';
 import '../producto.css'
 import {motion} from 'framer-motion'
 import SkeletonProd from "./SkeletonProd";
@@ -30,13 +26,14 @@ import SkeletonProd from "./SkeletonProd";
 export default function ProductCard() {
     const url = 'http://192.168.1.8:3000'
     const [productos, setProductos] = useState([]);
+    const [searchParams, setSearchParams] = useSearchParams();
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 32;
     const [totales, setTotales] = useState(0);
-    const [nombre, setNombre] = useState("");
-    const [categoria, setCategoria] = useState("");
-    const [precioMax, setPrecioMax] = useState("");
-    const [precioMin, setPrecioMin] = useState("");
+    const [nombre, setNombre] = useState(searchParams.get('nombre') || "");
+    const [categoria, setCategoria] = useState(searchParams.get('categoria') || "");
+    const [precioMax, setPrecioMax] = useState(searchParams.get('precioMax') || "");
+    const [precioMin, setPrecioMin] = useState(searchParams.get('precioMin') || "");
     const [favoritos, setFavoritos] = useState([])
     const { sesion,logout } = useAuth();
     const [alerta, setAlerta] = useState(false)
@@ -44,7 +41,7 @@ export default function ProductCard() {
     const [carrito, setCarrito] = useState([]);
     const [favorito, setFavorito] = useState([]);
     const [productoSeleccionado,setProductoSeleccionado] = useState("");
-
+    const navigate = useNavigate();
 
 
     const construirQuery = () => {
@@ -219,9 +216,43 @@ export default function ProductCard() {
 
     }
 
+    const aplicarFiltros = () => {
+        const nuevosParams = new URLSearchParams();
+        
+        if (nombre) nuevosParams.set('nombre', nombre);
+        if (categoria) nuevosParams.set('categoria', categoria);
+        if (precioMin) nuevosParams.set('precioMin', precioMin);
+        if (precioMax) nuevosParams.set('precioMax', precioMax);
+        
+        setPagina(1);
+        setSearchParams(nuevosParams);
+    };
+
+    const handleCategoriaChange = (e) => {
+        setCategoria(e.target.value);
+        const nuevosParams = new URLSearchParams(searchParams);
+        if (e.target.value) {
+            nuevosParams.set('categoria', e.target.value);
+        } else {
+            nuevosParams.delete('categoria');
+        }
+        setSearchParams(nuevosParams);
+    };
+
     useEffect(() => {
+        const nombreParam = searchParams.get('nombre');
+        const categoriaParam = searchParams.get('categoria');
+        const precioMinParam = searchParams.get('precioMin');
+        const precioMaxParam = searchParams.get('precioMax');
+
+        if (nombreParam !== nombre) setNombre(nombreParam || "");
+        if (categoriaParam !== categoria) setCategoria(categoriaParam || "");
+        if (precioMinParam !== precioMin) setPrecioMin(precioMinParam || "");
+        if (precioMaxParam !== precioMax) setPrecioMax(precioMaxParam || "");
+
         getProductos();
-    }, [pagina]);
+    }, [searchParams, pagina]);
+
     return (
         <Container sx={{}}>
             {/* <SkeletonProd></SkeletonProd> */}
@@ -231,7 +262,8 @@ export default function ProductCard() {
                     <Typography level="h3">Filtrar por: </Typography>
                     <br />
                     <TextField label="Buscar por Nombre" name="nombre" variant="outlined" size="small" value={nombre} onChange={(e) => setNombre(e.target.value)} style={{ marginRight: "10px"}} className='inputFiltro' /> 
-                    <TextField select label="Buscar por Categoria" name="categoria" variant="outlined" size="small" value={categoria} onChange={(e) => setCategoria(e.target.value)} style={{ marginRight: "10px", minWidth:"200px"  }} className='inputFiltro' >
+                    <TextField select label="Buscar por Categoria" name="categoria" variant="outlined" size="small" value={categoria} onChange={handleCategoriaChange} style={{ marginRight: "10px", minWidth:"200px"  }} className='inputFiltro' >
+                        <MenuItem value="">Todas las categorías</MenuItem>
                         <MenuItem value="Computadoras">Computadoras</MenuItem>
                         <MenuItem value="All In One">All In One</MenuItem>
                         <MenuItem value="Hardware">Hardware</MenuItem>
@@ -348,7 +380,7 @@ export default function ProductCard() {
                     </TextField>
                     <TextField label="Minimo Precio" name="precioMin" variant="outlined" size="small" value={precioMin} onChange={(e) => setPrecioMin(e.target.value)} style={{ marginRight: "10px" }} className='inputFiltro'/>
                     <TextField label="Maximo Precio" name="precioMax" variant="outlined" size="small" value={precioMax} onChange={(e) => setPrecioMax(e.target.value)} style={{ marginRight: "10px" }} className='inputFiltro'/>
-                    <Button variant="contained" sx={{ backgroundColor: "#a111ad" }} onClick={() => { setPagina(1); getProductos(); }}>
+                    <Button variant="contained" sx={{ backgroundColor: "#a111ad" }} onClick={aplicarFiltros}>
                         Aplicar Filtros
                     </Button>
                 </Grid>
