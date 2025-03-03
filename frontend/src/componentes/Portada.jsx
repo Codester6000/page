@@ -68,7 +68,9 @@ export default function Portada(){
             <div className="nuevosIngresos">
                 <div className="bloqueNI">
                     <h1>NUEVOS INGRESOS</h1>
-                <div className="lineaNaranja"></div>
+                <div className="lineaNaranja">
+                    <a href="/productos">VER TODO</a>
+                </div>
                 </div>
                 <div className="productosPortada">
                 <motion.div className="animacion" initial={{ opacity: 0, x:isMobile ? 0 : 800 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, ease:"linear" }}>
@@ -118,7 +120,9 @@ export default function Portada(){
             <div className="nuevosIngresos">
                 <div className="bloqueNI">
                     <h1>NOTEBOOKS</h1>
-                <div className="lineaNaranja"></div>
+                <div className="lineaNaranja">
+                <a href="/productos?categoria=Notebook">VER TODO</a>
+                </div>
                 </div>
                 <div className="productosPortada">
                 <motion.div className="animacion" initial={{ opacity: 0, x: isMobile ? 0 : 800 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, ease:"linear" }}>

@@ -92,7 +92,6 @@ export default function ProductCard() {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${sesion.token}`,
                     },
                 }
             );
