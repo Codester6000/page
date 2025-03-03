@@ -40,6 +40,13 @@ export default function Navbar() {
                     <Button variant="contained" sx={{ml: 2, backgroundColor: "#a111ad", borderRadius: 50, height: "60px" , padding: "5px", objectFit: "cover" }}><ShoppingCartIcon sx={{ fontSize: 20 }} /></Button>
                     <Button> <img src="./public/carrito.png" alt="" style={{ width: "50px", height: "auto", padding: "15px", filter: "brightness(0) invert(1)" }} /></Button> */}
                 </Toolbar>
+                <div className="navLinksPc">
+                    <div className="linkPc"><a href="/">INICIO</a></div>
+                    <div className="linkPc"><a href="/productos">PRODUCTOS</a></div>
+                    <div className="linkPc"><a href="/armador">ARMA TU PC</a></div>
+                    <div className="linkPc"><a href="/desarrollo">DESARROLLO</a></div>
+                    <div className="linkPc"></div>
+                </div>
             </AppBar>
 
         </>

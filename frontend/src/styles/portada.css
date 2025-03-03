@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 *{
     margin: 0;
     padding: 0;
@@ -70,6 +71,8 @@ html{
 }
 .armados{
     align-items: flex-start;
+    margin-top: 20px;
+    margin-bottom: 20px;
 
 }
 .armadosTitulo{
@@ -122,7 +125,37 @@ html{
     font-family: 'Open Sans', sans-serif;
     cursor: pointer;
 }
+.navLinksPc{
+    display: none;
+}
 @media (min-width: 800px) {
+    .navLinksPc{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 25px;
+        height: 50px;
+        font-size: 1.3rem;
+        font-family: "Open Sans", serif;
+    }
+    .linkPc{
+        cursor: pointer;
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        height: 35px;
+        display: flex;
+        align-items: center;
+    }
+    .linkPc:nth-child(2){
+        border-left: 2px solid #f3f3f381;
+        padding-left: 10px;
+        margin-right: -10px;
+    }
+    .linkPc:nth-child(3){
+        border-left: 2px solid #f3f3f381;
+        border-right: 2px solid #f3f3f381;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
     .banner {
         height: 500px;
     }

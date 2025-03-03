@@ -25,10 +25,12 @@ export default function Portada(){
         setNuevosIngresos(data.productos)
     }
     const getArmados = async () => {
-        const response = await fetch(`${url}/productos?offset=0&limit=12`)
+        const response = await fetch(`${url}/productos?offset=0&limit=22&categoria=computadoras`)
         const data = await response.json()
         setArmados(data.productos)
-    }   
+    }
+    
+    
     
 
     useEffect(() => {
@@ -91,7 +93,26 @@ export default function Portada(){
             </div>
             <div className="armados">
                 <h2 className="armadosTitulo">ARMADOS</h2>
-                <div className="productosPortada"></div>
+                <div className="productosPortada">
+                <motion.div className="animacion" initial={{ opacity: 0, x: isMobile ? 0 : 800 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, ease:"linear" }}>
+                    <Swiper watchSlidesProgress={true} slidesPerView={isMobile ? 2 : 5} className="mySwiper" loop={true} modules={[Autoplay]} autoplay={{ delay: 2000, disableOnInteraction: true }} >
+                        {armados.map((armado) => (
+                            <SwiperSlide key={armado.id_producto}>
+                                <div className="productoCarousel">
+                                    <img src={armado.url_imagenes[armado.url_imagenes.length - 1]} alt={armado.nombre} width={"155"} height={"155"} />
+                                    <h3>{armado.nombre}</h3>
+                                    <p>{Number(armado.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
+    style: 'currency',
+    currency: 'ARS',
+    maximumFractionDigits:0
+})}</p>
+                                    <button className="btn-agregar-carrito">COMPRAR</button>
+                                </div>
+                            </SwiperSlide>
+                        ))}
+                          </Swiper>
+                </motion.div>
+                </div>
             </div>
 
             <div className="nuevosIngresos">

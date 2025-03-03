@@ -69,6 +69,11 @@ body {
     gap: 0px;
 }
 @media (min-width: 1394px) {
+    .swiper{
+        width: 1590px;
+        height: 350px;
+        margin-top: 40px;
+    }
     .swiperR {
     border-radius: 45px;
     margin-top: 50px;
@@ -78,7 +83,7 @@ body {
         height: 100%;
         width: 100%;
         border-radius: 45px;
-        object-position: 0 20;
+        
 
     }
 
