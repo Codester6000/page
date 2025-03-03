@@ -1,0 +1,221 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+}
+html{
+    background-color: #ffffff;
+    max-width: 100dvw;
+}
+.banner{
+    width: 100%;
+    height: 300px;
+    background-color: #000;
+}
+
+.marcas{
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 0 5px;
+    
+}
+.marca{
+    flex: 1 0 42%;
+    height: 65px;
+    width: 46%;
+    border: 1px solid #FF7300;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+}
+.marca:hover{
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+.marca img{
+    aspect-ratio: 1/1;
+    object-fit: contain;
+
+}
+.nuevosIngresos,.armados{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 400px;
+}
+.bloqueNI{
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+.bloqueNI h1{
+    color: #FF7300;
+    width: 300px;
+    font-size: 30px;
+    flex: 0 0 300px;
+    font-family: 'Open Sans', sans-serif;
+}
+    
+
+.lineaNaranja{
+    width: 100%;
+    height: 3px;
+    background-color: #FF7300;
+    position: relative;
+}
+.lineaNaranja a{
+    position: absolute;
+    right: 20px;
+    top: -13px;
+    font-size: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    background-color: #fff;
+    color: #FF7300;
+}
+.armados{
+    align-items: flex-start;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+}
+.armadosTitulo{
+    height: 0px;
+    width: 85dvw;
+    border-bottom: 35px solid #FF7300;
+    border-left: 30px solid #ff7300;
+    border-right: 20px solid transparent;
+    margin-left: 20px;
+    text-align: center; 
+    color: #fff;
+    font-family: 'Open Sans', sans-serif;
+}
+.productosPortada{
+    width: 100%;
+}
+
+.productoCarousel{
+    display: flex;
+    height: 270px;
+    flex-direction: column;
+    padding: 10px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 10px;
+    border-radius: 10px;
+    border: 1px solid #FF7300;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
+    max-width: 250px;
+    position: relative;
+    justify-content: space-between;
+}
+.productoCarousel h3{
+    font-size: 12px;
+    max-width: 250px;
+}
+.productoCarousel p{
+    font-size: 20px;
+}
+.swiper-wrapper{
+    gap: 30px;
+}
+.btn-agregar-carrito{
+    background-color: #FF7300;
+    color: #fff;
+    width: 75%;
+    height: 15px;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: 'Open Sans', sans-serif;
+    cursor: pointer;
+}
+.navLinksPc{
+    display: none;
+}
+@media (max-width:800px) {
+    .marcas{
+        margin-top: 30px;
+        margin-bottom: 30px;
+    }
+    .armadosTitulo{
+        margin-bottom: 30px;
+    }
+    .bloqueNI{
+        margin-bottom: 30px;
+    }
+
+    .lineaNaranja a{
+        text-align: center;
+    }
+}
+@media (min-width: 800px) {
+    .navLinksPc{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 25px;
+        height: 50px;
+        font-size: 1.3rem;
+        font-family: "Open Sans", serif;
+    }
+    .linkPc{
+        cursor: pointer;
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        height: 35px;
+        display: flex;
+        align-items: center;
+    }
+    .linkPc:nth-child(2){
+        border-left: 2px solid #f3f3f381;
+        padding-left: 10px;
+        margin-right: -10px;
+    }
+    .linkPc:nth-child(3){
+        border-left: 2px solid #f3f3f381;
+        border-right: 2px solid #f3f3f381;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .banner {
+        height: 500px;
+    }
+    
+    .marcas {
+        padding: 50px 10%;
+        gap: 50px;
+        flex-wrap: nowrap;
+    }
+    
+    .marca {
+        flex: 0 0 25%;
+    }
+  
+    
+    .nuevosIngresos, .armados {
+        height: 420px;
+        padding: 0 5%;
+        gap: 20px;
+    }
+    
+    .bloqueNI h1 {
+        font-size: 40px;
+        width: 400px;
+        flex: 0 0 400px;
+    }
+    
+    .armadosTitulo {
+        width: 90dvw;
+        border-bottom: 45px solid #FF7300;
+        border-left: 40px solid #ff7300;
+        border-right: 25px solid transparent;
+        font-size: 24px;
+    }
+}
+

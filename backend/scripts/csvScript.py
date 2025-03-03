@@ -46,7 +46,7 @@ categorias_final_air = {
 "001-0555": "Bolsos fundas y maletines",
 "001-0609": "Botellas de Tinta",
 "001-0998": "Fundas",
-"001-0040": "Computadoras",
+"001-0040": "Calculadoras",
 "001-0565": "Camaras Web",
 "001-0704": "Carepack hp",
 "001-0532": "Carepacks servers",
@@ -61,7 +61,7 @@ categorias_final_air = {
 "001-0050": "Impresoras",
 "001-0140": "Cds dvds disquetes cajas",
 "001-3562": "Auriculares",
-"001-0260": "Computadoras",
+"001-0260": "Cinta Rotuladoras",
 "001-0155": "Discos Externos",
 "002-0015": "Computadoras",
 "001-0014": "Computadoras",
@@ -99,7 +99,7 @@ categorias_final_air = {
 "001-0610": "Fiscal epson",
 "001-610": "Fiscales kretz",
 "001-0529": "Fuentes alimentacion servers",
-"001-0556": "Botellas de Tinta",
+"001-0556": "Fuentes",
 "001-0190": "Gabinetes",
 "001-0200": "Grabadoras cd / dvd",
 "908-957": "Iluminacion led",
@@ -145,9 +145,9 @@ categorias_final_air = {
 "001-0340": "Mouses",
 "001-0290": "Muebles",
 "001-0130": "Networking",
-"001-0360": "Base Notebook",
+"001-0360": "Notebook",
 "001-0363": "Accesorios",
-"002-0361": "Base Notebook",
+"002-0361": "Notebook",
 "001-0456": "Notebooks repuestos",
 "001-2096": "Parlantes",
 "001-0370": "Papeleria",
@@ -169,7 +169,7 @@ categorias_final_air = {
 "001-0455": "Repuestos",
 "001-0460": "Memorias",
 "001-0480": "Rollos",
-"001-0279": "Computadoras",
+"001-0279": "Rotuladoras",
 "001-0490": "Escaner",
 "001-0491": "Scanners cheques",
 "002-0304": "Accesorios",
@@ -257,3 +257,5 @@ def extraer_columnas_csv(ruta_csv):
 ruta_csv = './arituc.csv'  # Cambia esto por pya ruta a tu archivo CSV
 columnas_interes = ['nombre', 'edad', 'correo']  # Cambia esto por las columnas que quieras extraer
 extraer_columnas_csv(ruta_csv)
+
+print("Terminado")

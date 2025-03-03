@@ -75,9 +75,12 @@ const cargarDatos = async (producto) => {
     ];
 
     // Ejecutamos la consulta SQL
-    const [result] = await db.execute("CALL schemamodex.cargarDatosProducto(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", params);
+    if (producto.iva == null){
+        producto.iva = 0
+    }
+        const [result] = await db.execute("CALL schemamodex.cargarDatosProducto(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", params);
+        console.log(result);
 
-    console.log(result);
 }
 const getProducts = async () => {
     try{
@@ -104,3 +107,4 @@ const cargarProductosAtabla = (listaProductos)=>{
 // llamamos las funciones necesarias para cargar las tablas
 const productosElit = await getElit()
 cargarProductosAtabla(productosElit)
+

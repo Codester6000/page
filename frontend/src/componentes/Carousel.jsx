@@ -1,6 +1,5 @@
-import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay,} from 'swiper/modules';
+import {  Pagination, Autoplay,} from 'swiper/modules';
 import 'swiper/swiper-bundle.css';
 import './Carousel.css'
 // poner en la terminar
@@ -19,14 +18,12 @@ const Carousel = () => {
   
   return (
     <Swiper
-      className='swiperR'
-      modules={[Navigation, Pagination, Autoplay]}
+      className='swiperRR'
+      pagination={true}
+      modules={[Pagination, Autoplay]}
       spaceBetween={0} 
       slidesPerView={1} 
-      navigation 
-      pagination={{ clickable: true, dynamicBullets: true, }} 
       loop={true} 
-      autoplay={{ delay : 5000}}
     >
       <SwiperSlide>
         <img className='imgCR' src="/1.png" alt="Slide 1" />

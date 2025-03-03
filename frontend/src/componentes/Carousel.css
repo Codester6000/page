@@ -7,17 +7,13 @@ body {
 }
 
 .swiperR {
-    width: 100%;
-
     position: relative;
+    width: 100%;
 }
 
 
 .imgCR {
     height: 350px;
-    width: 100%;
-    object-fit: cover;
-    position: relative; 
 }
 
 /* Degradado a los costados */
@@ -30,27 +26,13 @@ body {
     width: 15%;
     z-index: 2; 
 }
-
-.swiper-slide::before {
-    left: 0;
-    background: linear-gradient(to right, rgb(253, 253, 253), transparent);
-    /* background: linear-gradient(to right, rgb(255, 125, 33), transparent); */
-}
-
-.swiper-slide::after {
-    right: 0;
-    background: linear-gradient(to left, rgb(253, 253, 253), transparent);
-    /* background: linear-gradient(to left, rgb(255, 125, 33), transparent); */
+.swiperRR img{
+    object-fit: cover;
+    width: 100%;
 }
 
 
-@media (min-width: 1024px) {
-    .imgCR {
-        height: 440px;
-        width: 100%;
-        object-fit: cover;
-    }
-}
+
 
 .swiper-button-next,
 .swiper-button-prev {
@@ -67,7 +49,7 @@ body {
 
 :hover .swiper-button-next,
 :hover .swiper-button-prev {
- opacity: 1;
+ opacity: 0;
 }
 
 .swiper-button-next {
@@ -78,4 +60,31 @@ body {
 .swiper-button-prev {
     border-radius: 0 35px 35px 0;
     left: -5px;
+}
+.swiper-button-next,
+.swiper-button-prev{
+    display: none;
+}
+.swiperRR .swiper-wrapper{
+    gap: 0px;
+}
+@media (min-width: 1394px) {
+    .swiper{
+        width: 1590px;
+        height: 350px;
+        margin-top: 40px;
+    }
+    .swiperR {
+    border-radius: 45px;
+    margin-top: 50px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+    }
+    .imgCR {
+        height: 100%;
+        width: 100%;
+        border-radius: 45px;
+        
+
+    }
+
 }
