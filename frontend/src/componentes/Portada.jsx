@@ -6,13 +6,18 @@ import "swiper/css";
 import { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "../Auth";
+import { Snackbar, Alert } from '@mui/material';
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 export default function Portada(){
     const url = 'http://192.168.1.8:3000'
     const [notebooks, setNotebooks] = useState([]);
     const [armados, setArmados] = useState([]);
     const [nuevosIngresos, setNuevosIngresos] = useState([]);
     const [isMobile, setIsMobile] = useState(true);
+    const [carrito, setCarrito] = useState([]);
+    const [alerta, setAlerta] = useState(false)
+    const { sesion, logout } = useAuth();
     const navigate = useNavigate();
     const getNotebooks = async () => {
         const response = await fetch(`${url}/productos?offset=0&limit=12&categoria=Notebook`)
@@ -29,7 +34,40 @@ export default function Portada(){
         const data = await response.json()
         setArmados(data.productos)
     }
-    
+    const agregarCarrito = async (producto_id) => {
+        setAlerta(true)
+        if (carrito.includes(producto_id)) {
+            console.log("El producto ya está en el carrito");
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `${url}/carrito`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${sesion.token}`,
+                    },
+                    body: JSON.stringify({ "id_producto": producto_id,"cantidad":1 })
+                }
+            );
+            if (response.ok) {
+                const mensaje = await response.json()
+                console.log(mensaje)
+                setCarrito([...carrito, producto_id])
+            } else {
+                console.log(response)
+                console.log(producto_id)
+            }
+        } catch (error) {
+            logout()
+            navigate("/login")
+            console.log("aaaa")
+            console.log(error)
+        }
+    };
     
     
 
@@ -54,7 +92,7 @@ export default function Portada(){
     }, [])
 
     return(
-        <div>
+        <div className='portada'>
             
             <Carousel/>
             <motion.div className="marcas" initial={{ opacity: 0, rotateX: 100 }} whileInView={{ opacity: 1, rotateX: 0 }} transition={{ duration: 0.5 }}>
@@ -73,7 +111,7 @@ export default function Portada(){
                 </div>
                 </div>
                 <div className="productosPortada">
-                <motion.div className="animacion" initial={{ opacity: 0, x:isMobile ? 0 : 800 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, ease:"linear" }}>
+                <motion.div className="animacion" initial={{ opacity: 0, x:isMobile ? 0 : 800 }}  whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, ease:"linear" }}>
                     <Swiper watchSlidesProgress={true} slidesPerView={isMobile ? 2 : 5} className="mySwiper" loop={true} modules={[Autoplay]} autoplay={{ delay: 2000, disableOnInteraction: false }} >
                         {nuevosIngresos.map((nuevoIngreso) => (
                             <SwiperSlide key={nuevoIngreso.id_producto}>
@@ -85,7 +123,7 @@ export default function Portada(){
     currency: 'ARS',
     maximumFractionDigits:0
 })}</p>
-                                    <button className="btn-agregar-carrito">COMPRAR</button>
+                                    <button className="btn-agregar-carrito" onClick={()=>agregarCarrito(nuevoIngreso.id_producto)}>COMPRAR</button>
                                 </div>
                             </SwiperSlide>
                         ))}
@@ -145,6 +183,19 @@ export default function Portada(){
                 </motion.div>
                 </div>
             </div>
+            <Snackbar
+                        open={alerta}
+                        autoHideDuration={2000}
+                        onClose={() => setAlerta(false)}
+                        variant="solid"
+                    >
+                    <Alert size="large" severity="success" icon={<AddShoppingCartIcon sx={{fontSize: "2rem", color:"white"}}/>}
+                    sx={{
+                        backgroundColor: "#a111ad", color: "white", fontSize: "1rem", padding: "12px", display: "flex", alignItems: "center", borderRadius: 3
+                    }}>
+                        El producto fué Añadido al Carrito
+                    </Alert>
+                </Snackbar>
         </div>
     )
 }   
