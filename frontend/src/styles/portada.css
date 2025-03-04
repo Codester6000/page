@@ -7,11 +7,7 @@ html{
     background-color: #ffffff;
     max-width: 100dvw;
 }
-.banner{
-    width: 100%;
-    height: 300px;
-    background-color: #000;
-}
+
 
 .marcas{
     display: flex;
@@ -111,7 +107,7 @@ html{
     border-radius: 10px;
     border: 1px solid #FF7300;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
-    max-width: 250px;
+    max-width: 200px;
     position: relative;
     justify-content: space-between;
 }
@@ -135,6 +131,11 @@ html{
     border-radius: 5px;
     font-family: 'Open Sans', sans-serif;
     cursor: pointer;
+
+}
+.btn-agregar-carrito:hover{
+    scale: 1.1;
+    box-shadow:0px 0px 4px 0px #a111ad;
 }
 .navLinksPc{
     display: none;
@@ -146,6 +147,7 @@ html{
     }
     .armadosTitulo{
         margin-bottom: 30px;
+        left: 0;
     }
     .bloqueNI{
         margin-bottom: 30px;
@@ -183,9 +185,7 @@ html{
         padding-left: 10px;
         padding-right: 10px;
     }
-    .banner {
-        height: 500px;
-    }
+ 
     
     .marcas {
         padding: 50px 10%;
@@ -198,10 +198,13 @@ html{
     }
   
     
-    .nuevosIngresos, .armados {
+    .nuevosIngresos {
         height: 420px;
         padding: 0 5%;
         gap: 20px;
+    }
+    .armados{
+        padding: 0 3%;
     }
     
     .bloqueNI h1 {
@@ -211,11 +214,15 @@ html{
     }
     
     .armadosTitulo {
-        width: 90dvw;
+        width: 95dvw;
         border-bottom: 45px solid #FF7300;
         border-left: 40px solid #ff7300;
         border-right: 25px solid transparent;
         font-size: 24px;
+        margin-left: -20px;
+    }
+    .productoCarousel{
+        align-items: center;
     }
 }
 

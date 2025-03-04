@@ -20,6 +20,7 @@ export default function Carrito() {
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 30;
     const [totales, setTotales] = useState(0);
+    const [isMobile, setIsMobile] = useState(true);
 
     const { sesion } = useAuth();
     const [value, setValue] = useState(0);
@@ -120,12 +121,33 @@ export default function Carrito() {
     useEffect(() => {
         getCarrito();
     }, [pagina]);
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 800);
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 800);
+          };
+      
+          window.addEventListener("resize", handleResize);
+      
+          //cleanup of event listener
+          return () => window.removeEventListener("resize", handleResize);
+    }, []);
+    
     return (
-        <Container>
-
-            <Card sx={{ width: "100%", bgcolor: "#e0e0e0", my: "20px", paddingLeft: 10}} >
+        <div style={{margin:"0px", padding:"0px", display:"flex", justifyContent:"center", alignItems:"center", width:"100dvw"}}>
+            
+            <Card sx={{ width:isMobile ? "100dvw" : "80dvw", bgcolor: "#e0e0e0", my: "20px", paddingLeft:isMobile ? 3 : 9}} >
+                
+            <Typography className="divComprar" level="h3" sx={{ mt: 3, fontWeight: 'bold', textAlign: 'right', color: 'orange',display:'flex',flexDirection:'column' }}>
+                    Total: {totales.toLocaleString('es-ar', {
+    style: 'currency',
+    currency: 'ARS',
+    maximumFractionDigits:0
+})}
+    <button style={{width:'100px',alignSelf:"flex-end",border:"none", backgroundColor:"#a111ad", padding:"7px", color:"#ffffff",borderRadius:'12px', cursor:"pointer", marginTop:"5px"}} onClick={()=>navigate('/checkout')}>Comprar</button>
+                </Typography>
                 <Typography  level="h1" id="card-description" sx={{ fontWeight: 'bold' }}> Carrito de {sesion.username}</Typography>
-                <Grid container spacing={3} style={{ marginTop: "10px" }}  >
+                <Grid container spacing={3} sx={{mt: "10px"}} >
                     {//aca hay que conectar los los botones con sus respectivas funciones eliminar , y un put para el + - 
                     }
                     {productos.length > 0 ? (
@@ -133,13 +155,13 @@ export default function Carrito() {
                             <Grid key={index} xs={12} > 
                                 <Card 
                                     variant="outlined"
-                                    orientation="horizontal"
+                                    orientation={isMobile ?'vertical' : 'horizontal' }
                                     sx={{
                                         width: "95%",
                                         '&:hover': { boxShadow: 'md', borderColor: 'neutral.outlinedHoverBorder' }
                                     }}
                                 >
-                                    <AspectRatio ratio="1" sx={{ width: 150 }}>
+                                    <AspectRatio ratio="1" sx={{ width: isMobile ? 300 : 150 }}>
                                         <img
                                             src={producto.url_imagenes[producto.url_imagenes.length -1]}
                                             alt={producto.nombre}
@@ -165,7 +187,7 @@ export default function Carrito() {
 })}
                                         </Typography>
                                     </CardContent>
-                                    <Grid>
+                                    
                                         <div style={{ display: "flex", flexDirection: "row" }}>
                                             <Button onClick={() => putCarrito(producto.id_producto, producto.cantidad - 1)} disabled={producto.cantidad <= 1} variant="contained" sx={{ mt: 8, height: 40, width: 20, backgroundColor: "#a111ad", borderRadius: "20px" }}>-</Button>
                                             <TextField sx={{ height: 20, width: 40, mt: 7, ml: 2 }}
@@ -173,10 +195,6 @@ export default function Carrito() {
                                                 InputProps={{ readOnly: true }}
                                             />
                                             <Button onClick={() => putCarrito(producto.id_producto, producto.cantidad + 1)} variant="contained" size="large" sx={{ mt: 8, ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white" }}>+</Button>
-                                        </div>
-                                    </Grid>
-                                    <Grid>
-                                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginLeft: "auto" }}>
                                             <IconButton onClick={() => deleteCarrito(producto.id_producto)} variant="contained" size="large" sx={{
                                                 mt: 8, ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white",
                                                 "&:active": {
@@ -191,7 +209,12 @@ export default function Carrito() {
                                                 <DeleteIcon></DeleteIcon>
                                             </IconButton>
                                         </div>
-                                    </Grid>
+                                    
+                                  
+                                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginLeft: "auto" }}>
+                                            
+                                        </div>
+                                    
                                 </Card>
                             </Grid>
                         ))
@@ -200,14 +223,6 @@ export default function Carrito() {
                     )}
                 </Grid>
 
-                <Typography className="divComprar" level="h3" sx={{ mt: 3, fontWeight: 'bold', textAlign: 'right', color: 'orange',display:'flex',flexDirection:'column' }}>
-                    Total: {totales.toLocaleString('es-ar', {
-    style: 'currency',
-    currency: 'ARS',
-    maximumFractionDigits:0
-})}
-    <button style={{width:'100px',alignSelf:"flex-end",border:"none", backgroundColor:"#a111ad", padding:"7px", color:"#ffffff",borderRadius:'12px', cursor:"pointer", marginTop:"5px"}} onClick={()=>navigate('/checkout')}>Comprar</button>
-                </Typography>
 
                 <Pagination count={Math.ceil(productos.length / itemPorPagina)} pagina={pagina} onChange={(e, value) => setPagina(value)} color="primary" sx={{
                     mt: 3, display: "flex", justifyContent: "center",
@@ -223,6 +238,6 @@ export default function Carrito() {
                     }
                 }} />
             </Card>
-        </Container>
+        </div>
     );
 }
