@@ -146,7 +146,7 @@ export default function Portada(){
     currency: 'ARS',
     maximumFractionDigits:0
 })}</p>
-                                    <button className="btn-agregar-carrito">COMPRAR</button>
+                                    <button className="btn-agregar-carrito" onClick={()=>agregarCarrito(armado.id_producto)}>COMPRAR</button>
                                 </div>
                             </SwiperSlide>
                         ))}
@@ -175,7 +175,7 @@ export default function Portada(){
     currency: 'ARS',
     maximumFractionDigits:0
 })}</p>
-                                    <button className="btn-agregar-carrito">COMPRAR</button>
+                                    <button className="btn-agregar-carrito" onClick={()=>agregarCarrito(notebook.id_producto)}>COMPRAR</button>
                                 </div>
                             </SwiperSlide>
                         ))}
