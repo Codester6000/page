@@ -174,7 +174,8 @@ export default function Carrito() {
                                             {producto.nombre}
                                         </Typography>
                                         <Typography level="body-m" aria-describedby="card-description" sx={{ mb: 1 }}>
-                                            {producto.categorias}
+                                            {producto.categorias[0]},
+                                            {producto.categorias[1]}
                                         </Typography>
                                         <Typography level="body-m" aria-describedby="card-description" sx={{ mb: 1 }}>
                                             {producto.codigo_fabricante}
