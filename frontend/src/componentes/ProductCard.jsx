@@ -402,6 +402,7 @@ export default function ProductCard() {
                                             alt={producto.nombre}
                                             loading="lazy"
                                             style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                            onClick={() => navigate(`/producto/${producto.id_producto}`)}
                                         />
                                     </AspectRatio>
                                     <CardContent orientation="horizontal" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -450,21 +451,21 @@ export default function ProductCard() {
                 <div className="productoSeleccionado" >
                     {productoSeleccionado != "" && <div className="prSeleccionadoCard" >
                         <div className="prImagen">
-                            <img src={productoSeleccionado.url_imagenes[productoSeleccionado.url_imagenes.length -1]} alt="" />
+                            <img src={productoSeleccionado.url_imagenes[productoSeleccionado.url_imagenes.length -1]} alt="" onClick={() => navigate(`/producto/${productoSeleccionado.id_producto}`)} />
                         </div>
                        <div className="prInfo">
                            <button className="cerrar" onClick={()=>setProductoSeleccionado("")}>X</button>
-                           <h2 className="nombreProducto">
+                           <h2 className="nombreProducto" onClick={() => navigate(`/producto/${productoSeleccionado.id_producto}`)}>
                                {productoSeleccionado.nombre}
                            </h2>
-                           <p className="prPrecio">
+                           <p className="prPrecio" onClick={() => navigate(`/producto/${productoSeleccionado.id_producto}`)}>
                            {Number(productoSeleccionado.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
                                style: 'currency',
                                currency: 'ARS',
                                maximumFractionDigits:0
                            })}
                            </p>
-                           <p className="prDescripcion">
+                           <p className="prDescripcion" onClick={() => navigate(`/producto/${productoSeleccionado.id_producto}`)}>
                            {productoSeleccionado.detalle}
                            <AuthRol rol="2">
                                         <div className="editarDetalle">
