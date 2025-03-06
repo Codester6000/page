@@ -2,7 +2,7 @@ import '../styles/producto.css'
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 export default function Producto() {
-    const url = 'http://192.168.1.8:3000'
+    const url = 'https://api.modex.com.ar'
     const { id } = useParams();
     const [producto, setProducto] = useState(null);
     const [disponibilidad, setDisponibilidad] = useState("NO DISPONIBLE");
