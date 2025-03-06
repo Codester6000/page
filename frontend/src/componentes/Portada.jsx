@@ -57,14 +57,14 @@ export default function Portada(){
                 const mensaje = await response.json()
                 console.log(mensaje)
                 setCarrito([...carrito, producto_id])
+                await new Promise(resolve => setTimeout(resolve, 300));
+                navigate('/checkout')
             } else {
                 console.log(response)
                 console.log(producto_id)
             }
         } catch (error) {
-            logout()
-            navigate("/login")
-            console.log("aaaa")
+            logout(navigate("/login"))
             console.log(error)
         }
     };
@@ -116,6 +116,7 @@ export default function Portada(){
                         {nuevosIngresos.map((nuevoIngreso) => (
                             <SwiperSlide key={nuevoIngreso.id_producto}>
                                 <div className="productoCarousel">
+                                <div onClick={() => navigate(`/producto/${nuevoIngreso.id_producto}`)} style={{cursor: 'pointer'}}>
                                     <img src={nuevoIngreso.url_imagenes[nuevoIngreso.url_imagenes.length - 1]} alt={nuevoIngreso.nombre} width={"155"} height={"155"} />
                                     <h3>{nuevoIngreso.nombre}</h3>
                                     <p>{Number(nuevoIngreso.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
@@ -123,6 +124,7 @@ export default function Portada(){
     currency: 'ARS',
     maximumFractionDigits:0
 })}</p>
+    </div>
                                     <button className="btn-agregar-carrito" onClick={()=>agregarCarrito(nuevoIngreso.id_producto)}>COMPRAR</button>
                                 </div>
                             </SwiperSlide>
@@ -139,6 +141,7 @@ export default function Portada(){
                         {armados.map((armado) => (
                             <SwiperSlide key={armado.id_producto}>
                                 <div className="productoCarousel">
+                                <div onClick={() => navigate(`/producto/${armado.id_producto}`)} style={{cursor: 'pointer'}}>
                                     <img src={armado.url_imagenes[armado.url_imagenes.length - 1]} alt={armado.nombre} width={"155"} height={"155"} />
                                     <h3>{armado.nombre}</h3>
                                     <p>{Number(armado.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
@@ -146,6 +149,7 @@ export default function Portada(){
     currency: 'ARS',
     maximumFractionDigits:0
 })}</p>
+</div>
                                     <button className="btn-agregar-carrito" onClick={()=>agregarCarrito(armado.id_producto)}>COMPRAR</button>
                                 </div>
                             </SwiperSlide>
@@ -166,17 +170,19 @@ export default function Portada(){
                 <motion.div className="animacion" initial={{ opacity: 0, x: isMobile ? 0 : 800 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, ease:"linear" }}>
                     <Swiper watchSlidesProgress={true} slidesPerView={isMobile ? 2 : 5} className="mySwiper" loop={true} modules={[Autoplay]} autoplay={{ delay: 2000, disableOnInteraction: true }} >
                         {notebooks.map((notebook) => (
-                            <SwiperSlide key={notebook.id_producto}>
-                                <div className="productoCarousel">
-                                    <img src={notebook.url_imagenes[notebook.url_imagenes.length - 1]} alt={notebook.nombre} width={"155"} height={"155"} />
-                                    <h3>{notebook.nombre}</h3>
-                                    <p>{Number(notebook.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
-    style: 'currency',
-    currency: 'ARS',
-    maximumFractionDigits:0
-})}</p>
-                                    <button className="btn-agregar-carrito" onClick={()=>agregarCarrito(notebook.id_producto)}>COMPRAR</button>
-                                </div>
+                            <SwiperSlide style={{zIndex:1}} key={notebook.id_producto} >
+                                    <div className="productoCarousel">
+                                        <div onClick={() => navigate(`/producto/${notebook.id_producto}`)} style={{cursor: 'pointer'}}>
+                                            <img src={notebook.url_imagenes[notebook.url_imagenes.length - 1]} alt={notebook.nombre} width={"155"} height={"155"} />
+                                            <h3>{notebook.nombre}</h3>
+                                            <p>{Number(notebook.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
+                                            style: 'currency',
+                                            currency: 'ARS',
+                                            maximumFractionDigits:0
+                                        })}</p>
+                                        </div>
+                                        <button className="btn-agregar-carrito" onClick={()=>agregarCarrito(notebook.id_producto)} style={{zIndex:10}}>COMPRAR</button>
+                                    </div>
                             </SwiperSlide>
                         ))}
                           </Swiper>

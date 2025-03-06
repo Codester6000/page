@@ -28,6 +28,7 @@ html{
     border-radius: 10px;
     display: flex;
     justify-content: center;
+    cursor: pointer;
 }
 .marca:hover{
     transform: scale(1.05);

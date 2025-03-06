@@ -24,6 +24,7 @@ import Ventas from "./componentes/ventas";
 import ThankYou from "./componentes/ThankYou";
 import DesarrolloWeb from "./componentes/DesarrolloWeb";
 import Portada from "./componentes/Portada";
+import Producto from "./componentes/Producto";
 
 
 
@@ -37,6 +38,8 @@ function App() {
         </header>
         <Routes>
         <Route path="/productos" element={<Inicio />}/>
+        <Route path="/producto/:id" element={<Producto/>}/>
+
         <Route path="/" element={<Portada />}/>
         <Route path="/armador" element={<AuthPage><Armadorpc /></AuthPage>} />
         <Route path="/busqueda" element={<Busqueda/>} />
