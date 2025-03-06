@@ -120,3 +120,31 @@
         align-items: center;
     }
 }
+@media (min-width:800px) {
+    footer{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        height: fit-content;
+        font-weight: 500;
+    }
+    footer div{
+        display: flex;
+        align-items: center;
+    }
+    .productoContainer{
+        max-width: 1200px;
+        margin-bottom: 30px;
+    }
+    .productPhoto{
+        max-width: 45%;
+    }
+    .responsiveDiv{
+        display: flex;
+        justify-content: center;
+    }
+}

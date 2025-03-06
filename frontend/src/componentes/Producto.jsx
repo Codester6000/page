@@ -67,44 +67,50 @@ export default function Producto() {
     }, [id]);
     return (
         <div className="productoContainer">
-            <div className="productPhoto">
-                <img src={producto?.url_imagenes[producto.url_imagenes.length -1]} alt="" className="productImage" />
-            </div>
-            <div className="productInfo">
-                <div className="productTitle">{producto?.nombre}</div>
-                <div className="productCategory">{producto?.categorias[0]}</div>
-                <div className="productStock" style={(disponibilidad=="DISPONIBLE") ? {color:'#5ca845'} : {color:'#ff6a00'}}>
-                   <div className="stockTxt">Stock</div> {disponibilidad}</div>
-            </div>
-                <div className="productPayment">
-                    
-                    <div className="productPrice">
-                        Precio <span>
-                        {Number(producto?.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
-                            style: 'currency',
-                            currency: 'ARS',
-                            maximumFractionDigits:0
-                        })}
-                                        </span>
-                        <button className="btn-agregar-carrito add-cart" onClick={()=>agregarCarrito(producto.id_producto)}>Agregar al carrito</button>
-                    </div>
-                    <div className="warranty"> <img src={escudo} width='25px' alt="escudo garantia" />Garantía - {producto?.garantia_meses} meses</div>
-                    <div className="warranty"> <img src={deli} width='25px' alt="escudo garantia" />Envios a La Rioja y alrededores</div>
-                    <div className="warranty"> <img src={local} width='25px' alt="escudo garantia" />Retiro en el local</div>
-                    <div className="grayLine"></div>
-                    <div className="paymentOptions">
-                        <p>Medios de pago</p>
-                    <div className="tarjetas">
-                <img src={logoMP} alt="mercado pago" className="tarjetaimg" />
-                <img src={logoModo} alt="MODO" className="tarjetaimg" />
-                <img src="/tarjetas/visa.png" alt="visaicon" className="tarjetaimg" />
-                <img src="/tarjetas/mastercard.png" alt="mastercard" className="tarjetaimg" />
-                <img src="/tarjetas/amex.png" alt="amex" className="tarjetaimg" />
-                <img src="/tarjetas/naranja.png" alt="naranja" className="tarjetaimg" />
-                <img src="/tarjetas/maestro.png" alt="maestro" className="tarjetaimg" />
-              </div>
-                    </div>
+            <div className="responsiveDiv">
+                <div className="productPhoto">
+                    <img src={producto?.url_imagenes[producto.url_imagenes.length -1]} alt="" className="productImage" />
                 </div>
+            <div className="responsiveDiv2">
+                
+                    <div className="productInfo">
+                        <div className="productTitle">{producto?.nombre}</div>
+                        <div className="productCategory">{producto?.categorias[0]}</div>
+                        <div className="productStock" style={(disponibilidad=="DISPONIBLE") ? {color:'#5ca845'} : {color:'#ff6a00'}}>
+                           <div className="stockTxt">Stock</div> {disponibilidad}</div>
+                    </div>
+                        <div className="productPayment">
+                
+                            <div className="productPrice">
+                                Precio <span>
+                                {Number(producto?.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
+                                    style: 'currency',
+                                    currency: 'ARS',
+                                    maximumFractionDigits:0
+                                })}
+                                                </span>
+                                <button className="btn-agregar-carrito add-cart" onClick={()=>agregarCarrito(producto.id_producto)}>Agregar al carrito</button>
+                            </div>
+                            <div className="warranty"> <img src={escudo} width='25px' alt="escudo garantia" />Garantía - {producto?.garantia_meses} meses</div>
+                            <div className="warranty"> <img src={deli} width='25px' alt="escudo garantia" />Envios a La Rioja y alrededores</div>
+                            <div className="warranty"> <img src={local} width='25px' alt="escudo garantia" />Retiro en el local</div>
+                            <div className="grayLine"></div>
+                            <div className="paymentOptions">
+                                <p>Medios de pago</p>
+                                <div className="tarjetas">
+                                    <img src={logoMP} alt="mercado pago" className="tarjetaimg" />
+                                    <img src={logoModo} alt="MODO" className="tarjetaimg" />
+                                    <img src="/tarjetas/visa.png" alt="visaicon" className="tarjetaimg" />
+                                    <img src="/tarjetas/mastercard.png" alt="mastercard" className="tarjetaimg" />
+                                    <img src="/tarjetas/amex.png" alt="amex" className="tarjetaimg" />
+                                    <img src="/tarjetas/naranja.png" alt="naranja" className="tarjetaimg" />
+                                    <img src="/tarjetas/maestro.png" alt="maestro" className="tarjetaimg" />
+                                </div>
+                            </div>
+                
+            </div>
+                    </div>
+            </div>
                 <div className="aditionalInfo">{producto?.detalle}</div>
                 <Snackbar
                         open={alerta}
