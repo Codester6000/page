@@ -6,8 +6,15 @@ const carritoRouter = express.Router()
 
 carritoRouter.get('/',validarJwt,async (req,res) =>{
     const id = req.user.userId
-    const sql = `SELECT ca.id_carrito,pr.id_producto,pr.nombre,cd.cantidad,GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias
-,(SELECT JSON_ARRAYAGG(url_imagen)
+    const sql = `SELECT ca.id_carrito,pr.id_producto,pr.nombre,cd.cantidad,
+    (SELECT JSON_ARRAYAGG(nombre_categoria)
+        FROM (
+            SELECT DISTINCT c.nombre_categoria
+            FROM productos_categorias pc3
+            INNER JOIN categorias c ON pc3.id_categoria = c.id_categoria
+            WHERE pc3.id_producto = pr.id_producto
+        ) AS distinct_categories) AS categorias,
+(SELECT JSON_ARRAYAGG(url_imagen)
         FROM (
             SELECT DISTINCT i.url_imagen
             FROM productos_imagenes pi

@@ -22,7 +22,7 @@
 .productImage{
     max-width: 100%;
 }
-.productInfo,.aditionalInfo{
+.productInfo,.aditionalInfo,.productPayment{
     display: flex;
     flex-direction: column;
     padding: 1rem;
@@ -62,9 +62,61 @@
     z-index: 0;
 }
 .productPrice{
+    font-size: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.productPrice span{
+    font-size: 27px;
     color: #5BBC00;
-    font-size: 30px;
+
+}
+.grayLine{
+    width: 98%;
+    height: 0px;
+    align-self: center;
+    border: 1px solid rgba(126, 126, 126, 0.3);
 }
 .aditionalInfo{
     max-width: 97%;
+}
+.paymentOptions{
+    text-align: center;
+    color: #ff6a00;
+    font-weight: 600;
+}
+.productPayment .tarjetas{
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+.add-cart{
+    max-width: fit-content;
+    height: fit-content;
+
+}
+.warranty{
+    display: flex;
+    align-items: center;
+    color: #ff7d21;
+    gap: 5px;
+    
+}
+
+@media (max-width:800px) {
+    footer{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        height: fit-content;
+        font-weight: 500;
+    }
+    footer div{
+        display: flex;
+        align-items: center;
+    }
 }
