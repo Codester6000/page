@@ -174,7 +174,13 @@ productosRouter.get("/:id", validarId, verificarValidaciones, async (req, res) =
         pr.detalle,
         pr.garantia_meses,
         pr.codigo_fabricante,
-        GROUP_CONCAT(c.nombre_categoria SEPARATOR ', ') AS categorias,
+        (SELECT JSON_ARRAYAGG(nombre_categoria)
+        FROM (
+            SELECT DISTINCT c.nombre_categoria
+            FROM productos_categorias pc2
+            INNER JOIN categorias c ON pc2.id_categoria = c.id_categoria
+            WHERE pc2.id_producto = pr.id_producto
+        ) AS distinct_categories) AS categorias,
         (SELECT JSON_ARRAYAGG(url_imagen)
         FROM (
             SELECT DISTINCT i.url_imagen
