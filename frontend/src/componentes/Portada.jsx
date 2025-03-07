@@ -20,12 +20,12 @@ export default function Portada(){
     const { sesion, logout } = useAuth();
     const navigate = useNavigate();
     const getNotebooks = async () => {
-        const response = await fetch(`${url}/productos?offset=0&limit=12&categoria=Notebook`)
+        const response = await fetch(`${url}/productos?offset=0&limit=22&categoria=Notebook`)
         const data = await response.json()
         setNotebooks(data.productos)
     }
     const getNuevosIngresos = async () => {
-        const response = await fetch(`${url}/productos?offset=0&limit=12`)
+        const response = await fetch(`${url}/productos?offset=0&limit=22`)
         const data = await response.json()
         setNuevosIngresos(data.productos)
     }
