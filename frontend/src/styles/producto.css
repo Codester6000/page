@@ -13,6 +13,7 @@
     justify-content: center;
     font-size: 18px;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
+    overflow-x: hidden;
 }
 .productPhoto{
     align-self: center;
@@ -80,6 +81,7 @@
 }
 .aditionalInfo{
     max-width: 97%;
+    margin-bottom: 20px;
 }
 .paymentOptions{
     text-align: center;
@@ -146,5 +148,8 @@
     .responsiveDiv{
         display: flex;
         justify-content: center;
+    }
+    .aditionalInfo{
+        margin-bottom: 40px;
     }
 }
