@@ -1,7 +1,6 @@
 import Navbar from "./componentes/Navbar"
 
 // import { CustomizedInputBase } from "./componentes/Barra"
-import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper-bundle.css';
 import { Route, Routes } from "react-router-dom";
 import { AuthPage,AuthRol } from "./Auth";
@@ -25,12 +24,30 @@ import ThankYou from "./componentes/ThankYou";
 import DesarrolloWeb from "./componentes/DesarrolloWeb";
 import Portada from "./componentes/Portada";
 import Producto from "./componentes/Producto";
+import { useEffect } from 'react';
+import { useAuth } from './Auth';
+import { useNavigate } from 'react-router-dom';
 
 
 
 function App() {
+  const { sesion, logout } = useAuth();
+  const navigate = useNavigate();
 
+    useEffect(() => {
+      if (sesion?.token) {
+        // Decodificar el token JWT
+        const tokenData = JSON.parse(atob(sesion.token.split('.')[1]));
+        const expirationTime = tokenData.exp * 1000; // Convertir a milisegundos
+        
+        if (Date.now() >= expirationTime) {
+          // Token expirado, hacer logout
+          logout(() => navigate("/"));
+        }
+      }
+    }, [sesion]);
   return (
+
     <>
 
         <header>

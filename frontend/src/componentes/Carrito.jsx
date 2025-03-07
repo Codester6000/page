@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 
 import Card from "@mui/joy/Card";
-import Container from "@mui/material/Container";
 import Grid from "@mui/joy/Grid";
 import CardContent from "@mui/joy/CardContent";
 import Typography from "@mui/joy/Typography";
@@ -10,7 +9,7 @@ import IconButton from "@mui/joy/IconButton";
 import Pagination from "@mui/material/Pagination";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useAuth } from "../Auth";
-import { Button, Input, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 export default function Carrito() {
@@ -23,20 +22,6 @@ export default function Carrito() {
     const [isMobile, setIsMobile] = useState(true);
 
     const { sesion } = useAuth();
-    const [value, setValue] = useState(0);
-
-    const increment = () => {
-        setValue(value + 1);
-    };
-
-    const decrement = () => {
-        setValue(value - 1);
-    };
-
-    const construirQuery = () => {
-        let query = `offset=${(pagina - 1) * itemPorPagina}&limit=${itemPorPagina}`;
-        return query;
-    };
 
     const getCarrito = async () => {
         try {
@@ -138,15 +123,16 @@ export default function Carrito() {
             
             <Card sx={{ width:isMobile ? "100dvw" : "80dvw", bgcolor: "#e0e0e0", my: "20px", paddingLeft:isMobile ? 3 : 9}} >
                 
-            <Typography className="divComprar" level="h3" sx={{ mt: 3, fontWeight: 'bold', textAlign: 'right', color: 'orange',display:'flex',flexDirection:'column' }}>
+            <Typography  level="h1" id="card-description"  sx={{ fontWeight: 'bold' }}> Carrito de {sesion.username}</Typography>
+            
+            <Typography className="divComprar" textAlign='center' level="h3" sx={{ mt: 3, fontWeight: 'bold', color: 'orange',display:'flex',flexDirection:'column' }}>
                     Total: {totales.toLocaleString('es-ar', {
     style: 'currency',
     currency: 'ARS',
     maximumFractionDigits:0
 })}
-    <button style={{width:'100px',alignSelf:"flex-end",border:"none", backgroundColor:"#a111ad", padding:"7px", color:"#ffffff",borderRadius:'12px', cursor:"pointer", marginTop:"5px"}} onClick={()=>navigate('/checkout')}>Comprar</button>
+    <button style={{width:'100px',border:"none", backgroundColor:"#a111ad", padding:"7px",alignSelf:'center', color:"#ffffff",borderRadius:'12px', cursor:"pointer", marginTop:"5px"}} onClick={()=>navigate('/checkout')}>Comprar</button>
                 </Typography>
-                <Typography  level="h1" id="card-description" sx={{ fontWeight: 'bold' }}> Carrito de {sesion.username}</Typography>
                 <Grid container spacing={3} sx={{mt: "10px"}} >
                     {//aca hay que conectar los los botones con sus respectivas funciones eliminar , y un put para el + - 
                     }
@@ -155,7 +141,7 @@ export default function Carrito() {
                             <Grid key={index} xs={12} > 
                                 <Card 
                                     variant="outlined"
-                                    orientation={isMobile ?'vertical' : 'horizontal' }
+                                    orientation={isMobile ? 'vertical' : 'horizontal' }
                                     sx={{
                                         width: "95%",
                                         '&:hover': { boxShadow: 'md', borderColor: 'neutral.outlinedHoverBorder' }

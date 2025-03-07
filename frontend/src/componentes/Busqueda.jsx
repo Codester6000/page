@@ -1,17 +1,14 @@
-import React, { useEffect, useState,useContext } from "react";
+import  { useEffect, useState,useContext } from "react";
 
 import Card from "@mui/joy/Card";
-import Container from "@mui/material/Container";
 import Grid from "@mui/joy/Grid";
 import CardContent from "@mui/joy/CardContent";
 import Typography from "@mui/joy/Typography";
 import AspectRatio from "@mui/joy/AspectRatio";
-import Button from "@mui/material/Button";
 import IconButton from "@mui/joy/IconButton";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Pagination from "@mui/material/Pagination";
-import { Chip, TextField } from "@mui/material";
 
 import { useAuth } from "../Auth";
 import {SearchContext} from "../searchContext"
@@ -22,6 +19,7 @@ export default function ProductCard() {
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 30;
     const [totales, setTotales] = useState(0);
+    const [isMobile, setIsMobile] = useState(true);
     
     const { sesion } = useAuth();
     const agregarCarrito = async (producto_id) => {
@@ -66,7 +64,7 @@ export default function ProductCard() {
             if (response.ok) {
                 const mensaje = await response.json()
                 console.log(mensaje)
-                setFavoritos([...favoritos, producto_id])
+                
             } else {
                 console.log(response)
                 console.log(producto_id)
@@ -116,9 +114,20 @@ export default function ProductCard() {
         getProductos();
         
     }, [pagina,searchTerm]);
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 800);
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 800);
+          };
+      
+          window.addEventListener("resize", handleResize);
+      
+          //cleanup of event listener
+          return () => window.removeEventListener("resize", handleResize);
+    }, []);
     return (
-        <Container>
-            <Card sx={{ width: "100%", bgcolor: "#e0e0e0", my: "20px", paddingLeft: 10  }}>
+        <div style={{margin:"0px", padding:"0px", display:"flex", justifyContent:"center", alignItems:"center", width:"100dvw"}}>
+            <Card sx={{ width:isMobile ? "100dvw" : "80dvw", bgcolor: "#e0e0e0", my: "20px", paddingLeft:isMobile ? 3 : 9}}>
 
                 <Grid container spacing={3} style={{ marginTop: "10px" }}>
                     {productos.length > 0 ? (
@@ -126,13 +135,13 @@ export default function ProductCard() {
                             <Grid key={index} xs={12}>
                                 <Card
                                     variant="outlined"
-                                    orientation="horizontal"
+                                    orientation={isMobile ? 'vertical' : 'horizontal' }
                                     sx={{
                                         width: "95%",
                                         '&:hover': { boxShadow: 'md', borderColor: 'neutral.outlinedHoverBorder' }
                                     }}
                                 >
-                                    <AspectRatio ratio="1" sx={{ width: 150 }}>
+                                    <AspectRatio ratio="1" sx={{ width: isMobile ? 300 : 150 }}>
                                         <img
                                             src={producto.url_imagenes[producto.url_imagenes.length -1]}
                                             alt={producto.nombre}
@@ -145,7 +154,8 @@ export default function ProductCard() {
                                             {producto.nombre}
                                         </Typography>
                                         <Typography level="body-m" aria-describedby="card-description" sx={{ mb: 1 }}>
-                                            {producto.categorias}
+                                        {producto.categorias[0]},
+                                        {producto.categorias[1]}
                                         </Typography>
                                         <Typography level="body-m" aria-describedby="card-description" sx={{ mb: 1 }}>
                                             {producto.codigo_fabricante}
@@ -159,7 +169,7 @@ export default function ProductCard() {
                                         </Typography>
                                     </CardContent>
                                 <Grid>
-                                <div style={{ display: "flex", flexDirection: "column" , alignItems: "center", marginLeft: "auto" }}>
+                                <div style={{ display: "flex", flexDirection: isMobile ? 'row' : 'column' , alignItems: "center", marginLeft: "auto" }}>
                                                     <IconButton variant="contained" size="large" sx={{
                                                         my: 4, ml: 2, height: 45, width: 45, backgroundColor: "#a111ad", borderRadius: "50px", objectFit: "contain", color: "white",
                                                         "&:active": {
@@ -213,6 +223,6 @@ export default function ProductCard() {
                     }
                 }} />
             </Card>
-        </Container>
+        </div>
     );
 }

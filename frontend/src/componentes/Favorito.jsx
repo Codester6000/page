@@ -17,6 +17,7 @@ export default function Favorito() {
     const [pagina, setPagina] = useState(1);
     const itemPorPagina = 30;
     const [totales, setTotales] = useState(0);
+    const [isMobile, setIsMobile] = useState(true);
     
 
     const { sesion } = useAuth();
@@ -84,10 +85,21 @@ export default function Favorito() {
     useEffect(() => {
         getFavorito();
     }, [pagina]);
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 800);
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 800);
+          };
+      
+          window.addEventListener("resize", handleResize);
+      
+          //cleanup of event listener
+          return () => window.removeEventListener("resize", handleResize);
+    }, []);
     return (
-        <Container>
+        <div style={{margin:"0px", padding:"0px", display:"flex", justifyContent:"center", alignItems:"center", width:"100dvw"}}>
 
-            <Card sx={{ width: "100%", bgcolor: "#e0e0e0", my: "20px", paddingLeft: 10 }}>
+            <Card sx={{ width:isMobile ? "100dvw" : "80dvw", bgcolor: "#e0e0e0", my: "20px", paddingLeft:isMobile ? 3 : 9}}>
                 <Typography level="h1" id="card-description" sx={{ fontWeight: 'bold' }}> Favoritos de {sesion.username}</Typography>
                 <Grid container spacing={3} style={{ marginTop: "10px" }}>
                     {productos.length > 0 ? (
@@ -95,13 +107,13 @@ export default function Favorito() {
                             <Grid item key={index} xs={12}>
                                 <Card
                                     variant="outlined"
-                                    orientation="horizontal"
+                                    orientation={isMobile ? 'vertical' : 'horizontal' }
                                     sx={{
                                         width: "95%",
                                         '&:hover': { boxShadow: 'md', borderColor: 'neutral.outlinedHoverBorder' }
                                     }}
                                 >
-                                    <AspectRatio ratio="1" sx={{ width: 150 }}>
+                                    <AspectRatio ratio="1" sx={{ width: isMobile ? 300 : 150 }}>
                                         <img
                                             src={producto.url_imagenes[producto.url_imagenes.length -1]}
                                             alt={producto.nombre}
@@ -114,7 +126,8 @@ export default function Favorito() {
                                             {producto.nombre}
                                         </Typography>
                                         <Typography level="body-m" aria-describedby="card-description" sx={{ mb: 1 }}>
-                                            {producto.categorias}
+                                        {producto.categorias[0]},
+                                        {producto.categorias[1]}
                                         </Typography>
                                         <Typography level="body-m" aria-describedby="card-description" sx={{ mb: 1 }}>
                                             {producto.codigo_fabricante}
@@ -162,6 +175,6 @@ export default function Favorito() {
                     }
                 }} />
             </Card>
-        </Container>
+        </div>
     );
 }
