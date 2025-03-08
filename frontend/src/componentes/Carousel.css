@@ -69,8 +69,13 @@ body {
     gap: 0px;
 }
 @media (max-width:800px){
+    .swiperRR{
+        width: 100dvw;
+    }
     .imgCR{
-        height: fit-content;
+        max-width: 100dvw;
+        object-fit:cover;
+        height: auto;
     }
 }
 @media (min-width: 1394px) {
