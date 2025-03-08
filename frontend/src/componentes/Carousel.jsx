@@ -2,6 +2,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import {  Pagination, Autoplay,} from 'swiper/modules';
 import 'swiper/swiper-bundle.css';
 import './Carousel.css'
+import { useState,useEffect } from 'react';
 // poner en la terminar
 // npm install swiper
 
@@ -13,9 +14,19 @@ import './Carousel.css'
 // tengo que hacer que tome las imagenes de una carpeta especifica
 //(probablemente "/public/noticias/" y dejar una cantidad especifica)
 // proximamente hacer que no tenga limitacion de cantidad
-
 const Carousel = () => {
+  const [isMobile, setIsMobile] = useState(true);
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 800);
+    const handleResize = () => {
+        setIsMobile(window.innerWidth < 800);
+      };
   
+      window.addEventListener("resize", handleResize);
+  
+      //cleanup of event listener
+      return () => window.removeEventListener("resize", handleResize);
+}, []);
   return (
     <Swiper
       className='swiperRR'
@@ -24,37 +35,33 @@ const Carousel = () => {
       spaceBetween={0} 
       slidesPerView={1} 
       loop={true} 
-    >
+    > 
+
       <SwiperSlide>
-        <img className='imgCR' src="/1.png" alt="Slide 1" />
+      {isMobile ? <img className='imgCR' src="carousel/3-mobile.png" alt="Slide 3" />: <img className='imgCR' src="carousel/3.png" alt="Slide 3" />}
       </SwiperSlide>
       <SwiperSlide>
-        <img className='imgCR' src="/2.png" alt="Slide 2" />
+      {isMobile ? <img className='imgCR' src="carousel/4-mobile.png" alt="Slide 4" />: <img className='imgCR' src="carousel/4.png" alt="Slide 4" />}
       </SwiperSlide>
       <SwiperSlide>
-        <img className='imgCR' src="/3.png" alt="Slide 3" />
+        {isMobile ? <img className='imgCR' src="carousel/5-mobile.png" alt="Slide 5" />: <img className='imgCR' src="carousel/5.png" alt="Slide 5" />}
       </SwiperSlide>
       <SwiperSlide>
-        <img className='imgCR' src="/4.png" alt="Slide 4" />
+      {isMobile ? <img className='imgCR' src="carousel/6-mobile.png" alt="Slide 6" />: <img className='imgCR' src="carousel/6.png" alt="Slide 6" />}
       </SwiperSlide>
       <SwiperSlide>
-        <img className='imgCR' src="/5.png" alt="Slide 5" />
+      {isMobile ? <img className='imgCR' src="carousel/7-mobile.png" alt="Slide 7" />: <img className='imgCR' src="carousel/7.png" alt="Slide 7" />}
       </SwiperSlide>
       <SwiperSlide>
-        <img className='imgCR' src="/6.png" alt="Slide 6" />
+      {isMobile ? <img className='imgCR' src="carousel/8-mobile.png" alt="Slide 8" />: <img className='imgCR' src="carousel/8.png" alt="Slide 8" />}
       </SwiperSlide>
       <SwiperSlide>
-        <img className='imgCR' src="/7.png" alt="Slide 7" />
+        {isMobile ? <img className='imgCR' src="carousel/1-mobile.png" alt="Slide 1" />: <img className='imgCR' src="carousel/1.png" alt="Slide 1" />}
       </SwiperSlide>
       <SwiperSlide>
-        <img className='imgCR' src="/8.png" alt="Slide 8" />
+      {isMobile ? <img className='imgCR' src="carousel/2-mobile.png" alt="Slide 2" />: <img className='imgCR' src="carousel/2.png" alt="Slide 2" />}
       </SwiperSlide>
-      <SwiperSlide>
-        <img className='imgCR' src="/9.png" alt="Slide 9" />
-      </SwiperSlide>
-      <SwiperSlide>
-        <img className='imgCR' src="/10.png" alt="Slide 10" />
-      </SwiperSlide>
+
     </Swiper>
   );
 };

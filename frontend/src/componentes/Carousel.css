@@ -68,6 +68,11 @@ body {
 .swiperRR .swiper-wrapper{
     gap: 0px;
 }
+@media (max-width:800px){
+    .imgCR{
+        height: fit-content;
+    }
+}
 @media (min-width: 1394px) {
     .swiper{
         width: 1590px;
