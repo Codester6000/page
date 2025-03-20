@@ -94,6 +94,7 @@ const Checkout =  () => {
     const [total,setTotal] = useState(0)
     const [nombreCompra,setNombreCompra] = useState("")
     const [linkGN, setLinkGN] = useState("")
+    const [didMount, setDidMount] = useState(false)
     const { sesion } = useAuth();
     const onSubmit = async (data) => {
       console.log("entre")
@@ -227,6 +228,7 @@ const Checkout =  () => {
   };
       useEffect(() => {
           getCarrito();
+          setDidMount(true)
       }, []);
 
 
@@ -242,8 +244,10 @@ const Checkout =  () => {
     };
 
     useEffect( () =>{
-      const link = createLinkGetNet();
-      setLinkGN(link)
+      if (didMount){
+        const link = createLinkGetNet();
+        setLinkGN(link)
+      }
     },[productos])
 return (
     
