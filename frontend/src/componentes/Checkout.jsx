@@ -256,7 +256,7 @@ const Checkout =  () => {
         await new Promise(resolve => setTimeout(resolve, 2000));
         console.log(linkGN)
         return linkGN;
-    }
+    }}
     useEffect( () =>{
       if (didMount){
         const handleGN = async () => {
