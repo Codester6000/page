@@ -215,8 +215,8 @@ const Checkout =  () => {
     }
   }
   const handleGN = async () => {
-    const link = await createLinkGetNet();
-    window.open(link)
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    window.open(linkGN)
   }
   const handleBuyMP = async () => {
     const id = await createPreferenceMP();
@@ -229,9 +229,7 @@ const Checkout =  () => {
           getCarrito();
       }, []);
 
-      // useEffect( () =>{
-      //   createLinkGetNet();
-      // },[productos])
+
     
       const handleExternalSubmit =  () => {
         productos.map((producto) => {
@@ -242,6 +240,11 @@ const Checkout =  () => {
         }
         console.log(nombreCompra)
     };
+
+    useEffect( () =>{
+      const link = createLinkGetNet();
+      setLinkGN(link)
+    },[productos])
 return (
     
     <div className="containerCheckout">
