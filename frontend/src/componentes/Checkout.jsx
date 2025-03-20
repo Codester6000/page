@@ -213,6 +213,7 @@ const Checkout =  () => {
         setLinkGN(data.links[0].checkout)
         return data.links[0].checkout;
       }
+      return "";
     }
     catch (error) {
       console.log(error);
