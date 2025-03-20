@@ -208,8 +208,6 @@ const Checkout =  () => {
         console.log("Link de GetNet recibido:", data.links[0].checkout);
         setLinkGN(data.links[0].checkout)
         return data.links[0].checkout;
-      }else if (!response.ok){
-        createLinkGetNet();
       }
     }
     catch (error) {

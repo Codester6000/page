@@ -27,6 +27,7 @@ getNetRouter.post('/intencion-pago', getAuthToken, async (req, res) =>{
     })
     const data = await response.json();
     if (!response.ok) {
+        console.log(data)
         return res.status(500).json({ error: 'Error generando link de pago.' });
     }
     const precio = data.data.attributes.price.amount / 100;
