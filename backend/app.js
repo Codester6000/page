@@ -8,6 +8,7 @@ import carritoRouter from './carrito.js'
 import authRouter, { authConfig } from "./auth.js"
 import favoritoRouter from "./favorito.js"
 import modoCheckoutRouter from "./checkout.js"
+import getNetRouter from "./checkoutGetNet.js"
 
 import routerMP from "./checkoutMP.js"
 
@@ -42,7 +43,7 @@ app.use("/carrito",carritoRouter)
 app.use("/favorito",favoritoRouter)
 app.use("/checkout",modoCheckoutRouter)
 app.use("/checkoutMP",routerMP)
-
+app.use("/checkoutGN",getNetRouter)
 app.get("/", (req, res) => {
     res.send("hola mundo")
 })
