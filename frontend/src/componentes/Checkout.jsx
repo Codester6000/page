@@ -175,6 +175,9 @@ const Checkout =  () => {
    
   }
   const createLinkGetNet = async () =>{
+    if (linkGN !== ""){
+      return linkGN;
+    }
     let itemsAux = []
     try {
       productos.forEach(producto =>{
