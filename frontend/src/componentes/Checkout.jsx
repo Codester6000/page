@@ -419,7 +419,7 @@ return (
               </div>
             </div>
 
-            {preferenciaMP &&
+            {preferenciaMP && metodoPago == 'mercadoPago' &&
                <motion.div className="mpcontainer" animate={(!isValid) ? {opacity:0, pointerEvents:"none"} : {opacity:1, disabled:false}} onClick={()=>handleExternalSubmit()} >
                  <div id="wallet_container">
                  
