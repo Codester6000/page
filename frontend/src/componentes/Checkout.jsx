@@ -248,8 +248,12 @@ const Checkout =  () => {
 
     useEffect( () =>{
       if (didMount){
-        const link = createLinkGetNet();
-        setLinkGN(link)
+        const handleGN = async () => {
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          const link = createLinkGetNet();
+          setLinkGN(link)
+        }
+        handleGN();
       }
     },[productos])
 return (
