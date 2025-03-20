@@ -205,7 +205,9 @@ const Checkout =  () => {
 
       if (response.ok) {
         const data = await response.json();
+        console.log("Link de GetNet recibido:", data.links[0].checkout);
         setLinkGN(data.links[0].checkout)
+        return data.links[0].checkout;
       }
     }
     catch (error) {
@@ -213,7 +215,8 @@ const Checkout =  () => {
     }
   }
   const handleGN = async () => {
-    window.open(linkGN)
+    const link = await createLinkGetNet();
+    window.open(link)
   }
   const handleBuyMP = async () => {
     const id = await createPreferenceMP();
@@ -226,9 +229,9 @@ const Checkout =  () => {
           getCarrito();
       }, []);
 
-      useEffect( () =>{
-        createLinkGetNet();
-      },[productos])
+      // useEffect( () =>{
+      //   createLinkGetNet();
+      // },[productos])
     
       const handleExternalSubmit =  () => {
         productos.map((producto) => {
