@@ -69,6 +69,9 @@
     height: 30px;
     margin-right: 10px;
 }
+.logoGN{
+    height: 70px;
+}
 .pagaModo{
     display: flex;
     justify-content: center;
@@ -83,6 +86,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
 }
 .seleccionada{
     box-shadow: 0px 0px 3px #9e4403;
@@ -249,9 +253,11 @@ span{
         height: 35px;
     }
     .paso{
-        top: -13px;
+        top: -15px;
         left: 5px;
-        width: 50px; 
+        width: fit-content; 
+        padding: 2px;
+        font-size: 13px;
     }
     .cuadroPagoInfo{
         padding: .3rem;
@@ -262,5 +268,6 @@ span{
     .detalle{
         width: 100%;
     }
+    
     
 }

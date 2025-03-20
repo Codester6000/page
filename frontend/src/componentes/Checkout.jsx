@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import '../checkout.css'
 import logoModo from '../assets/Logo_modo.svg';
 import logoMP from '../assets/mplogo.svg';
+import logoGN from '../assets/getnet.png';
 import { useAuth } from "../Auth";
 import { set, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -82,15 +83,17 @@ const Checkout =  () => {
     const handleHover = async () => {
       await trigger(); // Valida todos los campos al pasar el mouse sobre el botón
     };
-    const [metodoPago,setMetodoPago] = useState("modo")
+    const [metodoPago,setMetodoPago] = useState("getnet")
     initMercadoPago('APP_USR-868c1d1d-2922-496f-bf87-56b0aafe44a2',{
       locale: 'es-AR',
     });
     const [preferenciaMP, setPreferenciaMP] = useState(null);
     const [productos, setProductos] = useState([])
+    const [itemsGN, setItemsGN] = useState([])
     const [idCarrito, setIdCarrito] = useState(0)
     const [total,setTotal] = useState(0)
     const [nombreCompra,setNombreCompra] = useState("")
+    const [linkGN, setLinkGN] = useState("")
     const { sesion } = useAuth();
     const onSubmit = async (data) => {
       console.log("entre")
@@ -170,7 +173,48 @@ const Checkout =  () => {
     }
    
   }
+  const createLinkGetNet = async () =>{
+    let itemsAux = []
+    try {
+      productos.forEach(producto =>{
+        const precioGN = Number(producto.precio_pesos_iva_ajustado).toFixed(2).replace('.', '');
 
+        itemsAux.push({
+          "id": producto.id_producto,
+          "name": producto.nombre,
+          "unitPrice": {
+            "currency": "032",
+            "amount": precioGN
+          },
+          "quantity": producto.cantidad
+        })
+      })
+
+      setItemsGN(itemsAux)
+      console.log(itemsAux)
+      const response = await fetch(`${urlBack}/checkoutGN/intencion-pago`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items: itemsGN,
+          id_carrito: idCarrito,
+        }),
+      })
+
+      if (response.ok) {
+        const data = await response.json();
+        setLinkGN(data.links[0].checkout)
+      }
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
+  const handleGN = async () => {
+    window.open(linkGN)
+  }
   const handleBuyMP = async () => {
     const id = await createPreferenceMP();
     console.log(id)
@@ -181,6 +225,10 @@ const Checkout =  () => {
       useEffect(() => {
           getCarrito();
       }, []);
+
+      useEffect( () =>{
+        createLinkGetNet();
+      },[productos])
     
       const handleExternalSubmit =  () => {
         productos.map((producto) => {
@@ -237,6 +285,16 @@ return (
                 <p>Selecciona tu metodo de pago.</p>
               </div>
               <div 
+                className={`opcionPago ${metodoPago === "getnet" ? "seleccionada" : ""}`} 
+                onClick={() => {
+                  setMetodoPago("getnet")
+                  createLinkGetNet()
+                }}
+              >
+                GetNet by Santander
+                <img src={logoGN} alt="" className="logoGN" />
+              </div>
+              <div 
                 className={`opcionPago ${metodoPago === "modo" ? "seleccionada" : ""}`} 
                 onClick={() => setMetodoPago("modo")}
               >
@@ -253,6 +311,7 @@ return (
                 Mercado Pago
                 <img src={logoMP} alt="" className="logoMP" />
               </div>
+              
               <div 
                 className='opcionPago'
               >
@@ -263,24 +322,33 @@ return (
             <div className="wrapperCheckout">
               <div className="pagaModo">
                 <h2>Paga con</h2>
-                <img src={logoModo} alt="" className="logoModo" />
+                {metodoPago === "getnet" && <img src={logoGN} alt="" className="logoGN" />}
+                {metodoPago === "mercadoPago" && <img src={logoMP} alt="" className="logoMP" />}
+                {metodoPago === "modo" && <img src={logoModo} alt="" className="logoModo" />}
               </div>
           
               <div className="cuadroPagoInfo">
                 <div className="paso">PASO 1</div>
-                <p>Al avanzar con el pago en la tienda <span>Se generara un QR.</span></p>
+                {metodoPago === "modo" && <p>Al avanzar con el pago en la tienda <span>Se generara un QR.</span></p>}
+                {metodoPago != "modo" && <p>Asegurate de rellenar el <span>Formulario.</span></p>}
               </div>
               <div className="cuadroPagoInfo">
               <div className="paso">PASO 2</div>
-              <p>En tu celular, <span>abri MODO</span> o la <span>App de tu banco</span> y <span>escanea</span> el QR.</p>
+              {metodoPago === "modo" && <p>En tu celular, <span>abri MODO</span> o la <span>App de tu banco</span> y <span>escanea</span> el QR.</p>}
+              
+              {metodoPago != "modo" && <p><span>Hacé click</span> en el boton para ir al <span>link de pago.</span> </p>}
               </div>
               <div className="cuadroPagoInfo">
               <div className="paso">PASO 3</div>
-              <p>Selecciona la tarjeda de <span>Debito</span> o  <span>Credito</span> que quieras usar.</p>
+              {metodoPago === "modo" && <p>Selecciona la tarjeta de <span>Debito</span> o  <span>Credito</span> que quieras usar.</p>}
+              {metodoPago != "modo" && <p><span>Realiza</span> el pago con la tarjeta de tu preferencia.</p>}
+              
               </div>
               <div className="cuadroPagoInfo">
               <div className="paso">PASO 4</div>
-              <p>Elegi la cantidad de <span>cuotas</span> que mas te convenga y <span>confirma tu pago!</span></p>
+              {metodoPago === "modo" && <p>Elegi la cantidad de <span>cuotas</span> que mas te convenga y <span>confirma tu pago!</span></p>}
+              {metodoPago != "modo" && <p>Mandanos por <span>whatsapp</span> el comprobante.</p>}
+              
               </div>
 
               <div className="tarjetas">
@@ -339,11 +407,18 @@ return (
                 showModal(total,'HOLA',idCarrito,total)
                 }}>Pagá con QR
               </button>}
+
+              {(metodoPago == 'getnet') && <button  disabled={!isValid}  onClick={()=>{
+                handleExternalSubmit();
+                handleGN();
+                }}>Link de Pago
+              </button>}
               
 
 
               </div>
             </div>
+
             {preferenciaMP &&
                <motion.div className="mpcontainer" animate={(!isValid) ? {opacity:0, pointerEvents:"none"} : {opacity:1, disabled:false}} onClick={()=>handleExternalSubmit()} >
                  <div id="wallet_container">

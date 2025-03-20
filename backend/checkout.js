@@ -140,6 +140,8 @@ modoCheckoutRouter.post('/intencion-pago',validarBodyCheckout(),verificarValidac
           const id_pago = body.id
 
           const result = await db.execute(sql,[id_pago]);
+          const sql2 = `CALL schemamodex.baja_stock_carrito(?);`
+          const result2 = await db.execute(sql2,[id_pago]);
           break;
         case 'REJECTED':
           console.log('rechazado')
