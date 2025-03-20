@@ -245,12 +245,23 @@ const Checkout =  () => {
         }
         console.log(nombreCompra)
     };
-
+    const handleLinkLag = async () => {
+      if (linkGN !== ""){
+        console.log(linkGN)
+        return linkGN;
+      }
+      if (linkGN === ""){
+        const linkGN2 = await createLinkGetNet();
+        setLinkGN(linkGN2)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        console.log(linkGN)
+        return linkGN;
+    }
     useEffect( () =>{
       if (didMount){
         const handleGN = async () => {
           await new Promise(resolve => setTimeout(resolve, 2000));
-          const link = createLinkGetNet();
+          const link = await createLinkGetNet();
           setLinkGN(link)
         }
         handleGN();
@@ -269,27 +280,27 @@ return (
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Email</label>
-                  <input type="email" name="email" id="email" {...register("email")}/>
+                  <input type="email" name="email" id="email" {...register("email")} onClick={()=>handleLinkLag()} onTouchStart={()=>handleLinkLag()}/>
                   { errors.email?.message && <p style={{color:"red"}}>{errors.email.message}</p>}
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Nombre</label>
-                  <input type="text" name="nombreC" id="nombreC" {...register("nombre")}/>
+                  <input type="text" name="nombreC" id="nombreC" {...register("nombre")} onClick={()=>handleLinkLag()} onTouchStart={()=>handleLinkLag()}/>
                   { errors.nombre?.message && <p style={{color:"red"}}>{errors.nombre.message}</p>}
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Apellido</label>
-                  <input type="text" name="apellidoC" id="apellidoC" {...register("apellido")} />
+                  <input type="text" name="apellidoC" id="apellidoC" {...register("apellido")} onClick={()=>handleLinkLag()} onTouchStart={()=>handleLinkLag()}/>
                   { errors.apellido?.message && <p style={{color:"red"}}>{errors.apellido.message}</p>}
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Direccion</label>
-                  <input type="text" name="direccionC" id="direccionC" {...register("direccion")} />
+                  <input type="text" name="direccionC" id="direccionC" {...register("direccion")} onClick={()=>handleLinkLag()} onTouchStart={()=>handleLinkLag()} />
                   { errors.direccion?.message && <p style={{color:"red"}}>{errors.direccion.message}</p>}
                 </div>
                 <div className="labelInputC">
                   <label htmlFor="">Telefono</label>
-                  <input type="text" name="telefonoC" id="telefonoC" {...register("telefono")} />
+                  <input type="text" name="telefonoC" id="telefonoC" {...register("telefono")} onClick={()=>handleLinkLag()} onTouchStart={()=>handleLinkLag()} />
                   { errors.telefono?.message && <p style={{color:"red"}}>{errors.telefono.message}</p>}
                 </div>
             </form>
