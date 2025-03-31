@@ -75,10 +75,19 @@ group by pr.id_producto,ca.id_carrito,cd.cantidad,p.precio_dolar, p.precio_dolar
 
 carritoRouter.post('/',validarJwt,validarBodyCarrito(),verificarValidaciones, async (req,res) =>{
     const {id_producto,cantidad } = req.body;
-    const parametros = [req.user.userId,id_producto,cantidad];
+    try {
+        const parametros = [req.user.userId,id_producto,cantidad];
     const sql = 'call schemamodex.cargar_carrito(?, ?, ?);'
     const [resul, fields] = await db.execute(sql,parametros)
-    res.status(201).send({resultado:resul})
+    return res.status(201).send({resultado:resul})
+    } catch (error) {
+        if (error.code === 'ER_SIGNAL_EXCEPTION' && error.sqlState === '45000') {
+            return res.status(400).send({ mensaje: error.sqlMessage });
+        }
+        
+        return res.status(500).send({mensaje: "Se produjo un error en el servidor"});
+    }
+    
 })
 
 carritoRouter.post('/armador',validarJwt,async (req,res) =>{
@@ -89,14 +98,20 @@ carritoRouter.put('/',validarJwt,validarBodyPutCarrito(),async (req,res)=>{
     try {
         const parametros = [id_producto,cantidad,req.user.userId]
         const sql = "call schemamodex.alterar_carrito(?, ?, ?);"
-        const resultado = db.execute(sql,parametros)
+        const resultado = await db.execute(sql,parametros)
         if(resultado.affectedRows == 0){
-            res.status(400).send({mensaje:"Id producto o id usuario invalido"})
+            return res.status(400).send({mensaje:"Id producto o id usuario invalido"})
         }
-        res.status(200).send({mensaje:"cantidad Actualizada"})
+        return res.status(200).send({mensaje:"cantidad Actualizada"})
 
     }catch(error){
-        res.status(500).send({mensaje:"Se produjo un error en el servidor"})
+        if (error.code == 'ER_SIGNAL_EXCEPTION' && 
+            error.sqlState == '45000') {
+          
+          // Return a user-friendly error message with a 400 status (Bad Request)
+          return res.status(400).send({ mensaje: "La cantidad solicitada excede el stock disponible." });
+        }
+        return res.status(500).send({mensaje:"Se produjo un error en el servidor"})
     }
 })
 carritoRouter.delete('/',validarJwt,validarBodyCarrito(),async (req, res) => {
