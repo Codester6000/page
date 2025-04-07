@@ -94,6 +94,7 @@ const Checkout =  () => {
     const [total,setTotal] = useState(0)
     const [nombreCompra,setNombreCompra] = useState("")
     const [linkGN, setLinkGN] = useState("")
+    const [totalMP, setTotalMP] = useState(0)
     const { sesion } = useAuth();
     const onSubmit = async (data) => {
       console.log("entre")
@@ -148,6 +149,8 @@ const Checkout =  () => {
 
   const createPreferenceMP = async () => {
     try {
+      const totalRecargo = Number(Number(total) / 0.90).toFixed(0);
+      setTotalMP(totalRecargo)
       const response = await fetch(`${urlBack}/checkoutMP/crear-preferencia-mercadopago`, {
         method: "POST",
         headers: {
@@ -294,13 +297,13 @@ return (
                 GetNet by Santander
                 <img src={logoGN} alt="" className="logoGN" />
               </div>
-              <div 
+              {/* <div 
                 className={`opcionPago ${metodoPago === "modo" ? "seleccionada" : ""}`} 
                 onClick={() => setMetodoPago("modo")}
               >
                 MODO o App Bancaria
                 <img src={logoModo} alt="" className="logoModo" />
-              </div>
+              </div> */}
               <div 
                 className={`opcionPago ${metodoPago === "mercadoPago" ? "seleccionada" : ""}`} 
                 onClick={() => {
@@ -312,6 +315,14 @@ return (
                 <img src={logoMP} alt="" className="logoMP" />
               </div>
               
+              <div 
+                className={`opcionPago ${metodoPago === "transferencia" ? "seleccionada" : ""}`} 
+                onClick={() => {
+                  setMetodoPago("transferencia")
+                }}
+              >
+                Transferencia Bancaria
+              </div>
               <div 
                 className='opcionPago'
               >
@@ -325,23 +336,27 @@ return (
                 {metodoPago === "getnet" && <img src={logoGN} alt="" className="logoGN" />}
                 {metodoPago === "mercadoPago" && <img src={logoMP} alt="" className="logoMP" />}
                 {metodoPago === "modo" && <img src={logoModo} alt="" className="logoModo" />}
+                {metodoPago === "transferencia" && <p style={{fontWeight:'bolder'}}>   Transferencia</p>}
               </div>
           
               <div className="cuadroPagoInfo">
                 <div className="paso">PASO 1</div>
                 {metodoPago === "modo" && <p>Al avanzar con el pago en la tienda <span>Se generara un QR.</span></p>}
-                {metodoPago != "modo" && <p>Asegurate de rellenar el <span>Formulario.</span></p>}
+                {metodoPago !='modo' && <p>Asegurate de rellenar el <span>Formulario.</span></p>}
+                
               </div>
               <div className="cuadroPagoInfo">
               <div className="paso">PASO 2</div>
               {metodoPago === "modo" && <p>En tu celular, <span>abri MODO</span> o la <span>App de tu banco</span> y <span>escanea</span> el QR.</p>}
               
-              {metodoPago != "modo" && <p><span>Hacé click</span> en el boton para ir al <span>link de pago.</span> </p>}
+              {metodoPago == "getnet" || metodoPago =="mercadoPago" && <p><span>Hacé click</span> en el boton para ir al <span>link de pago.</span> </p>}
+              {metodoPago == "transferencia" && <p>Consulta el stock a traves del numero <span>3804353826</span>.</p>}
               </div>
               <div className="cuadroPagoInfo">
               <div className="paso">PASO 3</div>
               {metodoPago === "modo" && <p>Selecciona la tarjeta de <span>Debito</span> o  <span>Credito</span> que quieras usar.</p>}
-              {metodoPago != "modo" && <p><span>Realiza</span> el pago con la tarjeta de tu preferencia.</p>}
+              {metodoPago == "getnet" || metodoPago =="mercadoPago" && <p><span>Realiza</span> el pago con la tarjeta de tu preferencia.</p>}
+              {metodoPago == "transferencia" && <p>Realiza la transferencia por el total al Alias "<span>Modex.mp</span>".</p>}
               
               </div>
               <div className="cuadroPagoInfo">
@@ -391,7 +406,13 @@ return (
               
               <div className="totalC">Total :</div>
               <div className="totalNum">
-              {Number(total).toLocaleString('es-ar', {
+              {metodoPago !="mercadoPago" && Number(total).toLocaleString('es-ar', {
+                  style: 'currency',
+                  currency: 'ARS',
+                  maximumFractionDigits:0
+              })}
+
+{metodoPago=="mercadoPago" && Number(totalMP).toLocaleString('es-ar', {
                   style: 'currency',
                   currency: 'ARS',
                   maximumFractionDigits:0
@@ -413,13 +434,18 @@ return (
                 handleGN();
                 }}>Link de Pago
               </button>}
+              {(metodoPago == 'transferencia') && <button  disabled={!isValid}  onClick={()=>{
+                handleExternalSubmit();
+                
+                }}> <a href="https://api.whatsapp.com/send/?phone=543804353826&amp;text=Hola,+realice+una+compra+via+transferencia+por+la+pagina!&amp;type=phone_number&amp;app_absent=0" target="_blank">Enviar Comprobante </a>
+              </button>}
               
 
 
               </div>
             </div>
 
-            {preferenciaMP &&
+            {preferenciaMP && metodoPago=="mercadoPago" &&
                <motion.div className="mpcontainer" animate={(!isValid) ? {opacity:0, pointerEvents:"none"} : {opacity:1, disabled:false}} onClick={()=>handleExternalSubmit()} >
                  <div id="wallet_container">
                  
