@@ -84,3 +84,5 @@ def extraer_columnas_csv(ruta_csv):
 # Ejemplo de uso:
 ruta_csv = './lista_modex.csv'  # Cambia esto por pya ruta a tu archivo CSV
 extraer_columnas_csv(ruta_csv)
+
+print("Carga de datos finalizada.")

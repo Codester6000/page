@@ -184,7 +184,7 @@ const Checkout =  () => {
     let itemsAux = []
     try {
       productos.forEach(producto =>{
-        const precioGN = Number(producto.precio_pesos_iva_ajustado).toFixed(2).replace('.', '');
+        const precioGN = Number(Number(producto.precio_pesos_iva_ajustado)*1.2748).toFixed(2).replace('.', '');
 
         itemsAux.push({
           "id": producto.id_producto,
@@ -435,7 +435,12 @@ return (
               
               <div className="totalC">Total :</div>
               <div className="totalNum">
-              {metodoPago !="mercadoPago" && Number(total).toLocaleString('es-ar', {
+              {metodoPago =="transferencia" && Number(total).toLocaleString('es-ar', {
+                  style: 'currency',
+                  currency: 'ARS',
+                  maximumFractionDigits:0
+              })}
+              {metodoPago =="getnet" && Number(Number(total)*1.2748).toLocaleString('es-ar', {
                   style: 'currency',
                   currency: 'ARS',
                   maximumFractionDigits:0
