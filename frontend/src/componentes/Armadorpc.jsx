@@ -25,7 +25,7 @@ import { useNavigate } from 'react-router-dom'
 
 
 function ArmadorPc() {
-const url = 'https://api.modex.com.ar'
+const url = import.meta.env.VITE_URL_BACK;
 const { sesion } = useAuth();
 const navigate = useNavigate();
 const [productos,setProductos] =useState({

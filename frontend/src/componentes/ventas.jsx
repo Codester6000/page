@@ -7,7 +7,7 @@ import persona from '../assets/personaVentas.svg'
 import { useAuth } from "../Auth";
 const Ventas = () =>{
     const { sesion } = useAuth();
-    const url = 'https://api.modex.com.ar'
+    const url = import.meta.env.VITE_URL_BACK;
     const columnas = [
         { field: 'id', headerName: 'ID Pedido', width: 100 },
         { field: 'username', headerName: 'Cliente', width: 150 },

@@ -10,7 +10,7 @@ import { useAuth } from "../Auth";
 import { Link } from "react-router-dom";
 
 const Login = () =>{
-    const url = 'https://api.modex.com.ar'
+    const url = import.meta.env.VITE_URL_BACK;
     const {register,handleSubmit,resetField,formState:{errors}} = useForm({
         resolver:zodResolver(formLoginSchema)
     })

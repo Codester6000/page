@@ -13,7 +13,7 @@ import { Button, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 export default function Carrito() {
-    const url = 'https://api.modex.com.ar'
+    const url = import.meta.env.VITE_URL_BACK;
     const navigate = useNavigate(); 
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);

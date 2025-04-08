@@ -14,7 +14,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay} from 'swiper/modules';
 import { motion } from "framer-motion";
 export default function Producto() {
-    const url = 'https://api.modex.com.ar'
+    const url = import.meta.env.VITE_URL_BACK;
     const { id } = useParams();
     const [producto, setProducto] = useState(null);
     const [similiraes,setSimilares] = useState([])

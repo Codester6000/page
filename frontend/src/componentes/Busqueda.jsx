@@ -13,7 +13,7 @@ import Pagination from "@mui/material/Pagination";
 import { useAuth } from "../Auth";
 import {SearchContext} from "../searchContext"
 export default function ProductCard() {
-    const url = 'https://api.modex.com.ar'
+    const url = import.meta.env.VITE_URL_BACK;
     const { searchTerm } = useContext(SearchContext)
     const [productos, setProductos] = useState([]);
     const [pagina, setPagina] = useState(1);

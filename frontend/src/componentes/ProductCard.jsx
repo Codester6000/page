@@ -24,7 +24,7 @@ import SkeletonProd from "./SkeletonProd";
 
 
 export default function ProductCard() {
-    const url = 'https://api.modex.com.ar'
+    const url = import.meta.env.VITE_URL_BACK;
     const [productos, setProductos] = useState([]);
     const [searchParams, setSearchParams] = useSearchParams();
     const [pagina, setPagina] = useState(1);

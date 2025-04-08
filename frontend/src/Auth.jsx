@@ -8,7 +8,7 @@ import {Button } from "@mui/material";
 export const useAuth = () => {
   return useContext(AuthContext);
 };
-const url = 'https://api.modex.com.ar'
+const url = import.meta.env.VITE_URL_BACK;
 // Componente principal
 export const AuthProvider = ({ children }) => {
   const [sesion, setSesion] = useState(()=>{

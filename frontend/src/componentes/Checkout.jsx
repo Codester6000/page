@@ -7,69 +7,69 @@ import { useAuth } from "../Auth";
 import { set, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { formCheckoutSchema } from '../validations/formcheckout'
-import { initMercadoPago, Wallet } from '@mercadopago/sdk-react'
+// import { initMercadoPago, Wallet } from '@mercadopago/sdk-react'
 import {motion} from 'framer-motion'
 
-const urlBack = 'https://api.modex.com.ar'
+const urlBack = import.meta.env.VITE_URL_BACK;
 const urlFront = 'https://modex.com.ar'
 
-async function createPaymentIntention(total,nombre_producto,id_carrito,total_a_pagar){
-  const res = await fetch(`${urlBack}/checkout/intencion-pago`, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({price:total,productName:nombre_producto,id_carrito:id_carrito,total:total_a_pagar})
+// async function createPaymentIntention(total,nombre_producto,id_carrito,total_a_pagar){
+//   const res = await fetch(`${urlBack}/checkout/intencion-pago`, {
+//           method: 'POST',
+//           headers: {
+//               'Content-Type': 'application/json'
+//           },
+//           body: JSON.stringify({price:total,productName:nombre_producto,id_carrito:id_carrito,total:total_a_pagar})
 
-      }  
-  );    
-  const jsonRes = await res.json();
-  console.log(jsonRes)
-  return {
-    checkoutId: jsonRes.data.id,
-    qrString: jsonRes.data.qr,
-    deeplink: jsonRes.data.deeplink,
-  };
-}
-async function showModal(total,nombre_producto,id_carrito,total_a_pagar) {
-  const modalData = await createPaymentIntention(total,nombre_producto,id_carrito,total_a_pagar);
-  var modalObject = {
-      qrString: modalData.qrString,
-      checkoutId: modalData.checkoutId,
-      deeplink:  {
-          url: modalData.deeplink,
-          callbackURL: `${urlFront}/checkout`,
-          callbackURLSuccess: `${urlFront}/thank-you`
-      },
-      callbackURL: `${urlFront}/thank-you`,
-      refreshData: createPaymentIntention,
-      onSuccess: async function () { 
-        const res = await fetch(`${urlBack}/checkout/modo/exito/${modalData.checkoutId}`, {
-          method: 'GET',
-          headers: {
-              'Content-Type': 'application/json'
-          },
+//       }  
+//   );    
+//   const jsonRes = await res.json();
+//   console.log(jsonRes)
+//   return {
+//     checkoutId: jsonRes.data.id,
+//     qrString: jsonRes.data.qr,
+//     deeplink: jsonRes.data.deeplink,
+//   };
+// }
+// async function showModal(total,nombre_producto,id_carrito,total_a_pagar) {
+//   const modalData = await createPaymentIntention(total,nombre_producto,id_carrito,total_a_pagar);
+//   var modalObject = {
+//       qrString: modalData.qrString,
+//       checkoutId: modalData.checkoutId,
+//       deeplink:  {
+//           url: modalData.deeplink,
+//           callbackURL: `${urlFront}/checkout`,
+//           callbackURLSuccess: `${urlFront}/thank-you`
+//       },
+//       callbackURL: `${urlFront}/thank-you`,
+//       refreshData: createPaymentIntention,
+//       onSuccess: async function () { 
+//         const res = await fetch(`${urlBack}/checkout/modo/exito/${modalData.checkoutId}`, {
+//           method: 'GET',
+//           headers: {
+//               'Content-Type': 'application/json'
+//           },
 
-      }  
-  );    
-  const jsonRes = await res.json();
-  console.log(jsonRes)
-      },
-      onFailure: function () { console.log('onFailure') },
-      onCancel: function () { console.log('onCancel') },
-      onClose: async function () {  const res = await fetch(`${urlBack}/checkout/modo/exito/${modalData.checkoutId}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+//       }  
+//   );    
+//   const jsonRes = await res.json();
+//   console.log(jsonRes)
+//       },
+//       onFailure: function () { console.log('onFailure') },
+//       onCancel: function () { console.log('onCancel') },
+//       onClose: async function () {  const res = await fetch(`${urlBack}/checkout/modo/exito/${modalData.checkoutId}`, {
+//         method: 'GET',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
 
-    }  
-);    
-const jsonRes = await res.json();
-console.log(jsonRes) },
-  }
-  ModoSDK.modoInitPayment(modalObject);
-}
+//     }  
+// );    
+// const jsonRes = await res.json();
+// console.log(jsonRes) },
+//   }
+//   ModoSDK.modoInitPayment(modalObject);
+// }
 
 
 
@@ -84,10 +84,10 @@ const Checkout =  () => {
       await trigger(); // Valida todos los campos al pasar el mouse sobre el botón
     };
     const [metodoPago,setMetodoPago] = useState("getnet")
-    initMercadoPago('APP_USR-868c1d1d-2922-496f-bf87-56b0aafe44a2',{
-      locale: 'es-AR',
-    });
-    const [preferenciaMP, setPreferenciaMP] = useState(null);
+    // initMercadoPago('APP_USR-868c1d1d-2922-496f-bf87-56b0aafe44a2',{
+    //   locale: 'es-AR',
+    // });
+    // const [preferenciaMP, setPreferenciaMP] = useState(null);
     const [productos, setProductos] = useState([])
     const [itemsGN, setItemsGN] = useState([])
     const [idCarrito, setIdCarrito] = useState(0)
@@ -95,7 +95,7 @@ const Checkout =  () => {
     const [nombreCompra,setNombreCompra] = useState("")
     const [linkGN, setLinkGN] = useState("")
     const [didMount, setDidMount] = useState(false)
-    const [totalMP, setTotalMP] = useState(0)
+    // const [totalMP, setTotalMP] = useState(0)
     const { sesion } = useAuth();
     const onSubmit = async (data) => {
       console.log("entre")
@@ -148,35 +148,35 @@ const Checkout =  () => {
       }
   };
 
-  const createPreferenceMP = async () => {
-    try {
-      const totalRecargo = Number(Number(total) / 0.90).toFixed(0);
-      setTotalMP(totalRecargo)
-      const response = await fetch(`${urlBack}/checkoutMP/crear-preferencia-mercadopago`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: `Insumos Informaticos Modex, ${idCarrito}`,
-          quantity: 1,
-          price: totalRecargo,
-          id_carrito: idCarrito,
-        }),
-      });
-      console.log(response)
-      if (response.ok) {
-        const data = await response.json();
-        const id = data.id
-        return id;
-      } else {
-        console.error("Error al crear la preferencia de Mercado Pago:", response.status);
-      }
-    } catch (error) {
-      console.log(error);
-    }
+  // const createPreferenceMP = async () => {
+  //   try {
+  //     const totalRecargo = Number(Number(total) / 0.90).toFixed(0);
+  //     setTotalMP(totalRecargo)
+  //     const response = await fetch(`${urlBack}/checkoutMP/crear-preferencia-mercadopago`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         title: `Insumos Informaticos Modex, ${idCarrito}`,
+  //         quantity: 1,
+  //         price: totalRecargo,
+  //         id_carrito: idCarrito,
+  //       }),
+  //     });
+  //     console.log(response)
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       const id = data.id
+  //       return id;
+  //     } else {
+  //       console.error("Error al crear la preferencia de Mercado Pago:", response.status);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
    
-  }
+  // }
   const createLinkGetNet = async () =>{
     if (linkGN !== ""){
       return linkGN;
@@ -226,13 +226,13 @@ const Checkout =  () => {
     await new Promise(resolve => setTimeout(resolve, 2000));
     window.open(linkGN)
   }
-  const handleBuyMP = async () => {
-    const id = await createPreferenceMP();
-    console.log(id)
-    if(id){
-      setPreferenciaMP(id);
-    }
-  };
+  // const handleBuyMP = async () => {
+  //   const id = await createPreferenceMP();
+  //   console.log(id)
+  //   if(id){
+  //     setPreferenciaMP(id);
+  //   }
+  // };
       useEffect(() => {
           getCarrito();
           setDidMount(true)
@@ -479,14 +479,14 @@ return (
               </div>
             </div>
 
-            {preferenciaMP && metodoPago=="mercadoPago" &&
+            {/* {preferenciaMP && metodoPago=="mercadoPago" &&
                <motion.div className="mpcontainer" animate={(!isValid) ? {opacity:0, pointerEvents:"none"} : {opacity:1, disabled:false}} onClick={()=>handleExternalSubmit()} >
                  <div id="wallet_container">
                  
                  <Wallet initialization={{ preferenceId: preferenciaMP }} />
                  </div>
                </motion.div>
-}
+} */}
         </div>
 
     </div>

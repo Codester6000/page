@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 const Register = () =>{
-    const url = 'https://api.modex.com.ar'
+    const url = import.meta.env.VITE_URL_BACK;
     const navigate = useNavigate();
     const [errores,setErrores] = useState("")
     const {register,handleSubmit,resetField,formState:{errors}} = useForm({

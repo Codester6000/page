@@ -41,13 +41,16 @@ getNetRouter.post('/intencion-pago', getAuthToken, async (req, res) =>{
 getNetRouter.post('/webhook', async (req, res) => {
     const body = req.body;
     console.log(body);
-    if (body.data.payment.status === 'APPROVED') {
+    if (body.payment.status === 'APPROVED') {
         const uuid = body.data.order.uuid;
         const sql = "UPDATE carrito SET estado = 'completado', fecha_finalizada = CURRENT_TIMESTAMP() WHERE (id_intencion_pago = ?);"
         const result = await db.execute(sql,[id_pago]);
         const sql2 = `CALL schemamodex.baja_stock_carrito(?);`
 
         const result2 = await db.execute(sql2,[uuid]);
+    }
+    else if(body.payment.status === "DENIED"){
+        console.log("Pago denegado")
     }
 res.status(200).send("Webhook recibido");
 })

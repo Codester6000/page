@@ -10,7 +10,7 @@ import { useAuth } from "../Auth";
 import { Snackbar, Alert } from '@mui/material';
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 export default function Portada(){
-    const url = 'https://api.modex.com.ar'
+    const url = import.meta.env.VITE_URL_BACK;
     const [notebooks, setNotebooks] = useState([]);
     const [armados, setArmados] = useState([]);
     const [nuevosIngresos, setNuevosIngresos] = useState([]);
