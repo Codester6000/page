@@ -160,7 +160,7 @@ const Checkout =  () => {
         body: JSON.stringify({
           title: `Insumos Informaticos Modex, ${idCarrito}`,
           quantity: 1,
-          price: total,
+          price: totalRecargo,
           id_carrito: idCarrito,
         }),
       });
@@ -378,13 +378,13 @@ return (
               <div className="paso">PASO 2</div>
               {metodoPago === "modo" && <p>En tu celular, <span>abri MODO</span> o la <span>App de tu banco</span> y <span>escanea</span> el QR.</p>}
               
-              {metodoPago == "getnet" || metodoPago =="mercadoPago" && <p><span>Hacé click</span> en el boton para ir al <span>link de pago.</span> </p>}
+              {(metodoPago == "getnet" || metodoPago =="mercadoPago") && <p><span>Hacé click</span> en el boton para ir al <span>link de pago.</span> </p>}
               {metodoPago == "transferencia" && <p>Consulta el stock a traves del numero <span>3804353826</span>.</p>}
               </div>
               <div className="cuadroPagoInfo">
               <div className="paso">PASO 3</div>
               {metodoPago === "modo" && <p>Selecciona la tarjeta de <span>Debito</span> o  <span>Credito</span> que quieras usar.</p>}
-              {metodoPago == "getnet" || metodoPago =="mercadoPago" && <p><span>Realiza</span> el pago con la tarjeta de tu preferencia.</p>}
+              {(metodoPago == "getnet" || metodoPago == "mercadoPago") && <p><span>Realiza</span> el pago con la tarjeta de tu preferencia.</p>}
               {metodoPago == "transferencia" && <p>Realiza la transferencia por el total al Alias "<span>Modex.mp</span>".</p>}
               
               </div>
