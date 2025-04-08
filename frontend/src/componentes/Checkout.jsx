@@ -333,7 +333,7 @@ return (
                 MODO o App Bancaria
                 <img src={logoModo} alt="" className="logoModo" />
               </div> */}
-              <div 
+              {/* <div 
                 className={`opcionPago ${metodoPago === "mercadoPago" ? "seleccionada" : ""}`} 
                 onClick={() => {
                   setMetodoPago("mercadoPago")
@@ -342,7 +342,7 @@ return (
               >
                 Mercado Pago
                 <img src={logoMP} alt="" className="logoMP" />
-              </div>
+              </div> */}
               
               <div 
                 className={`opcionPago ${metodoPago === "transferencia" ? "seleccionada" : ""}`} 
