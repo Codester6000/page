@@ -43,7 +43,7 @@ getNetRouter.post('/webhook', async (req, res) => {
     console.log(body);
     if (body.data.payment.status === 'APPROVED') {
         const uuid = body.data.order.uuid;
-        const sql = "UPDATE carrito SET estado = 'completado', fecha_finalizada = CURRENT_TIMESTAMP() WHERE (id_intencion_pago = ?);"
+        const sql = "UPDATE carrito SET estado = 'completado', metodo_pago = 'GetNet',fecha_finalizada = CURRENT_TIMESTAMP() WHERE (id_intencion_pago = ?);"
         const result = await db.execute(sql,[uuid]);
         const sql2 = `CALL schemamodex.baja_stock_carrito(?);`
 
