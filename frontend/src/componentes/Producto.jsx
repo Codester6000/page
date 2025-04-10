@@ -111,14 +111,19 @@ export default function Producto() {
                         <div className="productPayment">
                 
                             <div className="productPrice">
-                                Precio especial<span>
+                            <p style={{fontSize:"0.9rem"}}>Precio de lista: <span style={{color:'black', fontSize:"1rem"}}>{Number((Number(producto?.precio_pesos_iva_ajustado) * 1.15)).toLocaleString('es-ar', {
+                                    style: 'currency',
+                                    currency: 'ARS',
+                                    maximumFractionDigits:0
+                                })}</span>  </p>
+                                Precio transferencia/deposito<span>
                                 {Number(producto?.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
                                     style: 'currency',
                                     currency: 'ARS',
                                     maximumFractionDigits:0
                                 })}
                                                 </span>
-
+                              
                                <p> 6 cuotas sin interes de <span style={{color:'black', fontSize:"1.4rem"}}>{Number((Number(producto?.precio_pesos_iva_ajustado) * 1.2748)/6).toLocaleString('es-ar', {
                                     style: 'currency',
                                     currency: 'ARS',
