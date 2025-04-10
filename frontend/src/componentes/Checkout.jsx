@@ -96,6 +96,7 @@ const Checkout =  () => {
     const [linkGN, setLinkGN] = useState("")
     const [didMount, setDidMount] = useState(false)
     const [totalMP, setTotalMP] = useState(0)
+    const [multiplicador, setMultiplicador] = useState(1)
     const { sesion } = useAuth();
     const onSubmit = async (data) => {
       console.log("entre")
@@ -271,6 +272,20 @@ const Checkout =  () => {
         handleGN();
       }
     },[productos])
+    useEffect(()=>{
+      switch (metodoPago) {
+        case 'transferencia':
+          setMultiplicador(1)
+          break;
+        case 'mercadoPago':
+          setMultiplicador(1.15)
+          break;
+        case 'getnet':
+          setMultiplicador(1.2748)
+        default:
+          break;
+      }
+    },[metodoPago])
 return (
     
     <div className="containerCheckout">
@@ -418,7 +433,7 @@ return (
                             <img src={producto.url_imagenes[producto.url_imagenes.length -1]} alt="" className="productoCheckout" />
                             <div className="infoNyP">
                               <div className="infoProductoCheckout">{producto.nombre}</div>
-                              <div className="precioUnitario">{Number(producto.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
+                              <div className="precioUnitario">{Number(Number(producto.precio_pesos_iva_ajustado)*multiplicador).toLocaleString('es-ar', {
     style: 'currency',
     currency: 'ARS',
     maximumFractionDigits:0
