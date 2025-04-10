@@ -62,7 +62,7 @@ routerMP.post('/webhook-mercadopago', async (req, res) => {
                     const comprobanteId = data.id;
                     console.log(carritoId);
                     console.log('comprobanteeeee' ,comprobanteId)
-                    const sql = "UPDATE carrito SET estado = 'completado', fecha_finalizada = CURRENT_TIMESTAMP() , comprobante = ?  WHERE (id_carrito = ?);"
+                    const sql = "UPDATE carrito SET estado = 'completado', metodo_pago = 'MercadoPago', fecha_finalizada = CURRENT_TIMESTAMP() , comprobante = ?  WHERE (id_carrito = ?);"
                     const result = await db.execute(sql,[comprobanteId,carritoId]);
                     const sql2 = `CALL schemamodex.baja_stock_carrito(?);`
                     const result2 = await db.execute(sql2,[comprobanteId]);
