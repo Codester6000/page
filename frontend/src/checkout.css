@@ -213,6 +213,23 @@ span{
     justify-content: center;
     align-items: center;
 }
+.deleteCheckout{
+    height: 24px;
+    cursor: pointer;
+    border: 1px double hsla(0, 0%, 0%, 0.37);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    }
+.deleteCheckout:hover{
+    scale: 1.1;
+}
+.deleteCheckout img{
+    height: 24px;
+    width: 24px;
+}
+
+
 @media screen and (max-width: 768px){
     .containerCheckout{
         flex-direction: column;

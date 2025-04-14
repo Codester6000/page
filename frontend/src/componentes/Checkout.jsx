@@ -74,7 +74,6 @@ const urlFront = 'https://modex.com.ar'
 
 
 const Checkout =  () => {
-
     const {register,handleSubmit,formState:{errors,isValid},trigger} = useForm({
             resolver:zodResolver(formCheckoutSchema),
             mode:'onChange'
@@ -83,7 +82,7 @@ const Checkout =  () => {
     const handleHover = async () => {
       await trigger(); // Valida todos los campos al pasar el mouse sobre el botón
     };
-    const [metodoPago,setMetodoPago] = useState("getnet")
+    const [metodoPago,setMetodoPago] = useState("transferencia")
     initMercadoPago('APP_USR-868c1d1d-2922-496f-bf87-56b0aafe44a2',{
       locale: 'es-AR',
     });
@@ -206,7 +205,7 @@ const Checkout =  () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          items: itemsGN,
+          items: itemsAux,
           id_carrito: idCarrito,
         }),
       })
@@ -240,7 +239,7 @@ const Checkout =  () => {
       }, []);
 
 
-    
+      
       const handleExternalSubmit =  () => {
         productos.map((producto) => {
           setNombreCompra(producto.categorias + " "+ producto.cantidad + " "  + nombreCompra)
@@ -286,6 +285,71 @@ const Checkout =  () => {
           break;
       }
     },[metodoPago])
+
+    const deleteCarrito = async (id_producto) => {
+      try {
+        setLinkGN("");
+        const response = await fetch(
+          `${urlBack}/carrito`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${sesion.token}`,
+            }, 
+            body: JSON.stringify({ id_producto })
+          }
+        );
+    
+        if (response.ok) {
+          console.log(`Producto ${id_producto} eliminado del carrito.`);
+          
+          // Actualiza el carrito y guarda los datos actualizados
+          const carritoResponse = await fetch(
+            `${urlBack}/carrito`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${sesion.token}`,
+              },
+            }
+          );
+          
+          if (carritoResponse.ok) {
+            const data = await carritoResponse.json();
+            if (data.carrito && Array.isArray(data.carrito)) {
+              // Actualiza el estado con los nuevos datos
+              setProductos(data.carrito);
+              const total = data.carrito.reduce((sum, producto) => sum + (parseFloat(producto.precio_pesos_iva_ajustado).toFixed(0) * producto.cantidad), 0);
+              setTotal(total);
+              setIdCarrito(data.carrito.length > 0 ? data.carrito[0]?.id_carrito : 0);
+              
+              // Después de actualizar los datos, maneja las acciones adicionales según el método de pago
+              await new Promise(resolve => setTimeout(resolve, 500)); // Pequeña pausa para asegurar que el estado se haya actualizado
+              
+              if (metodoPago === "mercadoPago") {
+                const newMP = await createPreferenceMP();
+                if (newMP) {
+                  setPreferenciaMP(newMP);
+                }
+              } else if (metodoPago === "getnet") {
+                const newLinkGN = await createLinkGetNet();
+                setLinkGN(newLinkGN);
+              }
+            } else {
+              console.error("Estructura de datos incorrecta:", data);
+            }
+          } else {
+            console.error("Error al obtener productos:", carritoResponse.status);
+          }
+        } else {
+          console.error("Error al eliminar producto:", response.status);
+        }
+      } catch (error) {
+        console.error("Error en la solicitud:", error);
+      }
+    };
 return (
     
     <div className="containerCheckout">
@@ -440,6 +504,7 @@ return (
 })}</div>
                             </div>
                             <div className="cantidadCheckout"> {producto.cantidad}</div>
+                            <div className="deleteCheckout" onClick={()=> deleteCarrito(producto.id_producto)}> <img src="/iconos/basura.png" alt="boton borrar"   /> </div>
                         </div>
                         <div className="lineaGris"></div>
                     </div>
