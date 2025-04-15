@@ -100,16 +100,17 @@
 .filtrosArmador{
     display: flex;
     align-items: center;
+    left: 0;
 }
 .ordernarPor,.siguiente{
     background: #a111ad;
     color: white;
     font-family: "League Spartan";
-    font-size: 25px;
-    margin-left: 20px;
+    font-size: 18px;
     border-radius: 10px;
     padding: 5px;
     margin-top: 20px;
+    max-width: fit-content;
 }
 .siguiente:hover{
     scale: 1.1;
@@ -123,6 +124,9 @@
 }
 .chupalaIvan{
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .mensajeUsado{
     display: flex;
@@ -138,6 +142,12 @@
 
 
 }
+.filtrosArmador{
+    position: absolute;
+    left: -10px;
+    
+}
+
 
 @media (max-width: 800px) {
     .armador{
