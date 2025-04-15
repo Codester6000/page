@@ -184,7 +184,7 @@ const Checkout =  () => {
     let itemsAux = []
     try {
       productos.forEach(producto =>{
-        const precioGN = Number(Number(producto.precio_pesos_iva_ajustado)*1.2748).toFixed(2).replace('.', '');
+        const precioGN = Number(Number(producto.precio_pesos_iva_ajustado)*1.15).toFixed(2).replace('.', '');
 
         itemsAux.push({
           "id": producto.id_producto,
@@ -280,7 +280,7 @@ const Checkout =  () => {
           setMultiplicador(1.15)
           break;
         case 'getnet':
-          setMultiplicador(1.2748)
+          setMultiplicador(1.15)
         default:
           break;
       }
@@ -520,7 +520,7 @@ return (
                   currency: 'ARS',
                   maximumFractionDigits:0
               })}
-              {metodoPago =="getnet" && Number(Number(total)*1.2748).toLocaleString('es-ar', {
+              {metodoPago =="getnet" && Number(Number(total)*1.15).toLocaleString('es-ar', {
                   style: 'currency',
                   currency: 'ARS',
                   maximumFractionDigits:0

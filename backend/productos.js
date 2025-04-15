@@ -199,6 +199,7 @@ productosRouter.get("/:id", validarId, verificarValidaciones, async (req, res) =
 		p.precio_dolar_iva,
 		p.iva, 
 		p.precio_pesos,
+        pro.nombre_proveedor,
         p.precio_pesos_iva,
     CASE
     WHEN pro.nombre_proveedor = 'elit' AND pr.id_producto IN (
