@@ -213,7 +213,7 @@ export default function Carrito() {
                         maximumFractionDigits:0
                     })}
     <button style={{
-        width:'100px',border:"none", backgroundColor:"#a111ad", padding:"12px",
+        border:"none", backgroundColor:"#a111ad", padding:"12px",
         alignSelf:'center', color:"#ffffff",borderRadius:'12px',
         cursor:"pointer", marginTop:"5px",width:"fit-content"}} onClick={()=>navigate('/checkout')}>Finalizar Compra</button>
                     </div>

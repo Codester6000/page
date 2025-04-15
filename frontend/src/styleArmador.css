@@ -121,7 +121,23 @@
     color: #000; 
     
 }
+.chupalaIvan{
+    position: relative;
+}
+.mensajeUsado{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-bottom: 10px;
+}
+.redWrapp{
+     border:1px solid black;
+     padding:10px; 
+     width: fit-content;
 
+
+}
 
 @media (max-width: 800px) {
     .armador{
@@ -129,6 +145,23 @@
     }
     .tipo{
         width: 90vw;
+        margin: 0;
+    }
+    .filtrosArmador{
+        flex-direction: column;
+    }
+    .filtrosArmador div{
+        max-width: 100dvw;
+    }
+    .filtrosArmador h2, .filtrosArmador p{
+        max-width: 70dvw;
+        font-size: small;
+    }
+    .redWrapp{
+        padding-left: 10px;
+        padding-right: 10px;
+        width: fit-content;
+        border: none;
         margin: 0;
     }
   }
