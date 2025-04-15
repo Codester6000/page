@@ -274,6 +274,7 @@ useEffect(() => {
 return(
 
     <div className="containerArmador">
+
         <div className="armador">
             <div className="ladoIzquierdoArmador">
                 <div className="tipo">
@@ -355,8 +356,20 @@ return(
 <Button variant="contained" onClick={()=>handleAgregarCarrito()} size="" sx={{ ml: 2, my:1.5, backgroundColor: "#a111ad", height: 40, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Comprar</Button>
                 </div>
             </div>
+
             <div className="productos">
-                <form className='filtrosArmador'>
+                <div className="chupalaIvan">
+
+
+                <div className="mensajeUsado">
+                <div className='redWrapp' >
+
+<h2 style={{color:'red'}}> ¡Solo se puede agregar un producto USADO al carrito!</h2>
+<p style={{color:'red', fontSize:"15px", textAlign:"center"}}> Si necesitas comprar más consultar por WhatsApp</p>
+</div>
+                </div>
+                
+                <form className='filtrosArmador' style={{position:'relative'}}>
                     <select className='ordernarPor' name="ordernar Por" value={order} onChange={(e)=>setOrder(e.target.value)}>
                         <option value="ASC">Precio menor a mayor</option>
                         <option value="DESC">Precio mayor a menor</option>
@@ -369,7 +382,10 @@ return(
                                     setTipo("monitores");
                                 }
                     }}> Siguiente </div>}
+                    
                 </form>
+        
+                </div>
                 <Grid container spacing={2} style={{ marginTop: "10px", justifyContent: "center"}}>
             {
                             // eslint-disable-next-line no-unused-vars

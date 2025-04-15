@@ -107,7 +107,7 @@ export default function Producto() {
                         <div className="productCategory">{producto?.categorias[0]}</div>
                         <div className="productStock" style={(disponibilidad=="DISPONIBLE") ? {color:'#5ca845'} : {color:'#ff6a00'}}>
                         <div className="stockTxt">Stock</div> {disponibilidad}</div>
-                        {(producto?.stock < 5)&& <p style={{fontSize:"13px"}}>Consultar Stock</p>}
+                        {(producto?.stock < 5)&& <p style={{fontSize:"13px"}}>Consultar stock por WhatsApp para validar compra</p>}
                     </div>
                         <div className="productPayment">
                 
