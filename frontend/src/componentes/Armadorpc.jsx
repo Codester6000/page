@@ -372,15 +372,9 @@ return(
                 <div className="chupalaIvan">
 
 
-                <div className="mensajeUsado">
-                <div className='redWrapp' >
 
-<h2 style={{color:'red'}}> ¡Solo se puede agregar hasta 2 productos USADOS al carrito!</h2>
-<p style={{color:'red', fontSize:"15px", textAlign:"center"}}> Si necesitas comprar más consultar por WhatsApp</p>
-</div>
-                </div>
                 
-                <form className='filtrosArmador' style={{position:'relative'}}>
+                <form className='filtrosArmador' >
                     <select className='ordernarPor' name="ordernar Por" value={order} onChange={(e)=>setOrder(e.target.value)}>
                         <option value="ASC">Precio menor a mayor</option>
                         <option value="DESC">Precio mayor a menor</option>
@@ -395,7 +389,13 @@ return(
                     }}> Siguiente </div>}
                     
                 </form>
-        
+                <div className="mensajeUsado">
+                <div className='redWrapp' >
+
+<h2 style={{color:'red'}}> Solo se puede agregar hasta 2 productos USADOS al carrito!</h2>
+<p style={{color:'red', fontSize:"15px", textAlign:"center"}}> Si necesitas comprar más consultar por WhatsApp</p>
+</div>
+                </div>
                 </div>
                 <Grid container spacing={2} style={{ marginTop: "10px", justifyContent: "center"}}>
             {
