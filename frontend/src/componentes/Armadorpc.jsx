@@ -375,7 +375,7 @@ return(
                 <div className="mensajeUsado">
                 <div className='redWrapp' >
 
-<h2 style={{color:'red'}}> ¡Solo se puede agregar un producto USADO al carrito!</h2>
+<h2 style={{color:'red'}}> ¡Solo se puede agregar hasta 2 productos USADOS al carrito!</h2>
 <p style={{color:'red', fontSize:"15px", textAlign:"center"}}> Si necesitas comprar más consultar por WhatsApp</p>
 </div>
                 </div>
