@@ -182,6 +182,7 @@ const handleSeleccionar = (id_producto) =>{
 
 
 }
+const sleep = ms => new Promise(r => setTimeout(r, ms))
 const handleAgregarCarrito = async () => {
     if(total == 0){
         return
@@ -209,8 +210,14 @@ const handleAgregarCarrito = async () => {
         }
     });
 
-    Object.entries(carritoObj).forEach(async([id_producto, cantidad]) => {
-        try {
+    try {
+        // Procesar cada producto de forma secuencial
+        const entries = Object.entries(carritoObj);
+        
+        for (const [id_producto, cantidad] of entries) {
+            // Esperar 1000ms antes de cada petición
+            await sleep(50);
+            
             const response = await fetch(
                 `${url}/carrito`,
                 {
@@ -219,17 +226,21 @@ const handleAgregarCarrito = async () => {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${sesion.token}`,
                     },
-                    body: JSON.stringify({ "id_producto": id_producto,"cantidad":cantidad })
+                    body: JSON.stringify({ "id_producto": id_producto, "cantidad": cantidad })
                 }
             );
+            
             if(response.ok){
-                console.log("Producto agregado al carrito")}
-        } catch (error) {
-            console.error(error)
+                console.log("Producto agregado al carrito");
+            }
         }
-    })
-
-    navigate('/checkout')
+        
+        // Solo navegar cuando todo esté listo
+        navigate('/checkout');
+    } catch (error) {
+        console.error("Error al agregar productos al carrito:", error);
+        // Manejar el error, tal vez mostrar una notificación al usuario
+    }
 };
 
 // Agregar nuevo useEffect para manejar el cálculo de totales
