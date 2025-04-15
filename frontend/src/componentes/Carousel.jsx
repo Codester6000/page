@@ -42,30 +42,18 @@ const Carousel = () => {
       <SwiperSlide>
       <img className='imgCR' src="carousel/1-mobile.png" alt="Slide 3" />
       </SwiperSlide>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/2-mobile.png" alt="Slide 3" />
-      </SwiperSlide>
+
       <SwiperSlide>
       <img className='imgCR' src="carousel/3-mobile.png" alt="Slide 3" />
       </SwiperSlide>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/4-mobile.png" alt="Slide 3" />
-      </SwiperSlide>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/5-mobile.png" alt="Slide 3" />
-      </SwiperSlide>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/6-mobile.png" alt="Slide 3" />
-      </SwiperSlide>
+
       <SwiperSlide>
       <img className='imgCR' src="carousel/7-mobile.png" alt="Slide 3" />
       </SwiperSlide>
       <SwiperSlide>
       <img className='imgCR' src="carousel/8-mobile.png" alt="Slide 3" />
       </SwiperSlide>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/9-mobile.png" alt="Slide 3" />
-      </SwiperSlide>
+
       <SwiperSlide>
       <img className='imgCR' src="carousel/10-mobile.png" alt="Slide 3" />
       </SwiperSlide>
@@ -73,21 +61,6 @@ const Carousel = () => {
       </div>
     :
       <div>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/1.png" alt="Slide 3" />
-      </SwiperSlide>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/2.png" alt="Slide 3" />
-      </SwiperSlide>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/3.png" alt="Slide 3" />
-      </SwiperSlide>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/4.png" alt="Slide 3" />
-      </SwiperSlide>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/5.png" alt="Slide 3" />
-      </SwiperSlide>
       <SwiperSlide>
       <img className='imgCR' src="carousel/6.png" alt="Slide 3" />
       </SwiperSlide>
@@ -97,6 +70,7 @@ const Carousel = () => {
       <SwiperSlide>
       <img className='imgCR' src="carousel/8.png" alt="Slide 3" />
       </SwiperSlide>
+    
 
       </div>
 
