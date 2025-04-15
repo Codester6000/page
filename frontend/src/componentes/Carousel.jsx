@@ -36,31 +36,71 @@ const Carousel = () => {
       slidesPerView={1} 
       loop={true} 
     > 
+      {isMobile ? 
+      <div>
 
       <SwiperSlide>
-      {isMobile ? <img className='imgCR' src="carousel/3-mobile.png" alt="Slide 3" />: <img className='imgCR' src="carousel/3.png" alt="Slide 3" />}
+      <img className='imgCR' src="carousel/1-mobile.png" alt="Slide 3" />
       </SwiperSlide>
       <SwiperSlide>
-      {isMobile ? <img className='imgCR' src="carousel/4-mobile.png" alt="Slide 4" />: <img className='imgCR' src="carousel/4.png" alt="Slide 4" />}
+      <img className='imgCR' src="carousel/2-mobile.png" alt="Slide 3" />
       </SwiperSlide>
       <SwiperSlide>
-        {isMobile ? <img className='imgCR' src="carousel/5-mobile.png" alt="Slide 5" />: <img className='imgCR' src="carousel/5.png" alt="Slide 5" />}
+      <img className='imgCR' src="carousel/3-mobile.png" alt="Slide 3" />
       </SwiperSlide>
       <SwiperSlide>
-      {isMobile ? <img className='imgCR' src="carousel/6-mobile.png" alt="Slide 6" />: <img className='imgCR' src="carousel/6.png" alt="Slide 6" />}
+      <img className='imgCR' src="carousel/4-mobile.png" alt="Slide 3" />
       </SwiperSlide>
       <SwiperSlide>
-      {isMobile ? <img className='imgCR' src="carousel/7-mobile.png" alt="Slide 7" />: <img className='imgCR' src="carousel/7.png" alt="Slide 7" />}
+      <img className='imgCR' src="carousel/5-mobile.png" alt="Slide 3" />
       </SwiperSlide>
       <SwiperSlide>
-      {isMobile ? <img className='imgCR' src="carousel/8-mobile.png" alt="Slide 8" />: <img className='imgCR' src="carousel/8.png" alt="Slide 8" />}
+      <img className='imgCR' src="carousel/6-mobile.png" alt="Slide 3" />
       </SwiperSlide>
       <SwiperSlide>
-        {isMobile ? <img className='imgCR' src="carousel/1-mobile.png" alt="Slide 1" />: <img className='imgCR' src="carousel/1.png" alt="Slide 1" />}
+      <img className='imgCR' src="carousel/7-mobile.png" alt="Slide 3" />
       </SwiperSlide>
       <SwiperSlide>
-      {isMobile ? <img className='imgCR' src="carousel/2-mobile.png" alt="Slide 2" />: <img className='imgCR' src="carousel/2.png" alt="Slide 2" />}
+      <img className='imgCR' src="carousel/8-mobile.png" alt="Slide 3" />
       </SwiperSlide>
+      <SwiperSlide>
+      <img className='imgCR' src="carousel/9-mobile.png" alt="Slide 3" />
+      </SwiperSlide>
+      <SwiperSlide>
+      <img className='imgCR' src="carousel/10-mobile.png" alt="Slide 3" />
+      </SwiperSlide>
+
+      </div>
+    :
+      <div>
+      <SwiperSlide>
+      <img className='imgCR' src="carousel/1.png" alt="Slide 3" />
+      </SwiperSlide>
+      <SwiperSlide>
+      <img className='imgCR' src="carousel/2.png" alt="Slide 3" />
+      </SwiperSlide>
+      <SwiperSlide>
+      <img className='imgCR' src="carousel/3.png" alt="Slide 3" />
+      </SwiperSlide>
+      <SwiperSlide>
+      <img className='imgCR' src="carousel/4.png" alt="Slide 3" />
+      </SwiperSlide>
+      <SwiperSlide>
+      <img className='imgCR' src="carousel/5.png" alt="Slide 3" />
+      </SwiperSlide>
+      <SwiperSlide>
+      <img className='imgCR' src="carousel/6.png" alt="Slide 3" />
+      </SwiperSlide>
+      <SwiperSlide>
+      <img className='imgCR' src="carousel/7.png" alt="Slide 3" />
+      </SwiperSlide>
+      <SwiperSlide>
+      <img className='imgCR' src="carousel/8.png" alt="Slide 3" />
+      </SwiperSlide>
+
+      </div>
+
+    }
 
     </Swiper>
   );

@@ -106,7 +106,8 @@ export default function Producto() {
                         <div className="productTitle">{producto?.nombre}</div>
                         <div className="productCategory">{producto?.categorias[0]}</div>
                         <div className="productStock" style={(disponibilidad=="DISPONIBLE") ? {color:'#5ca845'} : {color:'#ff6a00'}}>
-                           <div className="stockTxt">Stock</div> {disponibilidad}</div>
+                        <div className="stockTxt">Stock</div> {disponibilidad}</div>
+                        {(producto?.stock < 5)&& <p style={{fontSize:"13px"}}>Consultar Stock</p>}
                     </div>
                         <div className="productPayment">
                 
@@ -123,8 +124,7 @@ export default function Producto() {
                                     maximumFractionDigits:0
                                 })}
                                                 </span>
-                              
-                               <p> 6 cuotas sin interes de <span style={{color:'black', fontSize:"1.4rem"}}>{Number((Number(producto?.precio_pesos_iva_ajustado) * 1.2748)/6).toLocaleString('es-ar', {
+                               {/* <p> 6 cuotas sin interes de <span style={{color:'black', fontSize:"1.4rem"}}>{Number((Number(producto?.precio_pesos_iva_ajustado) * 1.2748)/6).toLocaleString('es-ar', {
                                     style: 'currency',
                                     currency: 'ARS',
                                     maximumFractionDigits:0
@@ -134,7 +134,7 @@ export default function Producto() {
                                     style: 'currency',
                                     currency: 'ARS',
                                     maximumFractionDigits:0
-                                })}</span></p>
+                                })}</span></p> */}
                                 <button className="btn-agregar-carrito add-cart" onClick={()=>agregarCarrito(producto.id_producto)}>Agregar al carrito</button>
                             </div>
                             <div className="warranty"> <img src={escudo} width='25px' alt="escudo garantia" />Garantía - {producto?.garantia_meses} meses</div>
@@ -157,7 +157,7 @@ export default function Producto() {
             </div>
                     </div>
             </div>
-                <div className="aditionalInfo">{producto?.detalle}</div>
+                { (producto?.detalle != "a") && <div className="aditionalInfo">{producto?.detalle}</div>}
                 <div className="bloqueNI" style={{marginBottom:"10px"}}>
                     <h1 style={{fontSize:'24px'}}>PRODUCTOS SIMILARES</h1>
                 <div className="lineaNaranja">

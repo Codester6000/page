@@ -124,15 +124,8 @@ export default function Carrito() {
             <Card sx={{ width:isMobile ? "100dvw" : "80dvw", bgcolor: "#e0e0e0", my: "20px", paddingLeft:isMobile ? 3 : 9}} >
                 
             <Typography  level="h1" id="card-description"  sx={{ fontWeight: 'bold' }}> Carrito de {sesion.username}</Typography>
+
             
-            <Typography className="divComprar" textAlign='center' level="h3" sx={{ mt: 3, fontWeight: 'bold', color: 'orange',display:'flex',flexDirection:'column' }}>
-                    Total: {totales.toLocaleString('es-ar', {
-    style: 'currency',
-    currency: 'ARS',
-    maximumFractionDigits:0
-})}
-    <button style={{width:'100px',border:"none", backgroundColor:"#a111ad", padding:"7px",alignSelf:'center', color:"#ffffff",borderRadius:'12px', cursor:"pointer", marginTop:"5px"}} onClick={()=>navigate('/checkout')}>Comprar</button>
-                </Typography>
                 <Grid container spacing={3} sx={{mt: "10px"}} >
                     {//aca hay que conectar los los botones con sus respectivas funciones eliminar , y un put para el + - 
                     }
@@ -210,7 +203,21 @@ export default function Carrito() {
                     )}
                 </Grid>
 
+                <Typography className="divComprar" textAlign='center' level="h3" sx={{ mt: 3, fontWeight: 'bold', color: 'orange',display:'flex', justifyContent:"flex-end"  }}>
+                    <div style={{display:"flex", justifyContent:"center", flexDirection:"column", marginRight:"38px" }}>
 
+
+                    Total: {totales.toLocaleString('es-ar', {
+                        style: 'currency',
+                        currency: 'ARS',
+                        maximumFractionDigits:0
+                    })}
+    <button style={{
+        width:'100px',border:"none", backgroundColor:"#a111ad", padding:"12px",
+        alignSelf:'center', color:"#ffffff",borderRadius:'12px',
+        cursor:"pointer", marginTop:"5px",width:"fit-content"}} onClick={()=>navigate('/checkout')}>Finalizar Compra</button>
+                    </div>
+                </Typography>
                 <Pagination count={Math.ceil(productos.length / itemPorPagina)} pagina={pagina} onChange={(e, value) => setPagina(value)} color="primary" sx={{
                     mt: 3, display: "flex", justifyContent: "center",
                     "& .MuiPaginationItem-root": {
