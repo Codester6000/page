@@ -125,8 +125,9 @@
 .chupalaIvan{
     position: relative;
     display: flex;
+    width: 96%;
+    margin-left: 20px;
     justify-content: center;
-    align-items: center;
 }
 .mensajeUsado{
     display: flex;
@@ -147,7 +148,14 @@
     left: -10px;
     
 }
-
+@media (max-width:1556px){
+    .chupalaIvan{
+        flex-direction: column-reverse;
+    }
+    .filtrosArmador{
+        position: relative;
+    }
+}
 
 @media (max-width: 800px) {
     .armador{
@@ -159,6 +167,7 @@
     }
     .filtrosArmador{
         flex-direction: column;
+        position: relative;
     }
     .filtrosArmador div{
         max-width: 100dvw;
@@ -173,5 +182,9 @@
         width: fit-content;
         border: none;
         margin: 0;
+    }
+    .chupalaIvan{
+        flex-direction: column;
+        text-align: center;
     }
   }
