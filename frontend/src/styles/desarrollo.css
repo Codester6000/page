@@ -17,6 +17,9 @@
     gap: 25px;
 }
 
+.negritas{
+    font-weight: 800;
+}
 .saludoDesarrollo{
     color: #ff335f;
     font-size: 1.4rem;
