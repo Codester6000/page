@@ -1,84 +1,64 @@
-import { Swiper, SwiperSlide } from 'swiper/react';
-import {  Pagination, Autoplay,} from 'swiper/modules';
-import 'swiper/swiper-bundle.css';
-import './Carousel.css'
-import { useState,useEffect } from 'react';
-// poner en la terminar
-// npm install swiper
+import { useState, useEffect } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Autoplay } from "swiper/modules";
+import "swiper/swiper-bundle.css";
+import "./Carousel.css";
 
-// para tener mejor obtimizadas las imagenes del carusel
-// deben de ser imagenes en 1600 x350px
-// el contenido tiene que estar bien centrado así evitamos
-// que se pierda el contenido importante
+// Notas:
+// - Asegurate de instalar Swiper: `npm install swiper`
+// - Imágenes optimizadas: 1600x350px, con contenido centrado
+// - Las imágenes deben estar en: /public/carousel/
+// - Próximamente: eliminar límite de cantidad de imágenes
 
-// tengo que hacer que tome las imagenes de una carpeta especifica
-//(probablemente "/public/noticias/" y dejar una cantidad especifica)
-// proximamente hacer que no tenga limitacion de cantidad
 const Carousel = () => {
-  const [isMobile, setIsMobile] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
+
   useEffect(() => {
-    setIsMobile(window.innerWidth < 800);
     const handleResize = () => {
-        setIsMobile(window.innerWidth < 800);
-      };
-  
-      window.addEventListener("resize", handleResize);
-  
-      //cleanup of event listener
-      return () => window.removeEventListener("resize", handleResize);
-}, []);
+      setIsMobile(window.innerWidth < 800);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Rutas de imágenes según tipo de dispositivo
+  const mobileImages = [
+    "1-mobile.png",
+    "3-mobile.png",
+    "7-mobile.png",
+    "8-mobile.png",
+    "10-mobile.png",
+  ];
+
+  const desktopImages = ["6.png", "7.png", "8.png"];
+
+  const images = isMobile ? mobileImages : desktopImages;
+
   return (
     <Swiper
-      className='swiperRR'
-      pagination={true}
+      className="swiperRR"
+      pagination={{ clickable: true }}
       modules={[Pagination, Autoplay]}
-      spaceBetween={0} 
-      slidesPerView={1} 
-      loop={true} 
-    > 
-      {isMobile ? 
-      <div>
-
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/1-mobile.png" alt="Slide 3" />
-      </SwiperSlide>
-
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/3-mobile.png" alt="Slide 3" />
-      </SwiperSlide>
-
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/7-mobile.png" alt="Slide 3" />
-      </SwiperSlide>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/8-mobile.png" alt="Slide 3" />
-      </SwiperSlide>
-
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/10-mobile.png" alt="Slide 3" />
-      </SwiperSlide>
-
-      </div>
-    :
-      <div>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/6.png" alt="Slide 3" />
-      </SwiperSlide>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/7.png" alt="Slide 3" />
-      </SwiperSlide>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/8.png" alt="Slide 3" />
-      </SwiperSlide>
-    
-
-      </div>
-
-    }
-
+      spaceBetween={0}
+      slidesPerView={1}
+      loop
+      autoplay={{
+        delay: 3000,
+        disableOnInteraction: false,
+      }}
+    >
+      {images.map((imageName, index) => (
+        <SwiperSlide key={index}>
+          <img
+            className="imgCR"
+            src={`carousel/${imageName}`}
+            alt={`Slide ${index + 1}`}
+          />
+        </SwiperSlide>
+      ))}
     </Swiper>
   );
 };
-
 
 export default Carousel;
