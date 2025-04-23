@@ -11,6 +11,7 @@ import modoCheckoutRouter from "./checkout.js";
 import getNetRouter from "./checkoutGetNet.js";
 
 import routerMP from "./checkoutMP.js";
+import { categoriasRouter } from "./categorias.js";
 
 const PUERTO = 3000;
 const HOST = "0.0.0.0";
@@ -43,6 +44,7 @@ app.use("/favorito", favoritoRouter);
 app.use("/checkout", modoCheckoutRouter);
 app.use("/checkoutMP", routerMP);
 app.use("/checkoutGN", getNetRouter);
+app.use('/categorias',categoriasRouter);
 app.get("/", (req, res) => {
   res.send("hola mundo");
 });
