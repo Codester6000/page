@@ -39,6 +39,7 @@ def extraer_columnas_csv(ruta_csv):
         lector_csv = csv.DictReader(archivo_csv,delimiter=";")
         for fila in lector_csv:
             nombre = fila["Producto"]
+            deposito = "Local"
             stock = int(float(fila["Stock"].replace(',','.')))
             garantia_meses = 6
             detalle = "a"
@@ -64,7 +65,7 @@ def extraer_columnas_csv(ruta_csv):
                 precio_pesos = float(fila["Precio Compra"].replace('.','').replace(',','.')) * float(dolar_venta)
                 precio_pesos_iva = float(fila['Precio Final'].replace('.','').replace(',','.')) * float(dolar_venta)
             if (categoria != 0 ):
-                parametros = (nombre,stock,garantia_meses,detalle,largo,alto,ancho,peso,codigo_fabricante,marca,categoria,sub_categoria,proveedor,precio_dolares,precio_dolares_iva,iva,precio_pesos,precio_pesos_iva,url_imagen)
+                parametros = (nombre,stock,garantia_meses,detalle,largo,alto,ancho,peso,codigo_fabricante,marca,categoria,sub_categoria,proveedor,precio_dolares,precio_dolares_iva,iva,precio_pesos,precio_pesos_iva,url_imagen,deposito)
                 print(parametros)
                 try:
                     mycursor.callproc("cargarDatosProducto", parametros)
