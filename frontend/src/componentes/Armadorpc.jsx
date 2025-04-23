@@ -312,10 +312,11 @@ return(
                                 return (
                                     <div className="productoCarritoArmador" key={`${productoArreglo}+${index}`}> 
                                         {producArreglo.nombre} :<br></br>  {Number(producArreglo.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
-    style: 'currency',
-    currency: 'ARS',
-    maximumFractionDigits:0
-})} <br />
+                                                style: 'currency',
+                                                currency: 'ARS',
+                                                maximumFractionDigits:0
+                                            })} 
+                                            <br />
                                         <IconButton variant='contained' onClick={()=>eliminarID(producArreglo.id_producto)} sx={{height: 20, width: 20, backgroundColor: "#a111ad", borderRadius: "10px", objectFit: "contain", color: "white",
                                                 "&:active": {
                                                     transform: "scale(0.95)",
@@ -392,9 +393,9 @@ return(
                 <div className="mensajeUsado">
                 <div className='redWrapp' >
 
-<h2 style={{color:'red'}}> ¡Solo se puede agregar hasta 2 productos USADOS al carrito!</h2>
-<p style={{color:'red', fontSize:"15px", textAlign:"center"}}> Si necesitas comprar más consultar por WhatsApp</p>
-</div>
+                    <h2 style={{color:'red'}}> ¡Solo se puede agregar hasta 2 productos USADOS al carrito!</h2>
+                    <p style={{color:'red', fontSize:"15px", textAlign:"center"}}> Si necesitas comprar más consultar por WhatsApp</p>
+                    </div>
                 </div>
                 </div>
                 <Grid container spacing={2} style={{ marginTop: "10px", justifyContent: "center"}}>
@@ -414,15 +415,15 @@ return(
                                         </AspectRatio>
                                         <CardContent orientation="horizontal" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                                             <div>
-                                                <Typography level="h5" sx={{ display: "-webkit-box", overflow: "hidden", WebkitBoxOrient: "vertical", WebkitLineClamp: 2, textOverflow: "ellipsis", fontWeight: "bold",}}>{producto.nombre}</Typography>
+                                                <Typography  sx={{ display: "-webkit-box", overflow: "hidden", WebkitBoxOrient: "vertical", WebkitLineClamp: 2, textOverflow: "ellipsis", fontWeight: "bold",}}>{producto.nombre}</Typography>
                                                 <Typography>{producto.descripcion}</Typography>
-                                                <Typography level="h4" sx={{ fontWeight: "xl", mt: 0.8 }}>{Number(producto.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
-    style: 'currency',
-    currency: 'ARS',
-    maximumFractionDigits:0
-})}</Typography>
+                                                <Typography  sx={{ fontWeight: "xl", mt: 0.8 }}>{Number(producto.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
+                                                    style: 'currency',
+                                                    currency: 'ARS',
+                                                    maximumFractionDigits:0
+                                                })}</Typography>
                                                 <div style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
-                                                    <Button variant="contained" onClick={()=>handleSeleccionar(producto.id_producto)} size="" sx={{ ml: 2, my:1.5, backgroundColor: "#a111ad", height: 40, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Seleccionar</Button>
+                                                    <Button variant="contained" onClick={()=>handleSeleccionar(producto.id_producto)} size="" sx={{ ml: 2, my:1.5, backgroundColor: "#FF852A", height: 40, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Seleccionar</Button>
 
                                                 </div>
                                             </div>
