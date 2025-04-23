@@ -211,8 +211,18 @@ def extraer_columnas_csv(ruta_csv):
     with open(ruta_csv, mode='r', newline='', encoding='ISO-8859-1') as archivo_csv:
         lector_csv = csv.DictReader(archivo_csv)
         for fila in lector_csv:
+            deposito = ""
+            if int(fila["CBA"]) > 0:
+                stock = int(fila["CBA"])
+                deposito = "CBA"
+            elif int(fila["LUG"]) > 0:
+                stock = int(fila["LUG"])
+                deposito = "LUG"
+            else:
+                stock = 0
+                
+
             nombre = fila["Descripcion"]
-            stock = int(fila["CBA"])
             garantia_meses = 6
             detalle = "a"
             largo = float("0")
@@ -236,7 +246,7 @@ def extraer_columnas_csv(ruta_csv):
                 categoria = 0   
 
             if (categoria != 0 and len(codigo_fabricante) > 2):
-                parametros = (nombre,stock,garantia_meses,detalle,largo,alto,ancho,peso,codigo_fabricante,marca,categoria,sub_categoria,proveedor,precio_dolares,precio_dolares_iva,iva,precio_pesos,precio_pesos_iva,url_imagen)
+                parametros = (nombre,stock,garantia_meses,detalle,largo,alto,ancho,peso,codigo_fabricante,marca,categoria,sub_categoria,proveedor,precio_dolares,precio_dolares_iva,iva,precio_pesos,precio_pesos_iva,url_imagen,deposito)
                 try:
                     mycursor.callproc("cargarDatosProducto", parametros)
                     mydb.commit()  # Asegúrate de confirmar los cambios si la operación fue exitosa
