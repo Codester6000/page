@@ -10,6 +10,7 @@ productosRouter.get("/",validarQuerysProducto(), verificarValidaciones, async (r
 
     let sql = `SELECT pr.id_producto,
     pr.nombre,p.stock,
+    p.deposito,
     pr.peso,pr.garantia_meses,
     pr.codigo_fabricante,
     (SELECT JSON_ARRAYAGG(nombre_categoria)
@@ -61,7 +62,7 @@ WHERE
         WHERE id_producto = pr.id_producto AND p.stock > 0 AND p.deshabilitado = 0
     ) `
 
-    let sqlParteFinal = ` group by pr.id_producto,pro.id_proveedor, p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor`
+    let sqlParteFinal = ` group by pr.id_producto,p.deposito,pro.id_proveedor, p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor`
     const filtros = []
     const parametros = []
 
@@ -169,6 +170,7 @@ productosRouter.get("/:id", validarId, verificarValidaciones, async (req, res) =
     const [resultado, fields] = await db.execute(`SELECT pr.id_producto,
         pr.nombre,
         p.stock,
+        p.deposito,
         pr.peso,
         pr.detalle,
         pr.garantia_meses,
@@ -222,7 +224,7 @@ WHERE
         FROM precios 
         WHERE id_producto = pr.id_producto
         ) AND pr.id_producto = ? AND p.deshabilitado = 0
-        group by pr.id_producto ,p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor;`, [id])
+        group by pr.id_producto ,p.stock,p.precio_dolar, p.deposito,p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor;`, [id])
 
     res.status(200).send({ datos:resultado })
 })

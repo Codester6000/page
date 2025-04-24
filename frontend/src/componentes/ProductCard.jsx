@@ -470,9 +470,9 @@ export default function ProductCard() {
                   }}
                 >
                   <div className="badge">
-                    {producto.nombre_proveedor == "air" ? (
+                    {producto.deposito == "CBA" ? (
                       <img src="/badges/24HS.png" alt="" />
-                    ) : producto.nombre_proveedor == "elit" ? (
+                    ) : producto.deposito == "LUG" ? (
                       <img src="/badges/5_DIAS.png" alt="" />
                     ) : (
                       <img src="/badges/LOCAL.png" alt="" />
