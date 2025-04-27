@@ -1,74 +1,126 @@
-import React, {useState} from "react";
-import '../Login.css'
-import icono_usuario from '/iconos/person.png'
-import icono_contraseña from '/iconos/password.png'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { formLoginSchema } from '../validations/formlogin'
-import {useLocation, useNavigate} from "react-router-dom"
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { formLoginSchema } from "../validations/formlogin";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../Auth";
-import { Link } from "react-router-dom";
 
-const Login = () =>{
-    const url = import.meta.env.VITE_URL_BACK;
-    const {register,handleSubmit,resetField,formState:{errors}} = useForm({
-        resolver:zodResolver(formLoginSchema)
-    })
-    const { login } = useAuth();
-    const navigate = useNavigate();
-    const location = useLocation();
+// Material UI
+import {
+  Container,
+  Paper,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  InputAdornment,
+} from "@mui/material";
+import PersonIcon from "@mui/icons-material/Person";
+import LockIcon from "@mui/icons-material/Lock";
 
-    const from = location.state?.from?.pathname || "/";
-    const [error,setError] = useState('');
-    const onSubmit = async (datos) => {
-        const response = await fetch(`${url}/auth/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(datos),
-        });
-        const mensaje = await response.json()
-        if (response.ok) {
-            resetField('username')
-            resetField('password')
-        
-        }
-        login(
-            datos.username,
-            datos.password,
-            () =>navigate(from,{replace:true}),
-            () =>setError('Contraseña o usuario incorrecto.')
-        )
-    };
-    return (
-        <div className="loginContainer">
-            <form  onSubmit={handleSubmit(onSubmit)} className="loginForm">
-            <div className="headerForm">
-                <div className="texto">Iniciar sesión en MODEX</div>
-            </div>
+const Login = () => {
+  const url = import.meta.env.VITE_URL_BACK;
+  const {
+    register,
+    handleSubmit,
+    resetField,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(formLoginSchema),
+  });
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-            <div className="inputs">
-                <div className="input" >
-                    <img src={icono_usuario} alt="" />
-                    <input type="text" placeholder='Usuario' name='usuario' {...register("username")}  />
-                </div>
-                    { errors.username?.message && <p style={{color:"red"}}>{errors.username.message}</p>}
+  const from = location.state?.from?.pathname || "/";
+  const [error, setError] = useState("");
 
-                <div className="input">
-                    <img src={icono_contraseña} alt="" />
-                    <input type="password" placeholder='Contraseña' name='contraseña' {...register("password")} />
-                </div>
-                    { errors.password?.message && <p style={{color:"red"}}>{errors.password.message}</p>}
+  const onSubmit = async (datos) => {
+    const response = await fetch(`${url}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datos),
+    });
+    const mensaje = await response.json();
+    if (response.ok) {
+      resetField("username");
+      resetField("password");
+    }
+    login(
+      datos.username,
+      datos.password,
+      () => navigate(from, { replace: true }),
+      () => setError("Contraseña o usuario incorrecto.")
+    );
+  };
 
-            </div>
+  return (
+    <Container maxWidth="sm" sx={{ mt: 8, mb: 12 }}>
+      <Paper elevation={6} sx={{ p: 4 }}>
+        <Typography variant="h5" align="center" fontWeight={400} gutterBottom>
+          Iniciar sesión en MODEX
+        </Typography>
 
-            <div className="submit-contenedor">
-                <button type="submit" className="submit">Iniciar sesión</button>
-            </div>
-                {(error != '') && <p style={{color:"red"}}>{error}</p>}
-            <p>No tienes una cuenta? Haz clic <Link to="/register">Aquí!</Link></p>
-            </form>
-            
-        </div>
-    )
-}
+        <Box
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          sx={{ mt: 2 }}
+        >
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Usuario"
+            {...register("username")}
+            error={!!errors.username}
+            helperText={errors.username?.message}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <PersonIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Contraseña"
+            type="password"
+            {...register("password")}
+            error={!!errors.password}
+            helperText={errors.password?.message}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LockIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2, bgcolor: "#FF7D20" }}
+          >
+            Iniciar sesión
+          </Button>
+
+          {error && (
+            <Typography color="error" align="center" variant="body2">
+              {error}
+            </Typography>
+          )}
+
+          <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+            ¿No tienes una cuenta? Haz clic <Link to="/register">Aquí</Link>
+          </Typography>
+        </Box>
+      </Paper>
+    </Container>
+  );
+};
+
 export default Login;

@@ -350,6 +350,7 @@ function ArmadorPc() {
           </Box>
 
           {/* Sección de productos seleccionados */}
+
           <Box className="elecciones" flex={1} p={2}>
             <Grid container spacing={2}>
               {Object.entries(elecciones).map(([categoria, valor]) => {
@@ -398,40 +399,8 @@ function ArmadorPc() {
                   });
                 } else {
                   const producto = buscarPorId(valor);
-                  return (
-                    <Grid item xs={12} key={categoria}>
-                      <Paper elevation={23} sx={{ p: 2, position: "relative" }}>
-                        <Typography fontWeight="bold">
-                          {producto.nombre}
-                        </Typography>
-                        <Typography color="text.secondary">
-                          {Number(
-                            producto.precio_pesos_iva_ajustado
-                          ).toLocaleString("es-ar", {
-                            style: "currency",
-                            currency: "ARS",
-                            maximumFractionDigits: 0,
-                          })}
-                        </Typography>
-                        <IconButton
-                          onClick={() => eliminarID(producto.id_producto)}
-                          sx={{
-                            position: "absolute",
-                            top: 8,
-                            right: 8,
-                            backgroundColor: "#a111ad",
-                            color: "white",
-                            "&:hover": {
-                              backgroundColor: "#e0e0e0",
-                              color: "black",
-                            },
-                          }}
-                        >
-                          <Delete />
-                        </IconButton>
-                      </Paper>
-                    </Grid>
-                  );
+
+                  return <></>;
                 }
               })}
             </Grid>
