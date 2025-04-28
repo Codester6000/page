@@ -1,30 +1,55 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  productos: {
+    procesadores: [],
+    mothers: [],
+    placas: [],
+    almacenamiento: [],
+    memorias: [],
+    fuentes: [],
+    gabinetes: [],
+    coolers: [],
+    monitores: [],
+  },
   selectedParts: {
     cpu: null,
-    gpu: null,
     motherboard: null,
-    ram: null,
-    storage: null,
-    psu: null,
-    case: null,
+    ram: [],
+    // Agrega más si necesitas...
   },
+  total: 0,
+  watts: 0,
+  order: "asc",
 };
 
-export const buildSlice = createSlice({
-  name: "build",
+const armadorSlice = createSlice({
+  name: "armador",
   initialState,
   reducers: {
+    setProductos: (state, action) => {
+      state.productos = action.payload;
+    },
+    setTotal: (state, action) => {
+      state.total = action.payload;
+    },
+    setWatts: (state, action) => {
+      state.watts = action.payload;
+    },
+    setOrder: (state, action) => {
+      state.order = action.payload;
+    },
     selectPart: (state, action) => {
       const { category, part } = action.payload;
-      state.selectedParts[category] = part;
-    },
-    clearBuild: (state) => {
-      state.selectedParts = initialState.selectedParts;
+      if (category === "ram") {
+        state.selectedParts[category] = [part]; // Si ram permite múltiples, podrías manejar un array
+      } else {
+        state.selectedParts[category] = part;
+      }
     },
   },
 });
 
-export const { selectPart, clearBuild } = buildSlice.actions;
-export default buildSlice.reducer;
+export const { setProductos, setTotal, setWatts, setOrder, selectPart } =
+  armadorSlice.actions;
+export default armadorSlice.reducer;

@@ -4,7 +4,7 @@ import {
   CardContent,
   Typography,
   Button,
-  Paper,
+  Box,
 } from "@mui/material";
 
 export function ListadoProductos({ productos, tipo, handleSeleccionar }) {
@@ -17,19 +17,38 @@ export function ListadoProductos({ productos, tipo, handleSeleccionar }) {
       style={{ marginTop: "10px", justifyContent: "center" }}
     >
       {productos.productos[tipo].map((producto) => (
-        <Grid lg={3.9} key={producto.id_producto}>
+        <Grid item lg={4} md={6} xs={12} key={producto.id_producto}>
           <Card
-            orientation="horizontal"
-            sx={{ width: "95%", bgcolor: "#ffff", height: 190 }}
+            sx={{
+              display: "flex",
+              flexDirection: "row", // Para que imagen y texto estén uno al lado del otro
+              width: "100%",
+              height: 190,
+              bgcolor: "#dfd6d6",
+              overflow: "hidden",
+            }}
           >
-            <Paper ratio="1" sx={{ width: "45%" }}>
+            {/* Imagen */}
+            <Box sx={{ width: "40%", position: "relative" }}>
               <img
-                src={producto.url_imagenes[producto.url_imagenes.length - 1]}
+                src={producto.url_imagenes?.[producto.url_imagenes.length - 1]}
                 alt={producto.nombre}
                 loading="lazy"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                style={{
+                  width: "100%",
+                  height: "auto", // Mantiene la proporción de la imagen
+                  objectFit: "contain", // Asegura que la imagen no se distorsione
+                }}
               />
-              <div className="badge">
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 8,
+                  left: 8,
+                  width: 40,
+                  height: 40,
+                }}
+              >
                 {producto.nombre_proveedor === "air" ? (
                   <img src="/badges/24HS.png" alt="" />
                 ) : producto.nombre_proveedor === "elit" ? (
@@ -37,14 +56,17 @@ export function ListadoProductos({ productos, tipo, handleSeleccionar }) {
                 ) : (
                   <img src="/badges/LOCAL.png" alt="" />
                 )}
-              </div>
-            </Paper>
+              </Box>
+            </Box>
+
+            {/* Contenido */}
             <CardContent
-              orientation="horizontal"
               sx={{
+                flex: "1 1 auto",
                 display: "flex",
                 flexDirection: "column",
-                height: "100%",
+                justifyContent: "space-between",
+                p: 2,
               }}
             >
               <div>
@@ -54,14 +76,22 @@ export function ListadoProductos({ productos, tipo, handleSeleccionar }) {
                     overflow: "hidden",
                     WebkitBoxOrient: "vertical",
                     WebkitLineClamp: 2,
-                    textOverflow: "ellipsis",
                     fontWeight: "bold",
+                    mb: 1,
                   }}
                 >
                   {producto.nombre}
                 </Typography>
-                <Typography>{producto.descripcion}</Typography>
-                <Typography sx={{ fontWeight: "xl", mt: 0.8 }}>
+
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mb: 1 }}
+                >
+                  {producto.descripcion}
+                </Typography>
+
+                <Typography sx={{ fontWeight: "bold", color: "green" }}>
                   {Number(producto.precio_pesos_iva_ajustado).toLocaleString(
                     "es-ar",
                     {
@@ -71,29 +101,22 @@ export function ListadoProductos({ productos, tipo, handleSeleccionar }) {
                     }
                   )}
                 </Typography>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginLeft: "auto",
-                  }}
-                >
-                  <Button
-                    variant="contained"
-                    onClick={() => handleSeleccionar(producto.id_producto)}
-                    sx={{
-                      ml: 2,
-                      my: 1.5,
-                      backgroundColor: "#FF852A",
-                      height: 40,
-                      borderRadius: "20px",
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    Seleccionar
-                  </Button>
-                </div>
               </div>
+
+              <Button
+                variant="contained"
+                onClick={() => handleSeleccionar(producto.id_producto)}
+                sx={{
+                  backgroundColor: "#FF852A",
+                  height: 36,
+                  borderRadius: "20px",
+                  fontSize: "0.75rem",
+                  alignSelf: "flex-end",
+                  mt: 1,
+                }}
+              >
+                Seleccionar
+              </Button>
             </CardContent>
           </Card>
         </Grid>

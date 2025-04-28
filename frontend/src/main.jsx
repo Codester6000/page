@@ -4,7 +4,7 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./Auth";
 import { Provider } from "react-redux";
-import { store } from "./redux/store.js";
+import { store } from "./redux/store";
 import { SearchProvider } from "./searchContext.jsx";
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
