@@ -32,24 +32,22 @@
 }
 
 .tipo {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  background-color: var(--gris-intermedio);
-  border-radius: var(--bordes-radius);
-  padding: 2rem;
-  gap: 1rem;
-  margin: 0 1rem;
-  place-items: center;
+  overflow: hidden; /* <-- agrega esto */
 }
 
 .tipo img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
   width: 40px;
   height: 40px;
   transition: transform 0.2s ease-in-out;
 }
 
 .tipo img:hover {
-  transform: scale(1.1);
+  transform: scale(
+    1.05
+  ); /* Cambié de 1.1 a 1.05 para que no se salga al hacer zoom */
 }
 
 .total {
@@ -158,9 +156,7 @@
   }
 
   .tipo {
-    width: 90vw;
-    margin: auto;
-    grid-template-columns: repeat(3, 1fr);
+    overflow: hidden;
   }
 
   .filtrosArmador {

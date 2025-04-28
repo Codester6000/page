@@ -1,29 +1,18 @@
 import { useState, useEffect } from "react";
 import "../styleArmador.css";
-import icono_cpu from "/iconos/armadorIconos/cpu.png";
-import icono_gpu from "/iconos/armadorIconos/gpu.png";
-import icono_psu from "/iconos/armadorIconos/psu.png";
-import icono_ram from "/iconos/armadorIconos/ram.png";
-import icono_hdd from "/iconos/armadorIconos/hdd.png";
-import icono_mother from "/iconos/armadorIconos/motherboard.png";
-import icono_gabinete from "/iconos/armadorIconos/gabinete.png";
-import icono_cooler from "/iconos/armadorIconos/cooler.png";
-import icono_monitor from "/iconos/armadorIconos/monitor.png";
+
 import { useAuth } from "../Auth";
 
-import Card from "@mui/joy/Card";
-import Grid from "@mui/joy/Grid";
-import CardContent from "@mui/joy/CardContent";
-import Typography from "@mui/joy/Typography";
-import AspectRatio from "@mui/joy/AspectRatio";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/joy/IconButton";
-
-import Delete from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import { Box, Paper } from "@mui/material";
+import { useDispatch } from "react-redux";
+import { selectPart } from "../redux/slices/buildSlice";
+import { ListadoProductos } from "./armador/listadoProductos";
+import { TotalesYComprar } from "./armador/totalesYComprar";
+import { CategoriasSelector } from "./armador/categoriasSelector";
+import { ProductosSeleccionados } from "./armador/productosSeleccionados";
 
-function ArmadorPc() {
+function ArmadorPc({ category, parts }) {
   const url = import.meta.env.VITE_URL_BACK;
   const { sesion } = useAuth();
   const navigate = useNavigate();
@@ -310,272 +299,67 @@ function ArmadorPc() {
   }, [elecciones]);
 
   return (
-    <div className="containerArmador">
-      <div className="armador">
-        <Box display="flex" className="ladoIzquierdoArmador">
-          {/* Sección de íconos de categorías */}
-          <Box
-            className="tipo"
-            display="flex"
-            flexDirection="column"
-            gap={2}
-            p={2}
-          >
-            {[
-              ["procesadores", icono_cpu],
-              ["motherboards", icono_mother],
-              ["gpus", icono_gpu],
-              ["memorias", icono_ram],
-              ["almacenamiento", icono_hdd],
-              ["fuentes", icono_psu],
-              ["gabinetes", icono_gabinete],
-              ["coolers", icono_cooler],
-              ["monitores", icono_monitor],
-            ].map(([tipo, icono]) => (
-              <Box
-                key={tipo}
-                sx={{
-                  cursor: "pointer",
-                  p: 1,
-                  "&:hover": {
-                    backgroundColor: "#f0f0f0",
-                    borderRadius: "10px",
-                  },
-                }}
-                onClick={() => setTipo(tipo)}
-              >
-                <img src={icono} alt={tipo} width={40} />
-              </Box>
-            ))}
-          </Box>
-
-          {/* Sección de productos seleccionados */}
-
-          <Box className="elecciones" flex={1} p={2}>
-            <Grid container spacing={2}>
-              {Object.entries(elecciones).map(([categoria, valor]) => {
-                if (valor == 0) return null;
-
-                if (typeof valor === "object") {
-                  return valor.map((productoArreglo, index) => {
-                    const producto = buscarPorId(productoArreglo);
-                    return (
-                      <Grid item xs={12} key={`${productoArreglo}-${index}`}>
-                        <Paper
-                          elevation={3}
-                          sx={{ p: 2, position: "relative" }}
-                        >
-                          <Typography fontWeight="bold">
-                            {producto.nombre}
-                          </Typography>
-                          <Typography color="text.secondary">
-                            {Number(
-                              producto.precio_pesos_iva_ajustado
-                            ).toLocaleString("es-ar", {
-                              style: "currency",
-                              currency: "ARS",
-                              maximumFractionDigits: 0,
-                            })}
-                          </Typography>
-                          <IconButton
-                            onClick={() => eliminarID(producto.id_producto)}
-                            sx={{
-                              position: "absolute",
-                              top: 8,
-                              right: 8,
-                              backgroundColor: "#a111ad",
-                              color: "white",
-                              "&:hover": {
-                                backgroundColor: "#e0e0e0",
-                                color: "black",
-                              },
-                            }}
-                          >
-                            <Delete />
-                          </IconButton>
-                        </Paper>
-                      </Grid>
-                    );
-                  });
-                } else {
-                  const producto = buscarPorId(valor);
-
-                  return <></>;
-                }
-              })}
-            </Grid>
-
-            <Box mt={3}>
-              <Typography variant="h6">
-                Total:{" "}
-                <span style={{ marginLeft: 10, color: "green" }}>
-                  {total.toLocaleString("es-ar", {
-                    style: "currency",
-                    currency: "ARS",
-                    maximumFractionDigits: 0,
-                  })}
-                </span>
-              </Typography>
-              <Typography variant="body1" color="text.secondary" mt={1}>
-                Consumo: {watts} W
-              </Typography>
-
-              <Button
-                variant="contained"
-                onClick={handleAgregarCarrito}
-                sx={{
-                  mt: 2,
-                  backgroundColor: "#FF7D20",
-                  borderRadius: "20px",
-                  fontSize: "0.875rem",
-                }}
-              >
-                Comprar
-              </Button>
+    <>
+      return (
+      <div className="containerArmador">
+        <div className="armador">
+          <Box display="flex" className="ladoIzquierdoArmador">
+            <CategoriasSelector setTipo={setTipo} />
+            <Box className="elecciones" flex={1} p={2}>
+              <ProductosSeleccionados
+                elecciones={elecciones}
+                buscarPorId={buscarPorId}
+                eliminarID={eliminarID}
+              />
+              <TotalesYComprar
+                total={total}
+                watts={watts}
+                handleAgregarCarrito={handleAgregarCarrito}
+              />
             </Box>
           </Box>
-        </Box>
-        <div className="productos">
-          <div className="chupalaIvan">
-            <form className="filtrosArmador">
-              <select
-                className="ordernarPor"
-                name="ordernar Por"
-                value={order}
-                onChange={(e) => setOrder(e.target.value)}
-              >
-                <option value="ASC">Precio menor a mayor</option>
-                <option value="DESC">Precio mayor a menor</option>
-              </select>
-              {((tipo == "memorias" && elecciones.memorias.length > 0) ||
-                (tipo == "almacenamiento" &&
-                  elecciones.almacenamiento.length > 0) ||
-                (tipo == "coolers" && elecciones.coolers.length > 0)) && (
-                <div
-                  className="siguiente"
-                  onClick={() => {
-                    if (tipo == "almacenamiento") {
-                      setTipo("fuentes");
-                    } else if (tipo == "memorias") {
-                      setTipo("almacenamiento");
-                    } else if (tipo == "coolers") {
-                      setTipo("monitores");
-                    }
-                  }}
+
+          <div className="productos">
+            <div className="filtrosContainer">
+              <form className="filtrosArmador">
+                <select
+                  className="ordernarPor"
+                  name="ordenarPor"
+                  value={order}
+                  onChange={(e) => setOrder(e.target.value)}
                 >
-                  {" "}
-                  Siguiente{" "}
-                </div>
-              )}
-            </form>
-            <br />
-          </div>
-          <Grid
-            container
-            spacing={2}
-            style={{ marginTop: "10px", justifyContent: "center" }}
-          >
-            {
-              // eslint-disable-next-line no-unused-vars
-              productos.productos[`${tipo}`].map((producto, index) => (
-                <Grid lg={3.9} key={producto.id_producto}>
-                  <Card
-                    orientation="horizontal"
-                    sx={{ width: "95%", bgcolor: "#ffff", height: 190 }}
+                  <option value="ASC">Precio menor a mayor</option>
+                  <option value="DESC">Precio mayor a menor</option>
+                </select>
+
+                {((tipo === "memorias" && elecciones.memorias.length > 0) ||
+                  (tipo === "almacenamiento" &&
+                    elecciones.almacenamiento.length > 0) ||
+                  (tipo === "coolers" && elecciones.coolers.length > 0)) && (
+                  <div
+                    className="siguiente"
+                    onClick={() => {
+                      if (tipo === "almacenamiento") setTipo("fuentes");
+                      else if (tipo === "memorias") setTipo("almacenamiento");
+                      else if (tipo === "coolers") setTipo("monitores");
+                    }}
                   >
-                    <AspectRatio ratio="1" sx={{ width: "45%" }}>
-                      <img
-                        src={
-                          producto.url_imagenes[
-                            producto.url_imagenes.length - 1
-                          ]
-                        }
-                        alt={producto.nombre}
-                        loading="lazy"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                      />
-                      <div className="badge">
-                        {producto.nombre_proveedor == "air" ? (
-                          <img src="/badges/24HS.png" alt="" />
-                        ) : producto.nombre_proveedor == "elit" ? (
-                          <img src="/badges/5_DIAS.png" alt="" />
-                        ) : (
-                          <img src="/badges/LOCAL.png" alt="" />
-                        )}{" "}
-                      </div>
-                    </AspectRatio>
-                    <CardContent
-                      orientation="horizontal"
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        height: "100%",
-                      }}
-                    >
-                      <div>
-                        <Typography
-                          sx={{
-                            display: "-webkit-box",
-                            overflow: "hidden",
-                            WebkitBoxOrient: "vertical",
-                            WebkitLineClamp: 2,
-                            textOverflow: "ellipsis",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {producto.nombre}
-                        </Typography>
-                        <Typography>{producto.descripcion}</Typography>
-                        <Typography sx={{ fontWeight: "xl", mt: 0.8 }}>
-                          {Number(
-                            producto.precio_pesos_iva_ajustado
-                          ).toLocaleString("es-ar", {
-                            style: "currency",
-                            currency: "ARS",
-                            maximumFractionDigits: 0,
-                          })}
-                        </Typography>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            marginLeft: "auto",
-                          }}
-                        >
-                          <Button
-                            variant="contained"
-                            onClick={() =>
-                              handleSeleccionar(producto.id_producto)
-                            }
-                            size=""
-                            sx={{
-                              ml: 2,
-                              my: 1.5,
-                              backgroundColor: "#FF852A",
-                              height: 40,
-                              borderRadius: "20px",
-                              fontSize: "0.75rem",
-                              objectFit: "contain",
-                            }}
-                          >
-                            Seleccionar
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))
-            }
-          </Grid>
+                    Siguiente
+                  </div>
+                )}
+              </form>
+            </div>
+
+            <ListadoProductos
+              productos={productos}
+              tipo={tipo}
+              handleSeleccionar={handleSeleccionar}
+            />
+          </div>
         </div>
       </div>
-    </div>
+      );
+    </>
   );
 }
-
 export default ArmadorPc;
