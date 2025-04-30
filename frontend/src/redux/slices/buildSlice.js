@@ -15,12 +15,11 @@ const initialState = {
   selectedParts: {
     cpu: null,
     motherboard: null,
-    ram: [],
-    // Agrega más si necesitas...
+    ram: [], // pensado para múltiples memorias
   },
   total: 0,
   watts: 0,
-  order: "asc",
+  order: "ASC", // Normalizado en mayúscula como en el front
 };
 
 const armadorSlice = createSlice({
@@ -37,19 +36,55 @@ const armadorSlice = createSlice({
       state.watts = action.payload;
     },
     setOrder: (state, action) => {
-      state.order = action.payload;
+      state.order = action.payload.toUpperCase(); // siempre en mayúscula
     },
     selectPart: (state, action) => {
       const { category, part } = action.payload;
+
       if (category === "ram") {
-        state.selectedParts[category] = [part]; // Si ram permite múltiples, podrías manejar un array
+        // Permitir múltiples rams sin duplicar
+        if (!state.selectedParts.ram.includes(part)) {
+          state.selectedParts.ram.push(part);
+        }
       } else {
         state.selectedParts[category] = part;
       }
     },
+    removePart: (state, action) => {
+      const { category, part } = action.payload;
+
+      if (category === "ram") {
+        // Si es RAM, eliminar el módulo específico
+        state.selectedParts.ram = state.selectedParts.ram.filter(
+          (id) => id !== part
+        );
+      } else {
+        // En otras categorías, simplemente setear a null
+        state.selectedParts[category] = null;
+      }
+    },
+    clearBuild: (state) => {
+      // Limpia toda la selección
+      state.selectedParts = {
+        cpu: null,
+        motherboard: null,
+        ram: [],
+        // otras categorías si agregás...
+      };
+      state.total = 0;
+      state.watts = 0;
+    },
   },
 });
 
-export const { setProductos, setTotal, setWatts, setOrder, selectPart } =
-  armadorSlice.actions;
+export const {
+  setProductos,
+  setTotal,
+  setWatts,
+  setOrder,
+  selectPart,
+  removePart,
+  clearBuild,
+} = armadorSlice.actions;
+
 export default armadorSlice.reducer;

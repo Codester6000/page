@@ -8,7 +8,17 @@ import {
 } from "@mui/material";
 
 export function ListadoProductos({ productos, tipo, handleSeleccionar }) {
-  if (!productos?.productos?.[tipo]) return null;
+  const categoriaRaiz = productos?.productos || {};
+  const tipoKey = (tipo || Object.keys(categoriaRaiz)?.[0] || "").toLowerCase();
+  const productosFiltrados = categoriaRaiz?.[tipoKey];
+
+  if (!Array.isArray(productosFiltrados) || productosFiltrados.length === 0) {
+    return (
+      <Typography variant="body1" align="center" sx={{ mt: 3 }}>
+        No hay productos disponibles para esta categoría.
+      </Typography>
+    );
+  }
 
   return (
     <Grid
@@ -16,28 +26,27 @@ export function ListadoProductos({ productos, tipo, handleSeleccionar }) {
       spacing={2}
       style={{ marginTop: "10px", justifyContent: "center" }}
     >
-      {productos.productos[tipo].map((producto) => (
+      {productosFiltrados.map((producto) => (
         <Grid item lg={4} md={6} xs={12} key={producto.id_producto}>
           <Card
             sx={{
               display: "flex",
-              flexDirection: "row", // Para que imagen y texto estén uno al lado del otro
+              flexDirection: "row",
               width: "100%",
               height: 190,
-              bgcolor: "#dfd6d6",
+              bgcolor: "#ffffff",
               overflow: "hidden",
             }}
           >
-            {/* Imagen */}
-            <Box sx={{ width: "40%", position: "relative" }}>
+            <Box sx={{ width: "100%", position: "relative" }}>
               <img
                 src={producto.url_imagenes?.[producto.url_imagenes.length - 1]}
                 alt={producto.nombre}
                 loading="lazy"
                 style={{
                   width: "100%",
-                  height: "auto", // Mantiene la proporción de la imagen
-                  objectFit: "contain", // Asegura que la imagen no se distorsione
+                  height: "auto",
+                  objectFit: "contain",
                 }}
               />
               <Box
@@ -45,21 +54,28 @@ export function ListadoProductos({ productos, tipo, handleSeleccionar }) {
                   position: "absolute",
                   top: 8,
                   left: 8,
-                  width: 40,
-                  height: 40,
+                  width: 30,
+                  height: 30,
                 }}
               >
-                {producto.nombre_proveedor === "air" ? (
-                  <img src="/badges/24HS.png" alt="" />
-                ) : producto.nombre_proveedor === "elit" ? (
-                  <img src="/badges/5_DIAS.png" alt="" />
-                ) : (
-                  <img src="/badges/LOCAL.png" alt="" />
-                )}
+                <img
+                  src={
+                    producto.nombre_proveedor === "air"
+                      ? "/badges/24HS.png"
+                      : producto.nombre_proveedor === "elit"
+                      ? "/badges/5_DIAS.png"
+                      : "/badges/LOCAL.png"
+                  }
+                  alt={producto.nombre_proveedor}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                  }}
+                />
               </Box>
             </Box>
 
-            {/* Contenido */}
             <CardContent
               sx={{
                 flex: "1 1 auto",
@@ -93,7 +109,7 @@ export function ListadoProductos({ productos, tipo, handleSeleccionar }) {
 
                 <Typography sx={{ fontWeight: "bold", color: "green" }}>
                   {Number(producto.precio_pesos_iva_ajustado).toLocaleString(
-                    "es-ar",
+                    "es-AR",
                     {
                       style: "currency",
                       currency: "ARS",

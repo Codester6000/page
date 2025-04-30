@@ -29,7 +29,7 @@ export function CategoriasSelector({ setTipo }) {
           sx={{
             cursor: "pointer",
             p: 1,
-            "&:hover": { backgroundColor: "#f0f0f0", borderRadius: "10px" },
+            "&:hover": { backgroundColor: "#e4e3e3", borderRadius: "10px" },
           }}
           onClick={() => setTipo(tipo)}
         >
