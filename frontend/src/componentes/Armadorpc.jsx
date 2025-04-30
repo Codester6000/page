@@ -1,10 +1,9 @@
-// ✅ ArmadorPc.jsx (COMPLETO Y FUNCIONAL)
 import { useState, useEffect, useCallback } from "react";
 import "../styleArmador.css";
 import axios from "axios";
 import { useAuth } from "../Auth";
 import { useNavigate } from "react-router-dom";
-import { Box } from "@mui/material";
+import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setProductos,
@@ -13,6 +12,7 @@ import {
   setOrder,
   selectPart,
   removePart,
+  clearBuild,
 } from "../redux/slices/buildSlice";
 import { ListadoProductos } from "./armador/listadoProductos";
 import { TotalesYComprar } from "./armador/totalesYComprar";
@@ -22,8 +22,8 @@ import { ProductosSeleccionados } from "./armador/productosSeleccionados";
 const categoryMap = {
   procesadores: "cpu",
   motherboards: "motherboard",
-  gpus: "gpu",
   memorias: "ram",
+  gpus: "gpu",
   almacenamiento: "storage",
   fuentes: "psu",
   gabinetes: "case",
@@ -31,7 +31,9 @@ const categoryMap = {
   monitores: "monitor",
 };
 
-function ArmadorPc({ category, parts }) {
+const secuenciaCategorias = Object.keys(categoryMap);
+
+function ArmadorPc({ category }) {
   const url = import.meta.env.VITE_URL_BACK;
   const { sesion } = useAuth();
   const navigate = useNavigate();
@@ -43,7 +45,10 @@ function ArmadorPc({ category, parts }) {
   const watts = useSelector((state) => state.build.watts);
   const order = useSelector((state) => state.build.order);
 
-  const [tipo, setTipo] = useState(Object.keys(categoryMap)[0]);
+  const [tipoIndex, setTipoIndex] = useState(0);
+  const [marcaCPU, setMarcaCPU] = useState(null);
+
+  const tipo = secuenciaCategorias[tipoIndex];
 
   const crearIndice = useCallback((productos) => {
     const indice = {};
@@ -89,6 +94,17 @@ function ArmadorPc({ category, parts }) {
 
       if (response.status === 200) {
         let nuevosProductos = response.data;
+        if (marcaCPU === "amd") {
+          nuevosProductos.productos.procesadores =
+            nuevosProductos.productos.procesadores.filter((p) =>
+              p.nombre.toLowerCase().includes("amd")
+            );
+        } else if (marcaCPU === "intel") {
+          nuevosProductos.productos.procesadores =
+            nuevosProductos.productos.procesadores.filter((p) =>
+              p.nombre.toLowerCase().includes("intel")
+            );
+        }
 
         const cpu = buscarPorId(selectedParts.cpu);
         if (cpu && nuevosProductos?.productos?.motherboards) {
@@ -102,23 +118,30 @@ function ArmadorPc({ category, parts }) {
         }
 
         dispatch(setProductos(nuevosProductos));
-      } else {
-        console.error("Error al obtener productos:", response.status);
       }
     } catch (error) {
       console.error("Error en la solicitud:", error);
     }
-  }, [url, selectedParts, order, watts, sesion.token, dispatch, buscarPorId]);
+  }, [
+    url,
+    selectedParts,
+    order,
+    watts,
+    sesion.token,
+    dispatch,
+    buscarPorId,
+    marcaCPU,
+  ]);
 
   const calcularTotales = useCallback(() => {
     let nuevoTotal = 0;
     let nuevoWatts = 0;
 
-    Object.entries(selectedParts || {}).forEach(([category, valor]) => {
+    Object.entries(selectedParts).forEach(([category, valor]) => {
       if (valor) {
         const ids = Array.isArray(valor) ? valor : [valor];
-        ids.forEach((productoId) => {
-          const producto = buscarPorId(productoId);
+        ids.forEach((id) => {
+          const producto = buscarPorId(id);
           if (producto) {
             nuevoTotal += Number(producto.precio_pesos_iva_ajustado);
             if (
@@ -137,25 +160,40 @@ function ArmadorPc({ category, parts }) {
   }, [selectedParts, buscarPorId, dispatch]);
 
   const handleSeleccionar = (id_producto) => {
-    const categoriaRedux = categoryMap[tipo || category];
-    if (!categoriaRedux) {
-      console.warn("Categoría no mapeada:", tipo || category);
-      return;
+    const categoriaRedux =
+      categoryMap[secuenciaCategorias[tipoIndex] || category];
+    if (!categoriaRedux) return;
+
+    const currentSelected = selectedParts[categoriaRedux];
+    const isArrayField =
+      categoriaRedux === "ram" || categoriaRedux === "storage";
+
+    if (isArrayField) {
+      const max = categoriaRedux === "ram" ? 4 : 4;
+      if (
+        !currentSelected.includes(id_producto) &&
+        currentSelected.length < max
+      ) {
+        dispatch(selectPart({ category: categoriaRedux, part: id_producto }));
+      }
+    } else {
+      dispatch(selectPart({ category: categoriaRedux, part: id_producto }));
+      const siguiente = tipoIndex + 1;
+      if (siguiente < secuenciaCategorias.length) setTipoIndex(siguiente);
     }
-    console.log("👉 handleSeleccionar:", {
-      tipo,
-      category,
-      categoriaRedux,
-    });
-    dispatch(selectPart({ category: categoriaRedux, part: id_producto }));
   };
 
   const eliminarID = (id_producto) => {
     const producto = buscarPorId(id_producto);
     if (!producto) return;
-
     const categoria = categoryMap[producto.categoria] || producto.categoria;
     dispatch(removePart({ category: categoria, part: id_producto }));
+  };
+
+  const handleReset = () => {
+    dispatch(clearBuild());
+    setTipoIndex(0);
+    setMarcaCPU(null);
   };
 
   useEffect(() => {
@@ -166,16 +204,31 @@ function ArmadorPc({ category, parts }) {
     calcularTotales();
   }, [calcularTotales]);
 
-  useEffect(() => {
-    console.log("🧩 Partes seleccionadas:", selectedParts);
-  }, [selectedParts]);
+  const handleSiguiente = () => {
+    if (tipoIndex < secuenciaCategorias.length - 1) {
+      setTipoIndex(tipoIndex + 1);
+    }
+  };
+
+  const handleAnterior = () => {
+    if (tipoIndex > 0) {
+      setTipoIndex(tipoIndex - 1);
+    }
+  };
+
+  const cambiarOrden = (nuevoOrden) => {
+    dispatch(setOrder(nuevoOrden));
+  };
 
   return (
     <div className="containerArmador">
       <div className="armador">
         <Box display="flex" className="ladoIzquierdoArmador">
           <CategoriasSelector
-            setTipo={setTipo}
+            setTipo={(categoria) => {
+              const index = secuenciaCategorias.indexOf(categoria);
+              if (index !== -1) setTipoIndex(index);
+            }}
             selectedParts={selectedParts}
             buscarPorId={buscarPorId}
           />
@@ -188,12 +241,75 @@ function ArmadorPc({ category, parts }) {
             <TotalesYComprar total={total} watts={watts} />
           </Box>
         </Box>
+
         <Box>
-          <ListadoProductos
-            productos={productos}
-            tipo={tipo || category}
-            handleSeleccionar={handleSeleccionar}
-          />
+          <Box display="flex" justifyContent="center" gap={2} my={2}>
+            <Button onClick={handleReset} variant="outlined" color="error">
+              Reiniciar Armado
+            </Button>
+          </Box>
+
+          {tipoIndex === 0 && !marcaCPU && (
+            <Box display="flex" justifyContent="center" gap={2} my={2}>
+              <Button
+                variant="contained"
+                onClick={() => setMarcaCPU("amd")}
+                sx={{ backgroundColor: "#9c27b0" }}
+              >
+                AMD
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => setMarcaCPU("intel")}
+                sx={{ backgroundColor: "#1976d2" }}
+              >
+                Intel
+              </Button>
+            </Box>
+          )}
+
+          {marcaCPU && (
+            <>
+              <Box display="flex" justifyContent="center" gap={2} mb={2}>
+                <Button
+                  variant="outlined"
+                  onClick={handleAnterior}
+                  disabled={tipoIndex === 0}
+                >
+                  Anterior
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleSiguiente}
+                  disabled={tipoIndex >= secuenciaCategorias.length - 1}
+                  sx={{ backgroundColor: "#FF852A" }}
+                >
+                  Siguiente
+                </Button>
+              </Box>
+
+              <Box display="flex" justifyContent="center" gap={2} mb={2}>
+                <Button
+                  variant={order === "ASC" ? "contained" : "outlined"}
+                  onClick={() => cambiarOrden("ASC")}
+                >
+                  Menor a Mayor
+                </Button>
+                <Button
+                  variant={order === "DESC" ? "contained" : "outlined"}
+                  onClick={() => cambiarOrden("DESC")}
+                >
+                  Mayor a Menor
+                </Button>
+              </Box>
+
+              <ListadoProductos
+                productos={productos}
+                tipo={secuenciaCategorias[tipoIndex] || category}
+                handleSeleccionar={handleSeleccionar}
+              />
+            </>
+          )}
         </Box>
       </div>
     </div>

@@ -11,7 +11,6 @@ import icono_gabinete from "/iconos/armadorIconos/gabinete.png";
 import icono_cooler from "/iconos/armadorIconos/cooler.png";
 import icono_monitor from "/iconos/armadorIconos/monitor.png";
 
-// Mapeo de nombres visuales a claves del estado
 const categoryMap = {
   procesadores: "cpu",
   motherboards: "motherboard",
@@ -24,7 +23,6 @@ const categoryMap = {
   monitores: "monitor",
 };
 
-// Íconos por categoría
 const iconos = {
   procesadores: icono_cpu,
   motherboards: icono_mother,
@@ -37,29 +35,23 @@ const iconos = {
   monitores: icono_monitor,
 };
 
-export function CategoriasSelector({
-  setTipo,
-  selectedParts = {},
-  buscarPorId,
-}) {
+export function CategoriasSelector({ setTipo, selectedParts, buscarPorId }) {
   const categorias = Object.keys(categoryMap);
 
   return (
     <Box className="tipo" display="flex" flexDirection="column" gap={2} p={2}>
       {categorias.map((categoria) => {
         const clave = categoryMap[categoria];
-        const seleccionado = selectedParts[clave];
+        const seleccionado = selectedParts?.[clave];
 
-        // Buscar el producto si hay uno seleccionado
         const producto =
           Array.isArray(seleccionado) && seleccionado.length > 0
             ? buscarPorId(seleccionado[0])
             : buscarPorId(seleccionado);
 
-        // Imagen a mostrar: si hay producto con imagen, usarla; si no, usar ícono
-        const imagen = producto?.url_imagenes?.length
-          ? producto.url_imagenes[producto.url_imagenes.length - 1]
-          : iconos[categoria];
+        const nombre = producto?.nombre?.toLowerCase();
+        const isAM4 = nombre?.includes("am4");
+        const isAM5 = nombre?.includes("am5");
 
         return (
           <Box
@@ -78,7 +70,10 @@ export function CategoriasSelector({
             onClick={() => setTipo(categoria)}
           >
             <img
-              src={imagen}
+              src={
+                producto?.url_imagenes?.[producto.url_imagenes.length - 1] ??
+                iconos[categoria]
+              }
               alt={producto?.nombre || categoria}
               style={{
                 width: 40,
@@ -88,19 +83,31 @@ export function CategoriasSelector({
               }}
             />
 
-            {producto?.nombre && (
+            <Typography
+              variant="caption"
+              sx={{
+                mt: 1,
+                textAlign: "center",
+                fontSize: "0.6rem",
+                lineHeight: 1.2,
+                color: producto ? "inherit" : "gray",
+              }}
+            >
+              {producto?.nombre?.length > 20
+                ? producto.nombre.slice(0, 20) + "..."
+                : producto?.nombre || categoria}
+            </Typography>
+
+            {clave === "cpu" && (
               <Typography
                 variant="caption"
                 sx={{
-                  mt: 1,
-                  textAlign: "center",
                   fontSize: "0.6rem",
-                  lineHeight: 1.2,
+                  fontWeight: "bold",
+                  color: isAM4 ? "#1976d2" : isAM5 ? "#9c27b0" : "gray",
                 }}
               >
-                {producto.nombre.length > 20
-                  ? producto.nombre.slice(0, 20) + "..."
-                  : producto.nombre}
+                {isAM4 ? "AM4" : isAM5 ? "AM5" : "¿?"}
               </Typography>
             )}
           </Box>
