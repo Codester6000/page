@@ -7,6 +7,8 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Auth";
+import BuscadorYAccesoArmador from "./inicio/buscadorYAccesoArmador";
+
 import {
   Snackbar,
   Alert,
@@ -135,6 +137,9 @@ export default function Portada() {
           </div>
         ))}
       </motion.div>
+
+      {/* Acceso a armador */}
+      <BuscadorYAccesoArmador />
 
       {/* Nuevos Ingresos */}
       <SeccionProductos
