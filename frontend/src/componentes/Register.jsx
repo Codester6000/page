@@ -3,7 +3,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formRegisterSchema } from "../validations/formlogin";
 import { useNavigate, Link } from "react-router-dom";
-import Swal from "sweetalert2"; // Importamos sweetalert2
+import Swal from "sweetalert2";
+import ReCAPTCHA from "react-google-recaptcha";
 
 // Material UI
 import {
@@ -14,16 +15,21 @@ import {
   TextField,
   Button,
   InputAdornment,
+  IconButton,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
 import EmailIcon from "@mui/icons-material/Email";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const Register = () => {
   const url = import.meta.env.VITE_URL_BACK;
   const navigate = useNavigate();
   const [errores, setErrores] = useState("");
+  const [captchaValue, setCaptchaValue] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -34,7 +40,16 @@ const Register = () => {
     resolver: zodResolver(formRegisterSchema),
   });
 
+  const toggleShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   const onSubmit = async (datos) => {
+    if (!captchaValue) {
+      setErrores("Por favor completa el CAPTCHA");
+      return;
+    }
+
     try {
       const response = await fetch(`${url}/usuarios`, {
         method: "POST",
@@ -50,7 +65,6 @@ const Register = () => {
         resetField("fechaNacimiento");
         setErrores("");
 
-        // SweetAlert de éxito
         await Swal.fire({
           title: "¡Cuenta creada!",
           text: "Ahora puedes iniciar sesión",
@@ -58,7 +72,7 @@ const Register = () => {
           confirmButtonText: "Aceptar",
         });
 
-        navigate("/login"); // Redirige luego de aceptar el Swal
+        navigate("/login");
       } else {
         setErrores("Ese usuario o email ya está en uso");
       }
@@ -101,7 +115,7 @@ const Register = () => {
             fullWidth
             margin="normal"
             label="Contraseña"
-            type="password"
+            type={showPassword ? "text" : "password"}
             {...register("password")}
             error={!!errors.password}
             helperText={errors.password?.message}
@@ -109,6 +123,13 @@ const Register = () => {
               startAdornment: (
                 <InputAdornment position="start">
                   <LockIcon />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={toggleShowPassword} edge="end">
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
                 </InputAdornment>
               ),
             }}
@@ -150,6 +171,14 @@ const Register = () => {
               ),
             }}
           />
+
+          {/* CAPTCHA */}
+          <Box sx={{ mt: 2, mb: 2, display: "flex", justifyContent: "center" }}>
+            <ReCAPTCHA
+              sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+              onChange={(value) => setCaptchaValue(value)}
+            />
+          </Box>
 
           <Button
             type="submit"

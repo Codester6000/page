@@ -3,8 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   productos: {
     procesadores: [],
-    mothers: [],
-    placas: [],
+    motherboards: [],
+    gpus: [],
     almacenamiento: [],
     memorias: [],
     fuentes: [],
@@ -17,7 +17,7 @@ const initialState = {
     motherboard: null,
     gpu: null,
     ram: [],
-    storage: null,
+    storage: [],
     psu: null,
     case: null,
     cooler: null,
@@ -48,18 +48,20 @@ const armadorSlice = createSlice({
       const { category, part } = action.payload;
 
       if (category === "ram") {
-        if (!state.selectedParts.ram.includes(part)) {
+        if (state.selectedParts.ram.length < 4) {
           state.selectedParts.ram.push(part);
+        }
+      } else if (category === "storage") {
+        if (state.selectedParts.storage.length < 4) {
+          state.selectedParts.storage.push(part);
         }
       } else if (category === "cpu") {
         state.selectedParts.cpu = part;
 
-        // Resetear motherboard si cambia de plataforma
         const cpuSeleccionado = (state.productos.procesadores || []).find(
           (p) => p.id_producto === part
         );
-
-        const motherActual = (state.productos.mothers || []).find(
+        const motherActual = (state.productos.motherboards || []).find(
           (mb) => mb.id_producto === state.selectedParts.motherboard
         );
 
@@ -87,6 +89,10 @@ const armadorSlice = createSlice({
         state.selectedParts.ram = state.selectedParts.ram.filter(
           (id) => id !== part
         );
+      } else if (category === "storage") {
+        state.selectedParts.storage = state.selectedParts.storage.filter(
+          (id) => id !== part
+        );
       } else {
         state.selectedParts[category] = null;
       }
@@ -97,7 +103,7 @@ const armadorSlice = createSlice({
         motherboard: null,
         gpu: null,
         ram: [],
-        storage: null,
+        storage: [],
         psu: null,
         case: null,
         cooler: null,

@@ -1,9 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
-import "../styleArmador.css";
+import {
+  Box,
+  Button,
+  Grid,
+  Container,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import axios from "axios";
-import { useAuth } from "../Auth";
-import { useNavigate } from "react-router-dom";
-import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setProductos,
@@ -14,10 +18,12 @@ import {
   removePart,
   clearBuild,
 } from "../redux/slices/buildSlice";
+import { useAuth } from "../Auth";
+import { useNavigate } from "react-router-dom";
 import { ListadoProductos } from "./armador/listadoProductos";
-import { TotalesYComprar } from "./armador/totalesYComprar";
 import { CategoriasSelector } from "./armador/categoriasSelector";
 import { ProductosSeleccionados } from "./armador/productosSeleccionados";
+import TotalesYComprar from "./armador/totalesYComprar";
 
 const categoryMap = {
   procesadores: "cpu",
@@ -38,6 +44,8 @@ function ArmadorPc({ category }) {
   const { sesion } = useAuth();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const selectedParts = useSelector((state) => state.build.selectedParts);
   const productos = useSelector((state) => state.build.productos);
@@ -46,17 +54,17 @@ function ArmadorPc({ category }) {
   const order = useSelector((state) => state.build.order);
 
   const [tipoIndex, setTipoIndex] = useState(0);
-  const [marcaCPU, setMarcaCPU] = useState(null);
-
   const tipo = secuenciaCategorias[tipoIndex];
 
-  const crearIndice = useCallback((productos) => {
+  const crearIndice = useCallback((productosRaw) => {
     const indice = {};
-    for (const categoria in productos) {
-      const productosCategoria = productos[categoria];
-      if (Array.isArray(productosCategoria)) {
-        productosCategoria.forEach((producto) => {
-          indice[producto.id_producto] = { ...producto, categoria };
+    for (const categoria in productosRaw?.productos || {}) {
+      const lista = productosRaw.productos[categoria];
+      if (Array.isArray(lista)) {
+        lista.forEach((p) => {
+          if (p.id_producto) {
+            indice[p.id_producto] = { ...p, categoria };
+          }
         });
       }
     }
@@ -64,166 +72,147 @@ function ArmadorPc({ category }) {
   }, []);
 
   const indiceProductos = productos ? crearIndice(productos) : {};
-
   const buscarPorId = useCallback(
     (id) => indiceProductos[id] || null,
     [indiceProductos]
   );
 
-  const getArmador = useCallback(async () => {
-    const queryParams = [];
-
-    if (selectedParts.cpu)
-      queryParams.push(`procesador_id=${selectedParts.cpu}`);
-    if (selectedParts.motherboard)
-      queryParams.push(`motherboard_id=${selectedParts.motherboard}`);
-    if (selectedParts.ram?.length > 0)
-      queryParams.push(`memoria_id=${selectedParts.ram[0]}`);
-    if (order) queryParams.push(`order=${order}`);
-    if (watts > 0) queryParams.push(`consumoW=${watts}`);
-
-    const query = queryParams.length ? `?${queryParams.join("&")}` : "";
-
-    try {
-      const response = await axios.get(`${url}/armador${query}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sesion.token}`,
-        },
-      });
-
-      if (response.status === 200) {
-        let nuevosProductos = response.data;
-        if (marcaCPU === "amd") {
-          nuevosProductos.productos.procesadores =
-            nuevosProductos.productos.procesadores.filter((p) =>
-              p.nombre.toLowerCase().includes("amd")
-            );
-        } else if (marcaCPU === "intel") {
-          nuevosProductos.productos.procesadores =
-            nuevosProductos.productos.procesadores.filter((p) =>
-              p.nombre.toLowerCase().includes("intel")
-            );
-        }
-
-        const cpu = buscarPorId(selectedParts.cpu);
-        if (cpu && nuevosProductos?.productos?.motherboards) {
-          nuevosProductos.productos.motherboards =
-            nuevosProductos.productos.motherboards.filter((mb) => {
-              const isAMD = cpu.nombre.toLowerCase().includes("amd");
-              return isAMD
-                ? mb.socket.includes("AM4") || mb.socket.includes("AM5")
-                : mb.socket.toLowerCase().startsWith("lga");
-            });
-        }
-
-        dispatch(setProductos(nuevosProductos));
-      }
-    } catch (error) {
-      console.error("Error en la solicitud:", error);
-    }
-  }, [
-    url,
-    selectedParts,
-    order,
-    watts,
-    sesion.token,
-    dispatch,
-    buscarPorId,
-    marcaCPU,
-  ]);
-
-  const calcularTotales = useCallback(() => {
-    let nuevoTotal = 0;
-    let nuevoWatts = 0;
-
-    Object.entries(selectedParts).forEach(([category, valor]) => {
-      if (valor) {
-        const ids = Array.isArray(valor) ? valor : [valor];
-        ids.forEach((id) => {
-          const producto = buscarPorId(id);
-          if (producto) {
-            nuevoTotal += Number(producto.precio_pesos_iva_ajustado);
-            if (
-              producto.consumo &&
-              !producto.nombre.toLowerCase().includes("fuente")
-            ) {
-              nuevoWatts += Number(producto.consumo);
-            }
+  const calcularTotalesYWatts = useCallback(() => {
+    let total = 0;
+    let watts = 0;
+    Object.entries(selectedParts).forEach(([categoria, ids]) => {
+      const lista = Array.isArray(ids) ? ids : [ids];
+      lista.forEach((id) => {
+        const producto = buscarPorId(id);
+        if (producto) {
+          total += Number(producto.precio_pesos_iva_ajustado || 0);
+          if (
+            producto.consumo &&
+            !producto.nombre?.toLowerCase().includes("fuente")
+          ) {
+            watts += Number(producto.consumo || 0);
           }
-        });
-      }
+        }
+      });
     });
-
-    dispatch(setTotal(nuevoTotal));
-    dispatch(setWatts(nuevoWatts));
+    dispatch(setTotal(total));
+    dispatch(setWatts(watts));
   }, [selectedParts, buscarPorId, dispatch]);
 
-  const handleSeleccionar = (id_producto) => {
-    const categoriaRedux =
-      categoryMap[secuenciaCategorias[tipoIndex] || category];
-    if (!categoriaRedux) return;
+  useEffect(() => {
+    calcularTotalesYWatts();
+  }, [selectedParts, calcularTotalesYWatts]);
 
-    const currentSelected = selectedParts[categoriaRedux];
-    const isArrayField =
-      categoriaRedux === "ram" || categoriaRedux === "storage";
+  const getArmador = useCallback(async () => {
+    const query = [];
+    if (selectedParts.cpu) query.push(`procesador_id=${selectedParts.cpu}`);
+    if (selectedParts.motherboard)
+      query.push(`motherboard_id=${selectedParts.motherboard}`);
+    if (selectedParts.ram?.length)
+      query.push(`memoria_id=${selectedParts.ram[0]}`);
+    if (order) query.push(`order=${order}`);
+    if (watts) query.push(`consumoW=${watts}`);
 
-    if (isArrayField) {
-      const max = categoriaRedux === "ram" ? 4 : 4;
-      if (
-        !currentSelected.includes(id_producto) &&
-        currentSelected.length < max
-      ) {
-        dispatch(selectPart({ category: categoriaRedux, part: id_producto }));
+    try {
+      const res = await axios.get(
+        `${url}/armador${query.length ? `?${query.join("&")}` : ""}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sesion.token}`,
+          },
+        }
+      );
+      if (res.status === 200) {
+        dispatch(setProductos(res.data));
+      }
+    } catch (error) {
+      console.error("Error al obtener productos:", error);
+    }
+  }, [url, selectedParts, order, watts, sesion.token, dispatch]);
+
+  const handleSeleccionar = (id) => {
+    const reduxKey = categoryMap[tipo || category];
+    const current = selectedParts[reduxKey];
+    const isArray = Array.isArray(current);
+    if (isArray) {
+      const next = [...current, id];
+      if (next.length <= 4) {
+        dispatch(selectPart({ category: reduxKey, part: id }));
+        if (next.length === 4) {
+          setTimeout(() => {
+            setTipoIndex((prev) =>
+              Math.min(prev + 1, secuenciaCategorias.length - 1)
+            );
+          }, 300);
+        }
       }
     } else {
-      dispatch(selectPart({ category: categoriaRedux, part: id_producto }));
-      const siguiente = tipoIndex + 1;
-      if (siguiente < secuenciaCategorias.length) setTipoIndex(siguiente);
+      dispatch(selectPart({ category: reduxKey, part: id }));
+      setTipoIndex((prev) =>
+        Math.min(prev + 1, secuenciaCategorias.length - 1)
+      );
     }
   };
 
-  const eliminarID = (id_producto) => {
-    const producto = buscarPorId(id_producto);
+  const eliminarID = (id) => {
+    const producto = buscarPorId(id);
     if (!producto) return;
-    const categoria = categoryMap[producto.categoria] || producto.categoria;
-    dispatch(removePart({ category: categoria, part: id_producto }));
+    const reduxKey = categoryMap[producto.categoria] || producto.categoria;
+    dispatch(removePart({ category: reduxKey, part: id }));
   };
 
   const handleReset = () => {
     dispatch(clearBuild());
     setTipoIndex(0);
-    setMarcaCPU(null);
+  };
+
+  const cambiarOrden = (orden) => dispatch(setOrder(orden));
+
+  const handleAgregarCarrito = async () => {
+    if (total === 0) return;
+
+    const carritoObj = {};
+
+    Object.entries(selectedParts).forEach(([_, valor]) => {
+      if (!valor || (Array.isArray(valor) && valor.length === 0)) return;
+
+      if (Array.isArray(valor)) {
+        valor.forEach((id) => {
+          carritoObj[id] = (carritoObj[id] || 0) + 1;
+        });
+      } else {
+        carritoObj[valor] = (carritoObj[valor] || 0) + 1;
+      }
+    });
+
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    try {
+      for (const [id_producto, cantidad] of Object.entries(carritoObj)) {
+        await sleep(50);
+        await fetch(`${url}/carrito`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sesion.token}`,
+          },
+          body: JSON.stringify({ id_producto, cantidad }),
+        });
+      }
+      navigate("/checkout");
+    } catch (error) {
+      console.error("Error al agregar productos al carrito:", error);
+    }
   };
 
   useEffect(() => {
     getArmador();
   }, [getArmador]);
 
-  useEffect(() => {
-    calcularTotales();
-  }, [calcularTotales]);
-
-  const handleSiguiente = () => {
-    if (tipoIndex < secuenciaCategorias.length - 1) {
-      setTipoIndex(tipoIndex + 1);
-    }
-  };
-
-  const handleAnterior = () => {
-    if (tipoIndex > 0) {
-      setTipoIndex(tipoIndex - 1);
-    }
-  };
-
-  const cambiarOrden = (nuevoOrden) => {
-    dispatch(setOrder(nuevoOrden));
-  };
-
   return (
-    <div className="containerArmador">
-      <div className="armador">
-        <Box display="flex" className="ladoIzquierdoArmador">
+    <Container maxWidth="xl" sx={{ py: 2 }}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={3}>
           <CategoriasSelector
             setTipo={(categoria) => {
               const index = secuenciaCategorias.indexOf(categoria);
@@ -232,87 +221,62 @@ function ArmadorPc({ category }) {
             selectedParts={selectedParts}
             buscarPorId={buscarPorId}
           />
-          <Box className="elecciones" flex={1} p={2}>
-            <ProductosSeleccionados
-              elecciones={selectedParts}
-              buscarPorId={buscarPorId}
-              eliminarID={eliminarID}
-            />
-            <TotalesYComprar total={total} watts={watts} />
-          </Box>
-        </Box>
+        </Grid>
 
-        <Box>
-          <Box display="flex" justifyContent="center" gap={2} my={2}>
-            <Button onClick={handleReset} variant="outlined" color="error">
-              Reiniciar Armado
+        <Grid item xs={12} md={6}>
+          <Box
+            display="flex"
+            justifyContent="center"
+            gap={2}
+            mb={2}
+            flexWrap="wrap"
+          >
+            <Button
+              variant="outlined"
+              onClick={() => setTipoIndex((prev) => Math.max(prev - 1, 0))}
+              disabled={tipoIndex === 0}
+            >
+              Anterior
+            </Button>
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: "#FF852A" }}
+              onClick={() =>
+                setTipoIndex((prev) =>
+                  Math.min(prev + 1, secuenciaCategorias.length - 1)
+                )
+              }
+              disabled={tipoIndex >= secuenciaCategorias.length - 1}
+            >
+              Siguiente
+            </Button>
+            <Button color="error" onClick={handleReset}>
+              Reiniciar
             </Button>
           </Box>
 
-          {tipoIndex === 0 && !marcaCPU && (
-            <Box display="flex" justifyContent="center" gap={2} my={2}>
-              <Button
-                variant="contained"
-                onClick={() => setMarcaCPU("amd")}
-                sx={{ backgroundColor: "#9c27b0" }}
-              >
-                AMD
-              </Button>
-              <Button
-                variant="contained"
-                onClick={() => setMarcaCPU("intel")}
-                sx={{ backgroundColor: "#1976d2" }}
-              >
-                Intel
-              </Button>
-            </Box>
-          )}
+          <ProductosSeleccionados
+            elecciones={selectedParts}
+            buscarPorId={buscarPorId}
+            eliminarID={eliminarID}
+          />
 
-          {marcaCPU && (
-            <>
-              <Box display="flex" justifyContent="center" gap={2} mb={2}>
-                <Button
-                  variant="outlined"
-                  onClick={handleAnterior}
-                  disabled={tipoIndex === 0}
-                >
-                  Anterior
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleSiguiente}
-                  disabled={tipoIndex >= secuenciaCategorias.length - 1}
-                  sx={{ backgroundColor: "#FF852A" }}
-                >
-                  Siguiente
-                </Button>
-              </Box>
+          <ListadoProductos
+            productos={productos}
+            tipo={tipo}
+            handleSeleccionar={handleSeleccionar}
+          />
+        </Grid>
 
-              <Box display="flex" justifyContent="center" gap={2} mb={2}>
-                <Button
-                  variant={order === "ASC" ? "contained" : "outlined"}
-                  onClick={() => cambiarOrden("ASC")}
-                >
-                  Menor a Mayor
-                </Button>
-                <Button
-                  variant={order === "DESC" ? "contained" : "outlined"}
-                  onClick={() => cambiarOrden("DESC")}
-                >
-                  Mayor a Menor
-                </Button>
-              </Box>
-
-              <ListadoProductos
-                productos={productos}
-                tipo={secuenciaCategorias[tipoIndex] || category}
-                handleSeleccionar={handleSeleccionar}
-              />
-            </>
-          )}
-        </Box>
-      </div>
-    </div>
+        <Grid item xs={12} md={3}>
+          <TotalesYComprar
+            total={total}
+            watts={watts}
+            handleAgregarCarrito={handleAgregarCarrito}
+          />
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
 

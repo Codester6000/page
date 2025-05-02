@@ -44,10 +44,16 @@ export function CategoriasSelector({ setTipo, selectedParts, buscarPorId }) {
         const clave = categoryMap[categoria];
         const seleccionado = selectedParts?.[clave];
 
-        const producto =
-          Array.isArray(seleccionado) && seleccionado.length > 0
-            ? buscarPorId(seleccionado[0])
-            : buscarPorId(seleccionado);
+        // Detectar si hay selección válida
+        let producto = null;
+        let cantidad = 0;
+
+        if (Array.isArray(seleccionado) && seleccionado.length > 0) {
+          producto = buscarPorId(seleccionado[0]);
+          cantidad = seleccionado.length;
+        } else if (seleccionado) {
+          producto = buscarPorId(seleccionado);
+        }
 
         const nombre = producto?.nombre?.toLowerCase();
         const isAM4 = nombre?.includes("am4");
@@ -93,12 +99,13 @@ export function CategoriasSelector({ setTipo, selectedParts, buscarPorId }) {
                 color: producto ? "inherit" : "gray",
               }}
             >
-              {producto?.nombre?.length > 20
-                ? producto.nombre.slice(0, 20) + "..."
-                : producto?.nombre || categoria}
+              {producto?.nombre
+                ? producto.nombre.slice(0, 20) +
+                  (producto.nombre.length > 20 ? "..." : "")
+                : categoria}
             </Typography>
 
-            {clave === "cpu" && (
+            {clave === "cpu" && producto && (
               <Typography
                 variant="caption"
                 sx={{
@@ -110,6 +117,20 @@ export function CategoriasSelector({ setTipo, selectedParts, buscarPorId }) {
                 {isAM4 ? "AM4" : isAM5 ? "AM5" : "¿?"}
               </Typography>
             )}
+
+            {["ram", "storage"].includes(clave) &&
+              Array.isArray(seleccionado) && (
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontSize: "0.6rem",
+                    fontWeight: "bold",
+                    color: "gray",
+                  }}
+                >
+                  x{cantidad}
+                </Typography>
+              )}
           </Box>
         );
       })}

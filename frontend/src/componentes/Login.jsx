@@ -14,9 +14,12 @@ import {
   TextField,
   Button,
   InputAdornment,
+  IconButton,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const Login = () => {
   const url = import.meta.env.VITE_URL_BACK;
@@ -31,9 +34,14 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
   const from = location.state?.from?.pathname || "/";
+
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const toggleShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   const onSubmit = async (datos) => {
     const response = await fetch(`${url}/auth/login`, {
@@ -82,11 +90,12 @@ const Login = () => {
               ),
             }}
           />
+
           <TextField
             fullWidth
             margin="normal"
             label="Contraseña"
-            type="password"
+            type={showPassword ? "text" : "password"}
             {...register("password")}
             error={!!errors.password}
             helperText={errors.password?.message}
@@ -94,6 +103,17 @@ const Login = () => {
               startAdornment: (
                 <InputAdornment position="start">
                   <LockIcon />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={toggleShowPassword}
+                    edge="end"
+                    aria-label="toggle password visibility"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
                 </InputAdornment>
               ),
             }}

@@ -1,28 +1,71 @@
-import { Box, Grid, Paper, Typography, IconButton } from "@mui/material";
-import { Delete } from "@mui/icons-material";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+  IconButton,
+  Box,
+  Grid,
+  Divider,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export function ProductosSeleccionados({
   elecciones,
   buscarPorId,
   eliminarID,
 }) {
+  const productosSeleccionados = [];
+
+  Object.entries(elecciones).forEach(([categoria, valor]) => {
+    if (!valor || (Array.isArray(valor) && valor.length === 0)) return;
+
+    const lista = Array.isArray(valor) ? valor : [valor];
+
+    lista.forEach((id) => {
+      const producto = buscarPorId(id);
+      if (producto) {
+        productosSeleccionados.push({ ...producto, categoria });
+      }
+    });
+  });
+
+  if (productosSeleccionados.length === 0) return null;
+
   return (
-    <Grid container spacing={2}>
-      {Object.entries(elecciones).map(([categoria, valor]) => {
-        if (valor === 0 || valor === null) return null;
-
-        if (Array.isArray(valor)) {
-          return valor.map((productoId, index) => {
-            const producto = buscarPorId(productoId);
-            if (!producto) return null;
-
-            return (
-              <Grid item xs={12} key={`${productoId}-${index}`}>
-                <Paper elevation={3} sx={{ p: 2, position: "relative" }}>
-                  <Typography fontWeight="bold">{producto.nombre}</Typography>
-                  <Typography color="text.secondary">
+    <Accordion sx={{ mb: 2 }}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography fontWeight="bold">
+          Componentes seleccionados ({productosSeleccionados.length})
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Grid container spacing={1}>
+          {productosSeleccionados.map((producto) => (
+            <Grid item xs={12} key={producto.id_producto}>
+              <Box
+                display="flex"
+                alignItems="center"
+                gap={2}
+                p={1}
+                border="1px solid #eee"
+                borderRadius={2}
+              >
+                <img
+                  src={producto.url_imagenes?.slice(-1)[0]}
+                  alt={producto.nombre}
+                  width={50}
+                  height={50}
+                  style={{ objectFit: "contain" }}
+                />
+                <Box flex={1}>
+                  <Typography fontSize="0.9rem" fontWeight="bold" noWrap>
+                    {producto.nombre}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
                     {Number(producto.precio_pesos_iva_ajustado).toLocaleString(
-                      "es-ar",
+                      "es-AR",
                       {
                         style: "currency",
                         currency: "ARS",
@@ -30,77 +73,24 @@ export function ProductosSeleccionados({
                       }
                     )}
                   </Typography>
-                  <IconButton
-                    onClick={() => eliminarID(producto.id_producto)}
-                    sx={{
-                      position: "absolute",
-                      top: 8,
-                      right: 8,
-                      backgroundColor: "#a111ad",
-                      color: "white",
-                      "&:hover": {
-                        backgroundColor: "#e0e0e0",
-                        color: "black",
-                      },
-                    }}
-                  >
-                    <Delete />
-                  </IconButton>
-                </Paper>
-              </Grid>
-            );
-          });
-        } else {
-          const producto = buscarPorId(valor);
-          if (!producto) return null;
-
-          return (
-            <Grid item xs={12} key={producto.id_producto}>
-              <Paper elevation={3} sx={{ p: 2, position: "relative" }}>
-                <Box display="flex" alignItems="center" gap={2}>
-                  <img
-                    src={
-                      producto.url_imagenes?.[producto.url_imagenes.length - 1]
-                    }
-                    alt={producto.nombre}
-                    width={60}
-                    height={60}
-                    style={{ objectFit: "contain" }}
-                  />
-                  <Box>
-                    <Typography fontWeight="bold">{producto.nombre}</Typography>
-                    <Typography color="text.secondary">
-                      {Number(
-                        producto.precio_pesos_iva_ajustado
-                      ).toLocaleString("es-ar", {
-                        style: "currency",
-                        currency: "ARS",
-                        maximumFractionDigits: 0,
-                      })}
+                  {producto.consumo && (
+                    <Typography variant="body2" color="text.secondary">
+                      Consumo: {producto.consumo} W
                     </Typography>
-                  </Box>
+                  )}
                 </Box>
                 <IconButton
                   onClick={() => eliminarID(producto.id_producto)}
-                  sx={{
-                    position: "absolute",
-                    top: 8,
-                    right: 8,
-                    backgroundColor: "#a111ad",
-                    color: "white",
-                    "&:hover": {
-                      backgroundColor: "#e0e0e0",
-                      color: "black",
-                    },
-                  }}
+                  color="error"
                 >
-                  <Delete />
+                  <DeleteIcon />
                 </IconButton>
-              </Paper>
+              </Box>
+              <Divider sx={{ mt: 1, mb: 1 }} />
             </Grid>
-          );
-        }
-      })}
-    </Grid>
+          ))}
+        </Grid>
+      </AccordionDetails>
+    </Accordion>
   );
 }
