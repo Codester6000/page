@@ -24,6 +24,10 @@ import { ListadoProductos } from "./armador/listadoProductos";
 import { CategoriasSelector } from "./armador/categoriasSelector";
 import { ProductosSeleccionados } from "./armador/productosSeleccionados";
 import TotalesYComprar from "./armador/totalesYComprar";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+
+import { useRef } from "react";
 
 const categoryMap = {
   procesadores: "cpu",
@@ -209,6 +213,21 @@ function ArmadorPc({ category }) {
     getArmador();
   }, [getArmador]);
 
+  const pdfRef = useRef();
+
+  const exportarPDF = async () => {
+    const input = pdfRef.current;
+    const canvas = await html2canvas(input, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save("presupuesto_pc.pdf");
+  };
+
   return (
     <Container maxWidth="xl" sx={{ py: 2 }}>
       <Grid container spacing={2}>
@@ -255,17 +274,18 @@ function ArmadorPc({ category }) {
             </Button>
           </Box>
 
-          <ProductosSeleccionados
-            elecciones={selectedParts}
-            buscarPorId={buscarPorId}
-            eliminarID={eliminarID}
-          />
-
-          <ListadoProductos
-            productos={productos}
-            tipo={tipo}
-            handleSeleccionar={handleSeleccionar}
-          />
+          <div ref={pdfRef}>
+            <ProductosSeleccionados
+              elecciones={selectedParts}
+              buscarPorId={buscarPorId}
+              eliminarID={eliminarID}
+            />
+            <ListadoProductos
+              productos={productos}
+              tipo={tipo}
+              handleSeleccionar={handleSeleccionar}
+            />
+          </div>
         </Grid>
 
         <Grid item xs={12} md={3}>

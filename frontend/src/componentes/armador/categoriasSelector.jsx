@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Tooltip } from "@mui/material";
 
 // Íconos por defecto
 import icono_cpu from "/iconos/armadorIconos/cpu.png";
@@ -35,6 +35,18 @@ const iconos = {
   monitores: icono_monitor,
 };
 
+const descripciones = {
+  procesadores: "Es el cerebro de la PC, ejecuta instrucciones y programas.",
+  motherboards: "Placa base que conecta y alimenta todos los componentes.",
+  gpus: "Procesador gráfico, esencial para juegos y diseño.",
+  memorias: "Memoria RAM, guarda datos temporales de programas en uso.",
+  almacenamiento: "Guarda tus archivos, sistema operativo y programas.",
+  fuentes: "Provee energía a todos los componentes de la PC.",
+  gabinetes: "Caja que aloja y protege los componentes internos.",
+  coolers: "Mantiene la temperatura de la PC bajo control.",
+  monitores: "Dispositivo de salida visual para ver lo que haces.",
+};
+
 export function CategoriasSelector({ setTipo, selectedParts, buscarPorId }) {
   const categorias = Object.keys(categoryMap);
 
@@ -44,7 +56,6 @@ export function CategoriasSelector({ setTipo, selectedParts, buscarPorId }) {
         const clave = categoryMap[categoria];
         const seleccionado = selectedParts?.[clave];
 
-        // Detectar si hay selección válida
         let producto = null;
         let cantidad = 0;
 
@@ -60,78 +71,84 @@ export function CategoriasSelector({ setTipo, selectedParts, buscarPorId }) {
         const isAM5 = nombre?.includes("am5");
 
         return (
-          <Box
+          <Tooltip
             key={categoria}
-            sx={{
-              cursor: "pointer",
-              p: 1,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              "&:hover": {
-                backgroundColor: "#e4e3e3",
-                borderRadius: "10px",
-              },
-            }}
-            onClick={() => setTipo(categoria)}
+            title={descripciones[categoria]}
+            placement="right"
+            arrow
           >
-            <img
-              src={
-                producto?.url_imagenes?.[producto.url_imagenes.length - 1] ??
-                iconos[categoria]
-              }
-              alt={producto?.nombre || categoria}
-              style={{
-                width: 40,
-                height: 40,
-                objectFit: "contain",
-                borderRadius: producto ? "5px" : "0px",
-              }}
-            />
-
-            <Typography
-              variant="caption"
+            <Box
               sx={{
-                mt: 1,
-                textAlign: "center",
-                fontSize: "0.6rem",
-                lineHeight: 1.2,
-                color: producto ? "inherit" : "gray",
+                cursor: "pointer",
+                p: 1,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                "&:hover": {
+                  backgroundColor: "#e4e3e3",
+                  borderRadius: "10px",
+                },
               }}
+              onClick={() => setTipo(categoria)}
             >
-              {producto?.nombre
-                ? producto.nombre.slice(0, 20) +
-                  (producto.nombre.length > 20 ? "..." : "")
-                : categoria}
-            </Typography>
+              <img
+                src={
+                  producto?.url_imagenes?.[producto.url_imagenes.length - 1] ??
+                  iconos[categoria]
+                }
+                alt={producto?.nombre || categoria}
+                style={{
+                  width: 40,
+                  height: 40,
+                  objectFit: "contain",
+                  borderRadius: producto ? "5px" : "0px",
+                }}
+              />
 
-            {clave === "cpu" && producto && (
               <Typography
                 variant="caption"
                 sx={{
+                  mt: 1,
+                  textAlign: "center",
                   fontSize: "0.6rem",
-                  fontWeight: "bold",
-                  color: isAM4 ? "#1976d2" : isAM5 ? "#9c27b0" : "gray",
+                  lineHeight: 1.2,
+                  color: producto ? "inherit" : "gray",
                 }}
               >
-                {isAM4 ? "AM4" : isAM5 ? "AM5" : "¿?"}
+                {producto?.nombre
+                  ? producto.nombre.slice(0, 20) +
+                    (producto.nombre.length > 20 ? "..." : "")
+                  : categoria}
               </Typography>
-            )}
 
-            {["ram", "storage"].includes(clave) &&
-              Array.isArray(seleccionado) && (
+              {clave === "cpu" && producto && (
                 <Typography
                   variant="caption"
                   sx={{
                     fontSize: "0.6rem",
                     fontWeight: "bold",
-                    color: "gray",
+                    color: isAM4 ? "#1976d2" : isAM5 ? "#9c27b0" : "gray",
                   }}
                 >
-                  x{cantidad}
+                  {isAM4 ? "AM4" : isAM5 ? "AM5" : "¿?"}
                 </Typography>
               )}
-          </Box>
+
+              {["ram", "storage"].includes(clave) &&
+                Array.isArray(seleccionado) && (
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontSize: "0.6rem",
+                      fontWeight: "bold",
+                      color: "gray",
+                    }}
+                  >
+                    x{cantidad}
+                  </Typography>
+                )}
+            </Box>
+          </Tooltip>
         );
       })}
     </Box>

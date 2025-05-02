@@ -26,6 +26,8 @@ export default function ProductCard() {
   const url = import.meta.env.VITE_URL_BACK;
   const [productos, setProductos] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [categoriasDisponibles, setCategoriasDisponibles] = useState([]);
+
   const [pagina, setPagina] = useState(1);
   const itemPorPagina = 32;
   const [totales, setTotales] = useState(0);
@@ -242,61 +244,125 @@ export default function ProductCard() {
 
     getProductos();
   }, [searchParams, pagina]);
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const response = await fetch(`${url}/categorias`);
+        const data = await response.json();
+        setCategoriasDisponibles(data.categorias || []);
+      } catch (error) {
+        console.error("Error al obtener categorías:", error);
+      }
+    };
+    fetchCategorias();
+  }, []);
 
   return (
     <Container sx={{}}>
       {/* <SkeletonProd></SkeletonProd> */}
       <Card sx={{ bgcolor: "#FFfff", padding: 5, marginX: -10, marginY: 5 }}>
-        <Grid className="filtros">
-          <Typography level="h3">Filtrar por: </Typography>
-          <br />
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 16,
+            alignItems: "flex-end",
+            marginBottom: 24,
+          }}
+        >
           <TextField
             label="Buscar por Nombre"
-            name="nombre"
             variant="outlined"
-            size="small"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
-            style={{ marginRight: "10px" }}
-            className="inputFiltro"
-          />
-          <Select
-            label="Filtrar producto"
-            name="proveedor"
-            sx={{ width: "30%" }}
-          >
-            <MenuItem value="" disabled>
-              Seleccionar Proveedor
-            </MenuItem>
-          </Select>
-          <TextField
-            label="Minimo Precio"
-            name="precioMin"
-            variant="outlined"
             size="small"
+            sx={{
+              width: { xs: "100%", sm: "200px" },
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "12px",
+                backgroundColor: "#f4f4f4",
+              },
+            }}
+          />
+          <TextField
+            label="Precio Mínimo"
+            variant="outlined"
+            type="number"
             value={precioMin}
             onChange={(e) => setPrecioMin(e.target.value)}
-            style={{ marginRight: "10px" }}
-            className="inputFiltro"
+            size="small"
+            sx={{
+              width: { xs: "100%", sm: "150px" },
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "12px",
+                backgroundColor: "#f4f4f4",
+              },
+            }}
           />
           <TextField
-            label="Maximo Precio"
-            name="precioMax"
+            label="Precio Máximo"
             variant="outlined"
-            size="small"
+            type="number"
             value={precioMax}
             onChange={(e) => setPrecioMax(e.target.value)}
-            style={{ marginRight: "10px" }}
-            className="inputFiltro"
+            size="small"
+            sx={{
+              width: { xs: "100%", sm: "150px" },
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "12px",
+                backgroundColor: "#f4f4f4",
+              },
+            }}
           />
+          <Select
+            value={categoria}
+            onChange={handleCategoriaChange}
+            displayEmpty
+            size="small"
+            renderValue={
+              categoria !== ""
+                ? undefined
+                : () => <span style={{ color: "#ffffff" }}>Categoría</span>
+            }
+            sx={{
+              width: { xs: "100%", sm: "180px" },
+              borderRadius: "12px",
+              backgroundColor: "#ffffff",
+              "& .MuiSelect-select": {
+                paddingY: "10px",
+                paddingX: "14px",
+              },
+            }}
+          >
+            <MenuItem disabled value="">
+              Categoría
+            </MenuItem>
+            {categoriasDisponibles.map((cat) => (
+              <MenuItem key={cat.id_categoria} value={cat.nombre_categoria}>
+                {cat.nombre_categoria}
+              </MenuItem>
+            ))}
+          </Select>
+
           <Button
             variant="contained"
-            sx={{ backgroundColor: "#FF7D20" }}
             onClick={aplicarFiltros}
+            sx={{
+              background: "linear-gradient(to right, #ff8a00, #ff6a00)",
+              borderRadius: "12px",
+              paddingX: 3,
+              height: "40px",
+              color: "white",
+              boxShadow: "0px 4px 14px rgba(0, 0, 0, 0.2)",
+              "&:hover": {
+                background: "linear-gradient(to right, #ff6a00, #ff8a00)",
+              },
+            }}
           >
             Aplicar Filtros
           </Button>
-        </Grid>
+        </div>
+
         <Grid
           container
           spacing={5}
