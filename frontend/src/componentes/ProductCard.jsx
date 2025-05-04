@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-
+import { motion, AnimatePresence } from "framer-motion";
+import { IconButton, useMediaQuery } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { useTheme } from "@mui/material/styles";
 import Card from "@mui/joy/Card";
 import Container from "@mui/material/Container";
 import Grid from "@mui/joy/Grid";
@@ -7,7 +10,6 @@ import CardContent from "@mui/joy/CardContent";
 import Typography from "@mui/joy/Typography";
 import AspectRatio from "@mui/joy/AspectRatio";
 import Button from "@mui/material/Button";
-import IconButton from "@mui/joy/IconButton";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Pagination from "@mui/material/Pagination";
@@ -19,7 +21,6 @@ import { Alert, MenuItem, Select, Snackbar, TextField } from "@mui/material";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import "../producto.css";
-import { motion } from "framer-motion";
 import SkeletonProd from "./SkeletonProd";
 
 export default function ProductCard() {
@@ -45,6 +46,8 @@ export default function ProductCard() {
   const { sesion, logout } = useAuth();
   const [alerta, setAlerta] = useState(false);
   const [alertaFav, setAlertaFav] = useState(false);
+  const [orden, setOrden] = useState(searchParams.get("orden") || "");
+
   const [carrito, setCarrito] = useState([]);
   const [favorito, setFavorito] = useState([]);
   const [productoSeleccionado, setProductoSeleccionado] = useState("");
@@ -56,6 +59,7 @@ export default function ProductCard() {
     if (precioMax) query += `&precio_lt=${precioMax}`;
     if (categoria) query += `&categoria=${categoria}`;
     if (nombre) query += `&nombre=${nombre}`;
+    if (orden) query += `&orden=${orden}`;
     return query;
   };
 
@@ -215,6 +219,7 @@ export default function ProductCard() {
     if (categoria) nuevosParams.set("categoria", categoria);
     if (precioMin) nuevosParams.set("precioMin", precioMin);
     if (precioMax) nuevosParams.set("precioMax", precioMax);
+    if (orden) nuevosParams.set("orden", orden);
 
     setPagina(1);
     setSearchParams(nuevosParams);
@@ -236,6 +241,8 @@ export default function ProductCard() {
     const categoriaParam = searchParams.get("categoria");
     const precioMinParam = searchParams.get("precioMin");
     const precioMaxParam = searchParams.get("precioMax");
+    const ordenParam = searchParams.get("orden");
+    if (ordenParam !== orden) setOrden(ordenParam || "");
 
     if (nombreParam !== nombre) setNombre(nombreParam || "");
     if (categoriaParam !== categoria) setCategoria(categoriaParam || "");
@@ -259,7 +266,6 @@ export default function ProductCard() {
 
   return (
     <Container sx={{}}>
-      {/* <SkeletonProd></SkeletonProd> */}
       <Card sx={{ bgcolor: "#FFfff", padding: 5, marginX: -10, marginY: 5 }}>
         <div
           style={{
@@ -343,6 +349,32 @@ export default function ProductCard() {
               </MenuItem>
             ))}
           </Select>
+          <Select
+            value={orden}
+            onChange={(e) => setOrden(e.target.value)}
+            displayEmpty
+            size="small"
+            renderValue={
+              orden !== ""
+                ? undefined
+                : () => <span style={{ color: "#999" }}>Ordenar por</span>
+            }
+            sx={{
+              width: { xs: "100%", sm: "180px" },
+              borderRadius: "12px",
+              backgroundColor: "#ffffff",
+              "& .MuiSelect-select": {
+                paddingY: "10px",
+                paddingX: "14px",
+              },
+            }}
+          >
+            <MenuItem disabled value="">
+              Ordenar por
+            </MenuItem>
+            <MenuItem value="asc">Precio: Menor a Mayor</MenuItem>
+            <MenuItem value="desc">Precio: Mayor a Menor</MenuItem>
+          </Select>
 
           <Button
             variant="contained"
@@ -362,7 +394,6 @@ export default function ProductCard() {
             Aplicar Filtros
           </Button>
         </div>
-
         <Grid
           container
           spacing={5}
@@ -526,98 +557,8 @@ export default function ProductCard() {
             ))
           ) : (
             <SkeletonProd></SkeletonProd>
-            // <Typography>Despues pongo un mensaje de error o skeleton</Typography>
           )}
         </Grid>
-        <div className="productoSeleccionado">
-          {productoSeleccionado != "" && (
-            <div className="prSeleccionadoCard">
-              <div className="prImagen">
-                <img
-                  src={
-                    productoSeleccionado.url_imagenes[
-                      productoSeleccionado.url_imagenes.length - 1
-                    ]
-                  }
-                  alt=""
-                  onClick={() =>
-                    navigate(`/producto/${productoSeleccionado.id_producto}`)
-                  }
-                />
-              </div>
-              <div className="prInfo">
-                <button
-                  className="cerrar"
-                  onClick={() => setProductoSeleccionado("")}
-                >
-                  X
-                </button>
-                <h2
-                  className="nombreProducto"
-                  onClick={() =>
-                    navigate(`/producto/${productoSeleccionado.id_producto}`)
-                  }
-                >
-                  {productoSeleccionado.nombre}
-                </h2>
-                <p
-                  className="prPrecio"
-                  onClick={() =>
-                    navigate(`/producto/${productoSeleccionado.id_producto}`)
-                  }
-                >
-                  {Number(
-                    productoSeleccionado.precio_pesos_iva_ajustado
-                  ).toLocaleString("es-ar", {
-                    style: "currency",
-                    currency: "ARS",
-                    maximumFractionDigits: 0,
-                  })}
-                </p>
-                <p
-                  className="prDescripcion"
-                  onClick={() =>
-                    navigate(`/producto/${productoSeleccionado.id_producto}`)
-                  }
-                >
-                  {productoSeleccionado.detalle}
-                  <AuthRol rol="2">
-                    <div className="editarDetalle">
-                      <img
-                        src={editSvg}
-                        alt=""
-                        onClick={() =>
-                          handleAgregarDetalle(productoSeleccionado.id_producto)
-                        }
-                      />
-                    </div>
-                  </AuthRol>
-                </p>
-
-                <button
-                  className="prAddCarrito"
-                  onClick={() => {
-                    agregarCarrito(productoSeleccionado.id_producto);
-                    setAlerta(true);
-                  }}
-                >
-                  <img src={carritoSVG} alt="" />
-                  <p>agregar al carrito</p>
-                </button>
-                <button
-                  className="prAddFav"
-                  onClick={() => {
-                    agregarFavorito(productoSeleccionado.id_producto);
-                    setAlertaFav(true);
-                  }}
-                >
-                  <img src={corazonSVG} alt="" />
-                  <p>agregar a favoritos</p>
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
         <Snackbar
           open={alerta}
           autoHideDuration={2000}
