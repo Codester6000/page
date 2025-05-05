@@ -233,11 +233,11 @@ def extraer_columnas_csv(ruta_csv):
             marca = "a"
             sub_categoria = "a"
             proveedor = "air"
-            precio_dolares = fila["lista3"]
-            precio_dolares_iva = float("{:.2f}".format(float(fila["lista3"]) * (float(fila["IVA"]) / 100 + 1)))
+            precio_dolares = fila["lista4"]
+            precio_dolares_iva = float("{:.2f}".format(float(fila["lista4"]) * (float(fila["IVA"]) / 100 + 1)))
             iva = float(fila["IVA"]) 
-            precio_pesos = float(fila["lista3"]) * float(dolar_venta)
-            precio_pesos_iva = float("{:.2f}".format(float(fila["lista3"]) * float(dolar_venta) * (float(fila["IVA"]) / 100 + 1)))
+            precio_pesos = float(fila["lista4"]) * float(dolar_venta)
+            precio_pesos_iva = float("{:.2f}".format(float(fila["lista4"]) * float(dolar_venta) * (float(fila["IVA"]) / 100 + 1)))
             url_imagen = "https://i.imgur.com/0wbrCkz.png"
             codigo_categoria = fila["Rubro"]
             try:
