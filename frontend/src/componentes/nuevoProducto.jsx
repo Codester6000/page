@@ -116,6 +116,24 @@ const NuevoProducto = () => {
             onChange={handleChange}
           />
         </Grid>
+        <Grid item xs={12} sm={6}>
+          <Select
+            fullWidth
+            name="proveedor"
+            value={form.proveedor}
+            onChange={handleChange}
+            displayEmpty
+          >
+            <MenuItem value="" disabled>
+              Seleccione proveedor
+            </MenuItem>
+            <MenuItem value="air">Air</MenuItem>
+            <MenuItem value="elit">Elit</MenuItem>
+            <MenuItem value="modex">Modex</MenuItem>
+            <MenuItem value="otros">Otros</MenuItem>
+          </Select>
+        </Grid>
+
         <Grid item xs={12}>
           <TextField
             label="Detalle"
