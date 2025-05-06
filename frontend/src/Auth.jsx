@@ -1,7 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import LogoutIcon from "@mui/icons-material/Logout";
-import PersonIcon from "@mui/icons-material/Person";
 import {
   Button,
   Menu,
@@ -10,11 +8,13 @@ import {
   Avatar,
   Tooltip,
 } from "@mui/material";
+import LogoutIcon from "@mui/icons-material/Logout";
+import PersonIcon from "@mui/icons-material/Person";
 
 // 🔐 Crear contexto
 const AuthContext = createContext();
 
-// ✅ Hook personalizado para usar el contexto
+// ✅ Hook personalizado para usar el contexto desde cualquier componente
 export const useAuth = () => {
   return useContext(AuthContext);
 };
@@ -53,6 +53,7 @@ export const AuthProvider = ({ children }) => {
       setSesion(sesion);
       ok();
     } catch (err) {
+      console.error(err);
       error();
     }
   };
@@ -79,11 +80,16 @@ export const AuthPage = ({ children }) => {
   return children;
 };
 
-// 🛡️ Protección por rol
+// 🛡️ Protección por rol (ajustada a rol numérico)
 export const AuthRol = ({ rol, children }) => {
   const { sesion } = useAuth();
 
-  if (!sesion || sesion.rol !== rol) {
+  if (!sesion) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Convertir ambos a string para que coincidan correctamente
+  if (String(sesion.rol).trim() !== String(rol).trim()) {
     return null;
   }
 
@@ -117,7 +123,7 @@ export const AuthStatus = () => {
             ml: 2,
             backgroundColor: "#a111ad",
             borderRadius: "20px",
-            color: "#fffff",
+            color: "#fff",
             borderColor: "#a111ad",
           }}
           onClick={() => navigate("/register")}
