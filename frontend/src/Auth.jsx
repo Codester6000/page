@@ -11,17 +11,17 @@ import {
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 
-// 🔐 Crear contexto
+//  Crear contexto
 const AuthContext = createContext();
 
-// ✅ Hook personalizado para usar el contexto desde cualquier componente
+//  Hook personalizado para usar el contexto desde cualquier componente
 export const useAuth = () => {
   return useContext(AuthContext);
 };
 
 const url = import.meta.env.VITE_URL_BACK;
 
-// 🔑 Proveedor de autenticación
+//  Proveedor de autenticación
 export const AuthProvider = ({ children }) => {
   const [sesion, setSesion] = useState(() => {
     const storedSesion = localStorage.getItem("sesion");
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = (ok) => {
     setSesion(null);
-    ok();
+    if (ok) ok();
   };
 
   const value = { sesion, login, logout };
@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// 🛡️ Protección de rutas privadas
+//  Protección de rutas privadas
 export const AuthPage = ({ children }) => {
   const { sesion } = useAuth();
   const location = useLocation();
@@ -80,7 +80,7 @@ export const AuthPage = ({ children }) => {
   return children;
 };
 
-// 🛡️ Protección por rol (ajustada a rol numérico)
+//  Protección por rol (ajustada a rol numérico)
 export const AuthRol = ({ rol, children }) => {
   const { sesion } = useAuth();
 

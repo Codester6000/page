@@ -1,13 +1,9 @@
 import Navbar from "./componentes/Navbar";
-
-// import { CustomizedInputBase } from "./componentes/Barra"
 import "swiper/swiper-bundle.css";
 import { Route, Routes } from "react-router-dom";
 import { AuthPage, AuthRol } from "./Auth";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-
 import "./styl.css";
-
 import Login from "./componentes/Login";
 import Register from "./componentes/Register";
 import Footer from "./componentes/footer";
@@ -34,34 +30,25 @@ function App() {
 
   useEffect(() => {
     if (sesion?.token) {
-      // Decodificar el token JWT
       const tokenData = JSON.parse(atob(sesion.token.split(".")[1]));
-      const expirationTime = tokenData.exp * 1000; // Convertir a milisegundos
+      const expirationTime = tokenData.exp * 1000;
 
       if (Date.now() >= expirationTime) {
-        // Token expirado, hacer logout
         logout(() => navigate("/"));
       }
     }
   }, [sesion]);
+
   return (
     <>
       <header>
-        <Navbar></Navbar>
+        <Navbar />
       </header>
       <Routes>
         <Route path="/productos" element={<Inicio />} />
         <Route path="/producto/:id" element={<Producto />} />
-
         <Route path="/" element={<Portada />} />
-        <Route
-          path="/armador"
-          element={
-            <AuthPage>
-              <Armadorpc />
-            </AuthPage>
-          }
-        />
+        <Route path="/armador" element={<Armadorpc />} />
         <Route path="/busqueda" element={<Busqueda />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -73,7 +60,6 @@ function App() {
             </AuthPage>
           }
         />
-
         <Route
           path="/carrito"
           element={
@@ -112,24 +98,16 @@ function App() {
         <Route path="/thank-you" element={<ThankYou />} />
         <Route path="/desarrollo" element={<DesarrolloWeb />} />
       </Routes>
-      {/* <div className="burWsp">
-          <div className="wsp-cont">
-            <a href="https://api.whatsapp.com/send/?phone=543804353826&text=Hola,+quiero+contactarme+con+ustedes!&type=phone_number&app_absent=0" className="bwsp" target="_blank"> <i><WhatsAppIcon sx={{fontSize: "35px"}}/></i> </a>
-            <div className="mensWsp">¿Quiere comunicarse con nosotros?</div>
-          </div>
-        </div> */}
       <a
         href="https://api.whatsapp.com/send/?phone=543804353826&text=Hola,+quiero+contactarme+con+ustedes!&type=phone_number&app_absent=0"
         className="bwsp"
         target="_blank"
       >
-        {" "}
         <i>
           <WhatsAppIcon sx={{ fontSize: "35px" }} />
-        </i>{" "}
+        </i>
       </a>
-
-      <Footer></Footer>
+      <Footer />
     </>
   );
 }
