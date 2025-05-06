@@ -1,4 +1,12 @@
-import { AppBar, Button, Drawer, IconButton, colors } from "@mui/material";
+import {
+  AppBar,
+  Button,
+  Drawer,
+  IconButton,
+  Menu,
+  MenuItem,
+  colors,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import CustomizedInputBase from "./CustomizedInputBase";
@@ -6,6 +14,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import PersonIcon from "@mui/icons-material/Person";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useState } from "react";
+import "../styles/navBar.css";
 import MenuNavbar from "./MenuNavbar";
 import { AuthStatus } from "../Auth";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +22,16 @@ import { useNavigate } from "react-router-dom";
 export default function Navbar() {
   const navigate = useNavigate();
   const [abierto, setAbierto] = useState(false);
+
+  // Estado para el submenú de productos
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <>
@@ -29,7 +48,7 @@ export default function Navbar() {
               color: "white",
             }}
           >
-            <MenuIcon></MenuIcon>
+            <MenuIcon />
           </IconButton>
           <Drawer
             open={abierto}
@@ -41,11 +60,8 @@ export default function Navbar() {
               },
             }}
           >
-            <MenuNavbar></MenuNavbar>{" "}
+            <MenuNavbar />
           </Drawer>
-          {/* <Button>
-                        <MenuIcon size="large" edge="start" color="orange" aria-label="menu" sx={{ mr: 2 }} ></MenuIcon>
-                    </Button> */}
           <img
             src="/modex.png"
             alt="logo modex"
@@ -56,12 +72,12 @@ export default function Navbar() {
               padding: "15px",
               paddingRight: "10px",
               filter: "brightness(0) invert(1)",
+              cursor: "pointer",
             }}
           />
-          <CustomizedInputBase></CustomizedInputBase>
+          <CustomizedInputBase />
           <AuthStatus />
           <IconButton
-            variant="contained"
             onClick={() => navigate("/favorito")}
             sx={{
               ml: 2,
@@ -77,7 +93,6 @@ export default function Navbar() {
             <FavoriteIcon color="inherit" />
           </IconButton>
           <IconButton
-            variant="contained"
             onClick={() => navigate("/carrito")}
             sx={{
               ml: 2,
@@ -92,24 +107,61 @@ export default function Navbar() {
           >
             <ShoppingCartIcon color="inherit" />
           </IconButton>
-          {/* <Button> <img src="./public/fav.png" alt="" style={{ width: "50px", height: "auto", padding: "15px", filter: "brightness(0) invert(1)" }} /></Button>
-                    <Button variant="contained" sx={{ml: 2, backgroundColor: "#a111ad", borderRadius: 50, height: "60px" , padding: "5px", objectFit: "cover" }}><ShoppingCartIcon sx={{ fontSize: 20 }} /></Button>
-                    <Button> <img src="./public/carrito.png" alt="" style={{ width: "50px", height: "auto", padding: "15px", filter: "brightness(0) invert(1)" }} /></Button> */}
         </Toolbar>
+
+        {/* NAV LINKS */}
         <div className="navLinksPc">
           <div className="linkPc">
             <a href="/">INICIO</a>
           </div>
+
           <div className="linkPc">
-            <a href="/productos">PRODUCTOS</a>
+            {/* Activador del submenú */}
+            <Button
+              onClick={handleClick}
+              sx={{ color: "white", fontWeight: "bold" }}
+            >
+              PRODUCTOS
+            </Button>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{ "aria-labelledby": "productos-button" }}
+            >
+              <MenuItem
+                onClick={() => {
+                  navigate("/productos");
+                  handleClose();
+                }}
+              >
+                Todos los productos
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  navigate("/productos/usados");
+                  handleClose();
+                }}
+              >
+                Usados
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  navigate("/productos/nuevos");
+                  handleClose();
+                }}
+              >
+                Nuevos
+              </MenuItem>
+            </Menu>
           </div>
+
           <div className="linkPc">
             <a href="/armador">ARMA TU PC</a>
           </div>
           <div className="linkPc">
             <a href="/desarrollo">DESARROLLO</a>
           </div>
-          <div className="linkPc"></div>
         </div>
       </AppBar>
     </>
