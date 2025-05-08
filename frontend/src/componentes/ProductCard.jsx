@@ -14,7 +14,7 @@ import {
 
 import Card from "@mui/joy/Card";
 import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/joy/Grid";
 import CardContent from "@mui/joy/CardContent";
 import Typography from "@mui/joy/Typography";
 import AspectRatio from "@mui/joy/AspectRatio";
