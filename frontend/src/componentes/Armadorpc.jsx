@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Box,
   Button,
@@ -19,15 +19,13 @@ import {
   clearBuild,
 } from "../redux/slices/buildSlice";
 import { useAuth } from "../Auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { ListadoProductos } from "./armador/listadoProductos";
 import { CategoriasSelector } from "./armador/categoriasSelector";
 import { ProductosSeleccionados } from "./armador/productosSeleccionados";
 import TotalesYComprar from "./armador/totalesYComprar";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-
-import { useRef } from "react";
 
 const categoryMap = {
   procesadores: "cpu",
@@ -47,6 +45,11 @@ function ArmadorPc({ category }) {
   const url = import.meta.env.VITE_URL_BACK;
   const { sesion } = useAuth();
   const navigate = useNavigate();
+
+  if (!sesion) {
+    return <Navigate to="/login" replace />;
+  }
+
   const dispatch = useDispatch();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));

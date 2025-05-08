@@ -266,7 +266,7 @@ export default function ProductCard() {
 
   return (
     <Container sx={{}}>
-      <Card sx={{ bgcolor: "#FFfff", padding: 5, marginX: -10, marginY: 5 }}>
+      <Card sx={{ bgcolor: "#fff", padding: 5, marginX: -3, marginY: 15 }}>
         <div
           style={{
             display: "flex",
@@ -394,54 +394,27 @@ export default function ProductCard() {
             Aplicar Filtros
           </Button>
         </div>
-        <Grid
-          container
-          spacing={5}
-          style={{ marginTop: "50px" }}
-          className="productosLista"
-        >
+        {/* Filtros y controles */}
+        <Grid container spacing={5} style={{ marginTop: "50px" }}>
           {productos.length > 0 ? (
-            productos.map((producto, index) => (
+            productos.map((producto) => (
               <Grid
+                item
                 xs={12}
                 sm={6}
                 md={4}
                 lg={3}
                 key={producto.id_producto}
-                onClick={() => {
-                  getProductoById(producto.id_producto);
-                }}
-                className="productoCarta"
               >
                 <Card
                   sx={{
                     mt: 3,
                     width: 280,
                     bgcolor: "#FAFAFA",
-                    height: 450,
+                    height: 500,
                     display: "flex",
                   }}
                 >
-                  <div className="badge">
-                    {producto.nombre_proveedor == "air" ? (
-                      <img src="/badges/24HS.png" alt="" />
-                    ) : producto.nombre_proveedor == "elit" ? (
-                      <img src="/badges/5_DIAS.png" alt="" />
-                    ) : (
-                      <img src="/badges/LOCAL.png" alt="" />
-                    )}{" "}
-                  </div>
-                  <AuthRol rol="2">
-                    <div className="editar">
-                      <img
-                        src={editSvg}
-                        alt=""
-                        onClick={() =>
-                          handleAgregarImagen(producto.id_producto)
-                        }
-                      />
-                    </div>
-                  </AuthRol>
                   <AspectRatio minHeight="250px" maxHeight="200px">
                     <img
                       src={
@@ -460,7 +433,6 @@ export default function ProductCard() {
                     />
                   </AspectRatio>
                   <CardContent
-                    orientation="horizontal"
                     sx={{
                       display: "flex",
                       flexDirection: "column",
@@ -468,166 +440,108 @@ export default function ProductCard() {
                       height: "100%",
                     }}
                   >
-                    <div>
-                      <Typography
+                    <Typography
+                      sx={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {producto.nombre}
+                    </Typography>
+                    <Typography level="h3" sx={{ fontWeight: "md", mt: 0.8 }}>
+                      {Number(
+                        producto.precio_pesos_iva_ajustado
+                      ).toLocaleString("es-ar", {
+                        style: "currency",
+                        currency: "ARS",
+                        maximumFractionDigits: 0,
+                      })}
+                    </Typography>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginLeft: "auto",
+                      }}
+                    >
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          agregarCarrito(producto.id_producto);
+                          setAlerta(true);
+                        }}
+                        startIcon={<AddShoppingCartIcon />}
                         sx={{
-                          display: "-webkit-box",
-                          overflow: "hidden",
-                          WebkitBoxOrient: "vertical",
-                          WebkitLineClamp: 2,
-                          height: "25px",
-                          textOverflow: "ellipsis",
-                          fontWeight: "bold",
+                          ml: 2,
+                          my: 2,
+                          backgroundColor: "#FF7D20",
+                          borderRadius: "20px",
                         }}
                       >
-                        {producto.nombre}
-                      </Typography>
-                      <Typography level="h3" sx={{ fontWeight: "md", mt: 0.8 }}>
-                        {Number(
-                          producto.precio_pesos_iva_ajustado
-                        ).toLocaleString("es-ar", {
-                          style: "currency",
-                          currency: "ARS",
-                          maximumFractionDigits: 0,
-                        })}
-                      </Typography>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          marginLeft: "auto",
+                        Agregar al Carrito
+                      </Button>
+                      <IconButton
+                        onClick={() => {
+                          agregarFavorito(producto.id_producto);
+                          setAlertaFav(true);
+                        }}
+                        sx={{
+                          ml: 2,
+                          backgroundColor: "#FF7D20",
+                          borderRadius: "50px",
+                          color: "white",
                         }}
                       >
-                        <Button
-                          variant="contained"
-                          size="large"
-                          onClick={() => {
-                            agregarCarrito(producto.id_producto);
-                            setAlerta(true);
-                          }}
-                          startIcon={<AddShoppingCartIcon />}
-                          sx={{
-                            ml: 2,
-                            my: 2,
-                            backgroundColor: "#FF7D20",
-                            height: "10 % ",
-                            width: "70%",
-                            borderRadius: "20px",
-                            fontSize: "0.75rem",
-                            objectFit: "contain",
-                          }}
-                        >
-                          Agregar al Carrito
-                        </Button>
-                        <IconButton
-                          variant="contained"
-                          size="large"
-                          sx={{
-                            ml: 2,
-                            height: 45,
-                            width: 45,
-                            backgroundColor: "#FF7D20",
-                            borderRadius: "50px",
-                            objectFit: "contain",
-                            color: "white",
-                            "&:active": {
-                              transform: "scale(0.95)",
-                              transition: "transform 0.2s ease",
-                            },
-                            "&:hover": {
-                              backgroundColor: "#d4671a",
-                            },
-                          }}
-                          onClick={() => {
-                            agregarFavorito(producto.id_producto);
-                            setAlertaFav(true);
-                          }}
-                        >
-                          {estaEnFavoritos(producto.id_producto) ? (
-                            <FavoriteIcon sx={{ color: "orange" }} />
-                          ) : (
-                            <FavoriteIcon />
-                          )}
-                        </IconButton>
-                      </div>
+                        {estaEnFavoritos(producto.id_producto) ? (
+                          <FavoriteIcon sx={{ color: "orange" }} />
+                        ) : (
+                          <FavoriteIcon />
+                        )}
+                      </IconButton>
                     </div>
                   </CardContent>
                 </Card>
               </Grid>
             ))
           ) : (
-            <SkeletonProd></SkeletonProd>
+            <SkeletonProd />
           )}
         </Grid>
         <Snackbar
           open={alerta}
           autoHideDuration={2000}
           onClose={() => setAlerta(false)}
-          variant="solid"
         >
           <Alert
-            size="large"
             severity="success"
             icon={
               <AddShoppingCartIcon sx={{ fontSize: "2rem", color: "white" }} />
             }
-            sx={{
-              backgroundColor: "#a111ad",
-              color: "white",
-              fontSize: "1rem",
-              padding: "12px",
-              display: "flex",
-              alignItems: "center",
-              borderRadius: 3,
-            }}
+            sx={{ backgroundColor: "#a111ad", color: "white" }}
           >
-            El producto fué Añadido al Carrito
+            El producto fue Añadido al Carrito
           </Alert>
         </Snackbar>
         <Snackbar
           open={alertaFav}
           autoHideDuration={2000}
           onClose={() => setAlertaFav(false)}
-          variant="solid"
         >
           <Alert
-            size="large"
             severity="success"
             icon={<FavoriteIcon sx={{ fontSize: "2rem", color: "white" }} />}
-            sx={{
-              backgroundColor: "#a111ad",
-              color: "white",
-              fontSize: "1rem",
-              padding: "12px",
-              display: "flex",
-              alignItems: "center",
-              borderRadius: 3,
-            }}
+            sx={{ backgroundColor: "#a111ad", color: "white" }}
           >
-            El producto fué Añadido a Favorito
+            El producto fue Añadido a Favorito
           </Alert>
         </Snackbar>
         <Pagination
-          className="paginador"
           count={Math.ceil(totales / itemPorPagina)}
-          pagina={pagina}
+          page={pagina}
           onChange={(e, value) => setPagina(value)}
           color="primary"
-          sx={{
-            mt: 3,
-            display: "flex",
-            justifyContent: "center",
-            "& .MuiPaginationItem-root": {
-              color: "#a111ad",
-            },
-            "& .Mui-selected": {
-              backgroundColor: "#a111ad",
-              color: "white",
-            },
-            "& .MuiPaginationItem-root:hover": {
-              backgroundColor: "#d17dcf",
-            },
-          }}
+          sx={{ mt: 3, display: "flex", justifyContent: "center" }}
         />
       </Card>
     </Container>
