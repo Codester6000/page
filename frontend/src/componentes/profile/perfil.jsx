@@ -88,10 +88,10 @@ const Perfil = () => {
           🧾 Mis cuentas
         </Typography>
         <Typography>
-          <b>Nombre:</b> Juan Pablo Corzo Barrera
+          <b>Nombre:</b>
         </Typography>
         <Typography>
-          <b>DNI:</b> 43612576
+          <b>DNI:</b>
         </Typography>
       </Paper>
 
