@@ -23,6 +23,8 @@ import { useEffect } from "react";
 import { useAuth } from "./Auth";
 import { useNavigate } from "react-router-dom";
 import Perfil from "./componentes/profile/perfil";
+import PreguntasFrecuentes from "./componentes/faqs/PreguntasFrecuentes";
+import Metricas from "./componentes/metricas/Metricas";
 
 function App() {
   const { sesion, logout } = useAuth();
@@ -49,6 +51,9 @@ function App() {
         <Route path="/producto/:id" element={<Producto />} />
         <Route path="/" element={<Portada />} />
         <Route path="/armador" element={<Armadorpc />} />
+        <Route path="/faqs" element={<PreguntasFrecuentes />} />
+        <Route path="/metricas" element={<Metricas />} />
+
         <Route path="/busqueda" element={<Busqueda />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

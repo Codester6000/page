@@ -2,48 +2,22 @@ import * as React from "react";
 import Box from "@mui/joy/Box";
 import List from "@mui/joy/List";
 import ListItem from "@mui/joy/ListItem";
-import ListItemButton, { listItemButtonClasses } from "@mui/joy/ListItemButton";
+import ListItemButton from "@mui/joy/ListItemButton";
 import Typography from "@mui/joy/Typography";
 import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 import { useState } from "react";
 import data from "./MenuData.json";
 import { useNavigate } from "react-router-dom";
 import { AuthRol } from "../Auth";
-import { Divider } from "@mui/material";
-
-// JSON con las categorías y subcategorías
-// const data = {
-//     "Accesorios": ["Candado", "Docking", "Accesorios Videojuegos"],
-//     "Almacenamiento": ["Pendrive", "SSD Interno", "SSD Externo", "Interno", "Externo", "Memorias Flash"],
-//     "Audio": ["Auriculares", "Micrófonos"],
-//     "Computadoras": ["All In One", "PC de Escritorio", "Notebooks Corporativos", "Notebooks Consumo"],
-//     "Conectividad": ["Extensores", "Routers", "Switches"],
-//     "Estuches": ["Fundas", "Maletines", "Mochilas"],
-//     "Hardware": ["Coolers", "Fuentes", "Gabinetes", "Motherboards", "Placas de Video", "Procesadores"],
-//     "Imagen": ["Accesorios", "Escaner", "Monitores", "Proyectores"],
-//     "Impresoras": [
-//         "Impresoras de Sistema Continuo",
-//         "Impresoras de Tickets",
-//         "Impresoras Inkjet",
-//         "Impresoras Laser",
-//         "Impresoras Matricial",
-//         "Impresoras Multifunción"
-//     ],
-//     "Insumos": ["Botellas de Tinta", "Cartuchos de Tinta", "Cintas", "Toners"],
-//     "Memorias": ["Memorias Notebook", "Memorias PC"],
-//     "Muebles": ["Sillas"],
-//     "Networking": ["Hubs"],
-//     "Papelería": ["Rollos"],
-//     "Periféricos": ["Cámaras Web", "Joysticks", "Mouse Pad", "Mouse", "Teclados", "Volantes"],
-//     "Seguridad": ["Cámaras IP", "Cámaras Wifi"],
-//     "Software": ["Garantía", "Software"]
-// };
+import { Divider, Collapse, ListItemText } from "@mui/material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
 export default function MenuNavbar() {
   const [openCategory, setOpenCategory] = useState(null);
-
+  const [ventas, setVentas] = useState(false);
   const [height, setHeight] = useState(0);
   const navigate = useNavigate();
+
   const toggleCategory = (category) => {
     if (openCategory === category) {
       setHeight(0);
@@ -53,8 +27,14 @@ export default function MenuNavbar() {
     setOpenCategory((prev) => (prev === category ? null : category));
   };
 
+  const handleOpenVentas = () => {
+    setVentas(!ventas);
+  };
+
   return (
-    <Box sx={{ width: 320, pl: "24px", bgcolor: "#e66c1d" }}>
+    <Box
+      sx={{ width: 320, pl: "24px", bgcolor: "#e66c1d", minHeight: "100vh" }}
+    >
       <List
         size="sm"
         sx={{
@@ -66,14 +46,11 @@ export default function MenuNavbar() {
       >
         {Object.entries(data).map(([category, subcategories]) => (
           <ListItem key={category} nested sx={{ my: 1 }}>
-            {/* Botón de categoría */}
             <ListItemButton
               onClick={() => toggleCategory(category)}
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
-                // backgroundColor: '#e66c1d',
-                // backgroundColor: '#FF7d21',
                 color: "white",
               }}
             >
@@ -111,8 +88,11 @@ export default function MenuNavbar() {
                         sx={{
                           paddingLeft: "40px",
                           backgroundColor: "#e66c1d",
-                          color: "#ffff",
+                          color: "#fff",
                           borderRadius: "10px",
+                          "&:hover": {
+                            backgroundColor: "#ff832b",
+                          },
                         }}
                         onClick={() => navigate(`/${subcategory}`)}
                       >
@@ -125,30 +105,85 @@ export default function MenuNavbar() {
             </div>
           </ListItem>
         ))}
-        <Divider />
-        <AuthRol rol="2">
-          <ListItem key="123">
-            <ListItemButton
-              sx={{
-                backgroundColor: "#e66c1d",
-                color: "#ffff",
-                borderRadius: "10px",
-              }}
-              onClick={() => navigate(`/ventas`)}
-            >
-              Ventas
-            </ListItemButton>
-          </ListItem>
+
+        {/* Preguntas frecuentes */}
+        <ListItem sx={{ my: 1 }}>
           <ListItemButton
             sx={{
               backgroundColor: "#e66c1d",
-              color: "#ffff",
+              color: "#fff",
               borderRadius: "10px",
+              "&:hover": {
+                backgroundColor: "#ff832b",
+              },
             }}
-            onClick={() => navigate(`/cargar-producto`)}
+            onClick={() => navigate(`/faqs`)}
           >
-            Cargar producto
+            Preguntas frecuentes
           </ListItemButton>
+        </ListItem>
+
+        <Divider sx={{ my: 2, borderColor: "#fff" }} />
+
+        {/* Sección para admin (rol 2) */}
+        <AuthRol rol="2">
+          <ListItem nested>
+            <ListItemButton
+              onClick={handleOpenVentas}
+              sx={{
+                backgroundColor: "#e66c1d",
+                color: "#fff",
+                borderRadius: "10px",
+                "&:hover": {
+                  backgroundColor: "#ff832b",
+                },
+              }}
+            >
+              <ListItemText primary="Ventas" />
+              {ventas ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+
+            <Collapse in={ventas} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                <ListItemButton
+                  sx={{
+                    pl: 4,
+                    color: "#fff",
+                    "&:hover": { backgroundColor: "#ff832b" },
+                  }}
+                  onClick={() => navigate("/ventas")}
+                >
+                  <ListItemText primary="Ventas" />
+                </ListItemButton>
+                <ListItemButton
+                  sx={{
+                    pl: 4,
+                    color: "#fff",
+                    "&:hover": { backgroundColor: "#ff832b" },
+                  }}
+                  onClick={() => navigate("/metricas")}
+                >
+                  <ListItemText primary="Métricas" />
+                </ListItemButton>
+              </List>
+            </Collapse>
+          </ListItem>
+
+          <ListItem sx={{ mt: 1 }}>
+            <ListItemButton
+              sx={{
+                backgroundColor: "#e66c1d",
+                color: "#fff",
+                borderRadius: "10px",
+                "&:hover": {
+                  backgroundColor: "#ff832b",
+                },
+              }}
+              onClick={() => navigate(`/cargar-producto`)}
+            >
+              Cargar producto
+            </ListItemButton>
+          </ListItem>
         </AuthRol>
       </List>
     </Box>
