@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { IconButton, useMediaQuery } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTheme } from "@mui/material/styles";
+import {
+  IconButton,
+  useMediaQuery,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Tooltip,
+} from "@mui/material";
+
 import Card from "@mui/joy/Card";
 import Container from "@mui/material/Container";
 import Grid from "@mui/joy/Grid";
@@ -47,6 +56,9 @@ export default function ProductCard() {
   const [alerta, setAlerta] = useState(false);
   const [alertaFav, setAlertaFav] = useState(false);
   const [orden, setOrden] = useState(searchParams.get("orden") || "");
+  const esAdmin = sesion && (sesion.rol === "admin" || sesion.rol === "2");
+  const [openEditar, setOpenEditar] = useState(false);
+  const [productoEditando, setProductoEditando] = useState(null);
 
   const [carrito, setCarrito] = useState([]);
   const [favorito, setFavorito] = useState([]);
@@ -415,7 +427,11 @@ export default function ProductCard() {
                     display: "flex",
                   }}
                 >
-                  <AspectRatio minHeight="250px" maxHeight="200px">
+                  <AspectRatio
+                    minHeight="250px"
+                    maxHeight="200px"
+                    sx={{ position: "relative" }}
+                  >
                     <img
                       src={
                         producto.url_imagenes[producto.url_imagenes.length - 1]
@@ -431,6 +447,31 @@ export default function ProductCard() {
                         navigate(`/producto/${producto.id_producto}`)
                       }
                     />
+
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: 8,
+                        left: 8,
+                        backgroundColor: producto.nombre
+                          .toLowerCase()
+                          .includes("usado")
+                          ? "#ffc107"
+                          : "#4caf50",
+                        color: "white",
+                        padding: "2px 8px",
+                        borderRadius: "4px",
+                        fontSize: "13px",
+                        fontWeight: "bold",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "5px",
+                      }}
+                    >
+                      {producto.nombre.toLowerCase().includes("usado")
+                        ? "♻️ USADO"
+                        : "🆕 NUEVO"}
+                    </div>
                   </AspectRatio>
                   <CardContent
                     sx={{
@@ -499,6 +540,24 @@ export default function ProductCard() {
                           <FavoriteIcon />
                         )}
                       </IconButton>
+                      {esAdmin && (
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          sx={{
+                            ml: 2,
+                            borderColor: "#a111ad",
+                            color: "#a111ad",
+                            borderRadius: "20px",
+                          }}
+                          onClick={() => {
+                            setProductoEditando(producto);
+                            setOpenEditar(true);
+                          }}
+                        >
+                          Editar
+                        </Button>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
