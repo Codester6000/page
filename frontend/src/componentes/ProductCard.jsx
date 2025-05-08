@@ -5,7 +5,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useTheme } from "@mui/material/styles";
 import Card from "@mui/joy/Card";
 import Container from "@mui/material/Container";
-import Grid from "@mui/joy/Grid";
+import Grid from "@mui/material/Grid";
 import CardContent from "@mui/joy/CardContent";
 import Typography from "@mui/joy/Typography";
 import AspectRatio from "@mui/joy/AspectRatio";

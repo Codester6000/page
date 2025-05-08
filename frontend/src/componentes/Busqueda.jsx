@@ -12,7 +12,7 @@ import Pagination from "@mui/material/Pagination";
 
 import { useAuth } from "../Auth";
 import { SearchContext } from "../searchContext";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 export default function ProductCard() {
   const url = import.meta.env.VITE_URL_BACK;
   const { searchTerm } = useContext(SearchContext);
@@ -21,7 +21,7 @@ export default function ProductCard() {
   const itemPorPagina = 30;
   const [totales, setTotales] = useState(0);
   const [isMobile, setIsMobile] = useState(true);
-  const navigate = Navigate();
+  const navigate = useNavigate();
   const { sesion } = useAuth();
   const agregarCarrito = async (producto_id) => {
     try {
