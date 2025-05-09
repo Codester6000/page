@@ -358,8 +358,8 @@ export default function ProductCard() {
                       }}
                     >
                       {producto.nombre.toLowerCase().includes("usado")
-                        ? "♻️ USADO"
-                        : "🆕 NUEVO"}
+                        ? " USADO"
+                        : " NUEVO"}
                     </div>
 
                     {esAdmin && (
