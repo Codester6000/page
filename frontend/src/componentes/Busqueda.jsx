@@ -179,6 +179,7 @@ export default function ProductCard() {
                     >
                       {producto.nombre}
                     </Typography>
+
                     <Typography
                       level="body-m"
                       aria-describedby="card-description"
