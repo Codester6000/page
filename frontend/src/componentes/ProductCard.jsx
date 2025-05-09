@@ -1,43 +1,42 @@
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import CloseIcon from "@mui/icons-material/Close";
-import { useTheme } from "@mui/material/styles";
 import {
   IconButton,
-  useMediaQuery,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Tooltip,
+  Alert,
+  MenuItem,
+  Select,
+  Snackbar,
+  TextField,
+  Button,
+  Container,
+  Pagination,
 } from "@mui/material";
 
 import Card from "@mui/joy/Card";
-import Container from "@mui/material/Container";
 import Grid from "@mui/joy/Grid";
 import CardContent from "@mui/joy/CardContent";
 import Typography from "@mui/joy/Typography";
 import AspectRatio from "@mui/joy/AspectRatio";
-import Button from "@mui/material/Button";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import Pagination from "@mui/material/Pagination";
+
 import editSvg from "../assets/edit.svg";
-import carritoSVG from "../assets/carrito.svg";
-import corazonSVG from "../assets/corazon.svg";
-import { useAuth, AuthRol } from "../Auth";
-import { Alert, MenuItem, Select, Snackbar, TextField } from "@mui/material";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "../Auth";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import "../producto.css";
 import SkeletonProd from "./SkeletonProd";
+import Swal from "sweetalert2";
 
 export default function ProductCard() {
   const url = import.meta.env.VITE_URL_BACK;
   const [productos, setProductos] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [categoriasDisponibles, setCategoriasDisponibles] = useState([]);
-
   const [pagina, setPagina] = useState(1);
   const itemPorPagina = 32;
   const [totales, setTotales] = useState(0);
@@ -56,13 +55,12 @@ export default function ProductCard() {
   const [alerta, setAlerta] = useState(false);
   const [alertaFav, setAlertaFav] = useState(false);
   const [orden, setOrden] = useState(searchParams.get("orden") || "");
-  const esAdmin = sesion && (sesion.rol === "admin" || sesion.rol === "2");
+  const esAdmin = sesion && (sesion.rol === "admin" || sesion.rol === 2);
   const [openEditar, setOpenEditar] = useState(false);
   const [productoEditando, setProductoEditando] = useState(null);
-
+  const [formEdit, setFormEdit] = useState({});
   const [carrito, setCarrito] = useState([]);
   const [favorito, setFavorito] = useState([]);
-  const [productoSeleccionado, setProductoSeleccionado] = useState("");
   const navigate = useNavigate();
 
   const construirQuery = () => {
@@ -75,50 +73,8 @@ export default function ProductCard() {
     return query;
   };
 
-  const handleAgregarImagen = async (producto_id) => {
-    const url_imagen = window.prompt("Ingresa la url de la nueva imagen");
-    if (url_imagen.length > 5) {
-      try {
-        const response = await fetch(`${url}/productos/imagen/${producto_id}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sesion.token}`,
-          },
-          body: JSON.stringify({ url: url_imagen }),
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
-
-  const handleAgregarDetalle = async (producto_id) => {
-    const detalle = window.prompt("Ingresa el detalle nuevo");
-    if (detalle.length > 5) {
-      try {
-        const response = await fetch(
-          `${url}/productos/detalle/${producto_id}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${sesion.token}`,
-            },
-            body: JSON.stringify({ detalle: detalle }),
-          }
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
   const agregarCarrito = async (producto_id) => {
-    if (carrito.includes(producto_id)) {
-      console.log("El producto ya está en el carrito");
-      return;
-    }
-
+    if (carrito.includes(producto_id)) return;
     try {
       const response = await fetch(`${url}/carrito`, {
         method: "POST",
@@ -129,26 +85,15 @@ export default function ProductCard() {
         body: JSON.stringify({ id_producto: producto_id, cantidad: 1 }),
       });
       if (response.ok) {
-        const mensaje = await response.json();
-        console.log(mensaje);
         setCarrito([...carrito, producto_id]);
-      } else {
-        console.log(response);
-        console.log(producto_id);
       }
     } catch (error) {
       navigate("/login");
-      console.log("aaaa");
-      console.log(error);
     }
   };
 
   const agregarFavorito = async (producto_id) => {
-    if (favorito.includes(producto_id)) {
-      console.log("El producto ya está en favorito");
-      return;
-    }
-
+    if (favorito.includes(producto_id)) return;
     try {
       const response = await fetch(`${url}/favorito`, {
         method: "POST",
@@ -159,17 +104,10 @@ export default function ProductCard() {
         body: JSON.stringify({ id_producto: producto_id, cantidad: 1 }),
       });
       if (response.ok) {
-        const mensaje = await response.json();
-        console.log(mensaje);
         setFavorito([...favorito, producto_id]);
-      } else {
-        console.log(response);
-        console.log(producto_id);
       }
     } catch (error) {
       navigate("/login");
-      console.log("aaaa");
-      console.log(error);
     }
   };
 
@@ -178,46 +116,14 @@ export default function ProductCard() {
   const getProductos = async () => {
     try {
       const query = construirQuery();
-      const response = await fetch(`${url}/productos?${query}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
+      const response = await fetch(`${url}/productos?${query}`);
       if (response.ok) {
         const data = await response.json();
         setTotales(data.cantidadProductos);
-        if (data.productos && Array.isArray(data.productos)) {
-          setProductos(data.productos);
-        } else {
-          console.error("Estructura de datos incorrecta:", data);
-        }
+        if (Array.isArray(data.productos)) setProductos(data.productos);
       } else {
         localStorage.removeItem("sesion");
         logout();
-        console.error("Error al obtener productos:", response.status);
-      }
-    } catch (error) {
-      console.error("Error en la solicitud:", error);
-    }
-  };
-
-  const getProductoById = async (id_producto_seleccionado) => {
-    try {
-      const response = await fetch(
-        `${url}/productos/${id_producto_seleccionado}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.ok) {
-        const resultado = await response.json();
-        setProductoSeleccionado(resultado.datos[0]);
       }
     } catch (error) {
       console.error(error);
@@ -226,13 +132,11 @@ export default function ProductCard() {
 
   const aplicarFiltros = () => {
     const nuevosParams = new URLSearchParams();
-
     if (nombre) nuevosParams.set("nombre", nombre);
     if (categoria) nuevosParams.set("categoria", categoria);
     if (precioMin) nuevosParams.set("precioMin", precioMin);
     if (precioMax) nuevosParams.set("precioMax", precioMax);
     if (orden) nuevosParams.set("orden", orden);
-
     setPagina(1);
     setSearchParams(nuevosParams);
   };
@@ -240,11 +144,9 @@ export default function ProductCard() {
   const handleCategoriaChange = (e) => {
     setCategoria(e.target.value);
     const nuevosParams = new URLSearchParams(searchParams);
-    if (e.target.value) {
-      nuevosParams.set("categoria", e.target.value);
-    } else {
-      nuevosParams.delete("categoria");
-    }
+    e.target.value
+      ? nuevosParams.set("categoria", e.target.value)
+      : nuevosParams.delete("categoria");
     setSearchParams(nuevosParams);
   };
 
@@ -254,8 +156,8 @@ export default function ProductCard() {
     const precioMinParam = searchParams.get("precioMin");
     const precioMaxParam = searchParams.get("precioMax");
     const ordenParam = searchParams.get("orden");
-    if (ordenParam !== orden) setOrden(ordenParam || "");
 
+    if (ordenParam !== orden) setOrden(ordenParam || "");
     if (nombreParam !== nombre) setNombre(nombreParam || "");
     if (categoriaParam !== categoria) setCategoria(categoriaParam || "");
     if (precioMinParam !== precioMin) setPrecioMin(precioMinParam || "");
@@ -263,6 +165,11 @@ export default function ProductCard() {
 
     getProductos();
   }, [searchParams, pagina]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [pagina]);
+
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
@@ -270,14 +177,58 @@ export default function ProductCard() {
         const data = await response.json();
         setCategoriasDisponibles(data.categorias || []);
       } catch (error) {
-        console.error("Error al obtener categorías:", error);
+        console.error(error);
       }
     };
     fetchCategorias();
   }, []);
 
+  const handleGuardarEdicion = async () => {
+    const nuevo_precio = formEdit.precio_pesos_iva;
+    const producto_id = productoEditando.id_producto;
+    const proveedor_id = productoEditando.id_proveedor || 1;
+
+    try {
+      const response = await fetch(
+        `${url}/productos/${producto_id}?nuevo_precio=${nuevo_precio}&producto_id=${producto_id}&proveedor_id=${proveedor_id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${sesion.token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Precio actualizado",
+          text: `El precio fue modificado correctamente.`,
+          confirmButtonColor: "#3085d6",
+        });
+        getProductos();
+        setOpenEditar(false);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo actualizar el precio.",
+          confirmButtonColor: "#d33",
+        });
+      }
+    } catch (error) {
+      console.error("Error de red:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error de red",
+        text: "No se pudo conectar con el servidor.",
+        confirmButtonColor: "#d33",
+      });
+    }
+  };
+
   return (
-    <Container sx={{}}>
+    <Container>
       <Card sx={{ bgcolor: "#fff", padding: 5, marginX: -3, marginY: 15 }}>
         <div
           style={{
@@ -294,13 +245,6 @@ export default function ProductCard() {
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
             size="small"
-            sx={{
-              width: { xs: "100%", sm: "200px" },
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "12px",
-                backgroundColor: "#f4f4f4",
-              },
-            }}
           />
           <TextField
             label="Precio Mínimo"
@@ -309,13 +253,6 @@ export default function ProductCard() {
             value={precioMin}
             onChange={(e) => setPrecioMin(e.target.value)}
             size="small"
-            sx={{
-              width: { xs: "100%", sm: "150px" },
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "12px",
-                backgroundColor: "#f4f4f4",
-              },
-            }}
           />
           <TextField
             label="Precio Máximo"
@@ -324,13 +261,6 @@ export default function ProductCard() {
             value={precioMax}
             onChange={(e) => setPrecioMax(e.target.value)}
             size="small"
-            sx={{
-              width: { xs: "100%", sm: "150px" },
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "12px",
-                backgroundColor: "#f4f4f4",
-              },
-            }}
           />
           <Select
             value={categoria}
@@ -338,19 +268,8 @@ export default function ProductCard() {
             displayEmpty
             size="small"
             renderValue={
-              categoria !== ""
-                ? undefined
-                : () => <span style={{ color: "#ffffff" }}>Categoría</span>
+              categoria !== "" ? undefined : () => <span>Categoría</span>
             }
-            sx={{
-              width: { xs: "100%", sm: "180px" },
-              borderRadius: "12px",
-              backgroundColor: "#ffffff",
-              "& .MuiSelect-select": {
-                paddingY: "10px",
-                paddingX: "14px",
-              },
-            }}
           >
             <MenuItem disabled value="">
               Categoría
@@ -367,19 +286,8 @@ export default function ProductCard() {
             displayEmpty
             size="small"
             renderValue={
-              orden !== ""
-                ? undefined
-                : () => <span style={{ color: "#999" }}>Ordenar por</span>
+              orden !== "" ? undefined : () => <span>Ordenar por</span>
             }
-            sx={{
-              width: { xs: "100%", sm: "180px" },
-              borderRadius: "12px",
-              backgroundColor: "#ffffff",
-              "& .MuiSelect-select": {
-                paddingY: "10px",
-                paddingX: "14px",
-              },
-            }}
           >
             <MenuItem disabled value="">
               Ordenar por
@@ -387,27 +295,12 @@ export default function ProductCard() {
             <MenuItem value="asc">Precio: Menor a Mayor</MenuItem>
             <MenuItem value="desc">Precio: Mayor a Menor</MenuItem>
           </Select>
-
-          <Button
-            variant="contained"
-            onClick={aplicarFiltros}
-            sx={{
-              background: "linear-gradient(to right, #ff8a00, #ff6a00)",
-              borderRadius: "12px",
-              paddingX: 3,
-              height: "40px",
-              color: "white",
-              boxShadow: "0px 4px 14px rgba(0, 0, 0, 0.2)",
-              "&:hover": {
-                background: "linear-gradient(to right, #ff6a00, #ff8a00)",
-              },
-            }}
-          >
+          <Button variant="contained" onClick={aplicarFiltros}>
             Aplicar Filtros
           </Button>
         </div>
-        {/* Filtros y controles */}
-        <Grid container spacing={5} style={{ marginTop: "50px" }}>
+
+        <Grid container spacing={5}>
           {productos.length > 0 ? (
             productos.map((producto) => (
               <Grid
@@ -447,7 +340,6 @@ export default function ProductCard() {
                         navigate(`/producto/${producto.id_producto}`)
                       }
                     />
-
                     <div
                       style={{
                         position: "absolute",
@@ -463,15 +355,41 @@ export default function ProductCard() {
                         borderRadius: "4px",
                         fontSize: "13px",
                         fontWeight: "bold",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "5px",
                       }}
                     >
                       {producto.nombre.toLowerCase().includes("usado")
                         ? "♻️ USADO"
                         : "🆕 NUEVO"}
                     </div>
+
+                    {esAdmin && (
+                      <IconButton
+                        onClick={() => {
+                          setProductoEditando(producto);
+                          setFormEdit({
+                            nombre: producto.nombre || "",
+                            detalle: producto.detalle || "",
+                            precio: producto.precio_pesos_iva_ajustado || "",
+                            stock: producto.stock || "",
+                          });
+                          setOpenEditar(true);
+                        }}
+                        sx={{
+                          position: "absolute",
+                          top: 8,
+                          right: 8,
+                          backgroundColor: "rgba(255, 255, 255, 0.8)",
+                          "&:hover": { backgroundColor: "white" },
+                          boxShadow: 1,
+                        }}
+                      >
+                        <img
+                          src={editSvg}
+                          alt="Editar"
+                          style={{ width: 20, height: 20 }}
+                        />
+                      </IconButton>
+                    )}
                   </AspectRatio>
                   <CardContent
                     sx={{
@@ -540,24 +458,6 @@ export default function ProductCard() {
                           <FavoriteIcon />
                         )}
                       </IconButton>
-                      {esAdmin && (
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          sx={{
-                            ml: 2,
-                            borderColor: "#a111ad",
-                            color: "#a111ad",
-                            borderRadius: "20px",
-                          }}
-                          onClick={() => {
-                            setProductoEditando(producto);
-                            setOpenEditar(true);
-                          }}
-                        >
-                          Editar
-                        </Button>
-                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -567,6 +467,7 @@ export default function ProductCard() {
             <SkeletonProd />
           )}
         </Grid>
+
         <Snackbar
           open={alerta}
           autoHideDuration={2000}
@@ -574,9 +475,7 @@ export default function ProductCard() {
         >
           <Alert
             severity="success"
-            icon={
-              <AddShoppingCartIcon sx={{ fontSize: "2rem", color: "white" }} />
-            }
+            icon={<AddShoppingCartIcon />}
             sx={{ backgroundColor: "#a111ad", color: "white" }}
           >
             El producto fue Añadido al Carrito
@@ -589,12 +488,13 @@ export default function ProductCard() {
         >
           <Alert
             severity="success"
-            icon={<FavoriteIcon sx={{ fontSize: "2rem", color: "white" }} />}
+            icon={<FavoriteIcon />}
             sx={{ backgroundColor: "#a111ad", color: "white" }}
           >
             El producto fue Añadido a Favorito
           </Alert>
         </Snackbar>
+
         <Pagination
           count={Math.ceil(totales / itemPorPagina)}
           page={pagina}
@@ -602,6 +502,50 @@ export default function ProductCard() {
           color="primary"
           sx={{ mt: 3, display: "flex", justifyContent: "center" }}
         />
+
+        {/* Modal solo visible si esAdmin */}
+        <Container>
+          {esAdmin && (
+            <Dialog
+              open={openEditar}
+              onClose={() => setOpenEditar(false)}
+              fullWidth
+              maxWidth="sm"
+            >
+              <DialogTitle>
+                Editar Producto
+                <IconButton
+                  aria-label="close"
+                  onClick={() => setOpenEditar(false)}
+                  sx={{ position: "absolute", right: 8, top: 8 }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </DialogTitle>
+              <DialogContent dividers>
+                <TextField
+                  fullWidth
+                  label="Precio con IVA"
+                  type="number"
+                  margin="normal"
+                  value={formEdit.precio_pesos_iva || 0}
+                  onChange={(e) =>
+                    setFormEdit({
+                      ...formEdit,
+                      precio_pesos_iva: e.target.value,
+                    })
+                  }
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setOpenEditar(false)}>Cancelar</Button>
+                <Button variant="contained" onClick={handleGuardarEdicion}>
+                  Guardar
+                </Button>
+              </DialogActions>
+            </Dialog>
+          )}
+        </Container>
       </Card>
     </Container>
   );
