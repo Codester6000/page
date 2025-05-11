@@ -34,7 +34,6 @@ p.precio_dolar,
 		p.precio_pesos,
         p.precio_pesos_iva,
     CASE
-        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos_iva * 1.25
         WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
         SELECT pc2.id_producto
         FROM productos_categorias pc2
@@ -197,7 +196,6 @@ productosRouter.get("/:id", validarId, verificarValidaciones, async (req, res) =
         pro.nombre_proveedor,
         p.precio_pesos_iva,
     CASE
-        WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos_iva * 1.25
         WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
         SELECT pc2.id_producto
         FROM productos_categorias pc2
