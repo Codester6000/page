@@ -34,8 +34,8 @@ carritoRouter.get('/',validarJwt,async (req,res) =>{
         INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
         WHERE c2.nombre_categoria IN ('procesadores')
         GROUP BY pc2.id_producto
-    ) THEN p.precio_pesos_iva * 1.20
-        WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos_iva * 1.25
+    ) THEN p.precio_pesos_iva * 1.12
+        WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos_iva * 1.12
         ELSE p.precio_pesos_iva
     END AS precio_pesos_iva_ajustado,
 pro.nombre_proveedor
