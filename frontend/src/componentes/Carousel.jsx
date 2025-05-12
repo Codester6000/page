@@ -12,13 +12,14 @@ const Carousel = () => {
   const [selectedFiles, setSelectedFiles] = useState({});
 
   const mobileImages = [
+    "11-mobile.png",
     "1-mobile.png",
     "3-mobile.png",
     "7-mobile.png",
     "8-mobile.png",
     "10-mobile.png",
   ];
-  const desktopImages = ["6.png", "7.png", "8.png"];
+  const desktopImages = ["11.png","6.png", "7.png", "8.png"];
 
   useEffect(() => {
     const handleResize = () => {
