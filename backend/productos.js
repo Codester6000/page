@@ -80,9 +80,9 @@ WHERE
     if (precio_gt != undefined) {
         filtros.push(`(
         CASE
-            WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos * 1.12
-            WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos * 1.12
-            ELSE p.precio_pesos
+            WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos_iva * 1.12
+            WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos_iva * 1.12
+            ELSE p.precio_pesos_iva
         END
     ) > ?`)
         parametros.push(precio_gt)
@@ -91,9 +91,9 @@ WHERE
     if (precio_lt != undefined) {
         filtros.push(`(
         CASE
-            WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos * 1.12
-            WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos * 1.12
-            ELSE p.precio_pesos
+            WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos_iva * 1.12
+            WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos_iva * 1.12
+            ELSE p.precio_pesos_iva
         END
     ) < ?`)
         parametros.push(precio_lt)
