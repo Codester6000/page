@@ -40,8 +40,8 @@ p.precio_dolar,
         INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
         WHERE c2.nombre_categoria IN ('procesadores')
         GROUP BY pc2.id_producto
-    ) THEN p.precio_pesos_iva * 1.20
-        WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos_iva * 1.25
+    ) THEN p.precio_pesos_iva * 1.12
+        WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos_iva * 1.12
         ELSE p.precio_pesos_iva
     END AS precio_pesos_iva_ajustado,
 pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor
@@ -80,8 +80,8 @@ WHERE
     if (precio_gt != undefined) {
         filtros.push(`(
         CASE
-            WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos * 1.20
-            WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos * 1.25
+            WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos * 1.12
+            WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos * 1.12
             ELSE p.precio_pesos
         END
     ) > ?`)
@@ -91,8 +91,8 @@ WHERE
     if (precio_lt != undefined) {
         filtros.push(`(
         CASE
-            WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos * 1.20
-            WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos * 1.25
+            WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos * 1.12
+            WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos * 1.12
             ELSE p.precio_pesos
         END
     ) < ?`)
