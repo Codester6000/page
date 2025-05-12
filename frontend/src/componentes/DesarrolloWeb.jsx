@@ -1,131 +1,139 @@
-import React, {useState} from 'react';
-import '../styles/desarrollo.css';
-import { motion } from "framer-motion"
-import html5 from '../images/svgs/html5.svg'
-import css3 from '../images/svgs/css3.svg'
-import js from '../images/svgs/javascript.svg'
-import mysql from '../images/svgs/mysql.svg'
-import nodejs from '../images/svgs/nodejs.svg'
-import python from '../images/svgs/python.svg'
-import reactSvg from '../images/svgs/react.svg'
-import useEmblaCarousel from 'embla-carousel-react'
-import Autoplay from 'embla-carousel-autoplay'
+import React from "react";
+import { Box, Grid, Typography, Paper, Divider } from "@mui/material";
+import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
+import HandshakeIcon from "@mui/icons-material/Handshake";
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
+import CodeIcon from "@mui/icons-material/Code";
+import MemoryIcon from "@mui/icons-material/Memory";
+import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
+import PublicIcon from "@mui/icons-material/Public";
+import { motion } from "framer-motion";
+
+const valores = [
+  {
+    icono: <WorkspacePremiumIcon color="primary" sx={{ fontSize: 40 }} />,
+    titulo: "Experiencia",
+  },
+  {
+    icono: <HandshakeIcon color="secondary" sx={{ fontSize: 40 }} />,
+    titulo: "Compromiso",
+  },
+  {
+    icono: <RocketLaunchIcon sx={{ fontSize: 40, color: "#f50057" }} />,
+    titulo: "Innovación",
+  },
+  {
+    icono: <EmojiObjectsIcon sx={{ fontSize: 40, color: "#ff9800" }} />,
+    titulo: "Creatividad",
+  },
+];
+
+const secciones = [
+  {
+    icono: <CodeIcon color="info" sx={{ fontSize: 40 }} />,
+    titulo: "Consultoría de Software",
+    texto:
+      "Desarrollamos soluciones personalizadas que se ajustan a tus necesidades. Desde sistemas de gestión hasta apps modernas y eficientes.",
+  },
+  {
+    icono: <MemoryIcon sx={{ fontSize: 40, color: "#8e24aa" }} />,
+    titulo: "Venta de Componentes",
+    texto:
+      "Ofrecemos hardware de última generación con stock real y asesoramiento técnico especializado para que armes la PC ideal.",
+  },
+  {
+    icono: <BusinessCenterIcon sx={{ fontSize: 40, color: "#4caf50" }} />,
+    titulo: "Atención Profesional",
+    texto:
+      "Nuestro equipo está comprometido a brindar una atención cercana y profesional. Somos técnicos, diseñadores y desarrolladores apasionados.",
+  },
+  {
+    icono: <PublicIcon sx={{ fontSize: 40, color: "#00bcd4" }} />,
+    titulo: "Origen Local",
+    texto:
+      "Somos una empresa riojana. Apoyamos el talento local y buscamos posicionar a La Rioja como polo de tecnología e innovación.",
+  },
+];
+
 const DesarrolloWeb = () => {
-    const [proyectos, setProyectos] = useState({1:false,2:false,3:false,4:false,5:false}) 
-    const variantes ={
-        'esconder':{
-            opacity:0,
-            y: 100
-        },
-        'mostrar':{
-            opacity:1,
-            y:0
-        },
-        'esconderIconos':{
-            opacity:0,
-            
-        },
-        'mostrarIconos':{
-            opacity:1,
-        }
-    }
-    const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true },[Autoplay()])
-    return (
-        <div className="containerDesarrolloWeb">
-            <div className="infoDesarrollo">
-                <h2 className='saludoDesarrollo'>HOLA, SOMOS MODEX WEB</h2>
-                <h1 className='tituloDesarrollo'>Hacemos paginas y software a medida.</h1>
-                <p>Tenemos un desarrollador <span>Full-Stack</span>  y un diseñador <span>UX/UI</span>.</p>
-            </div>
+  return (
+    <Box sx={{ flexGrow: 1, px: { xs: 2, md: 6 }, py: 8 }}>
+      <Grid container spacing={4} alignItems="center">
+        {/* Imagen y presentación */}
+        <Grid item xs={12} md={6}>
+          <motion.img
+            src="https://kinsta.com/wp-content/uploads/2021/11/about-us-page-1024x512.png"
+            alt="Nuestro equipo"
+            style={{ width: "100%", borderRadius: 16 }}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          />
+        </Grid>
 
-                <h2>Paginas Web</h2>
-            <div className="proyectosWeb">
-                    <a target='_blank' href="https://obemasa.com.ar">
-                <div className="cardProyecto" onTouchStart={()=>setProyectos({...proyectos,1:true})} onTouchEnd={()=>setProyectos({...proyectos,1:false})} onMouseEnter={()=>setProyectos({...proyectos,1:true})} onMouseLeave={()=>setProyectos({...proyectos,1:false})} id='obema'>
-                        <h4 >OBEMA S.A</h4>
-                        <motion.p variants={variantes} initial='esconder' animate={(proyectos[1]) ? 'mostrar': 'esconder'} >Landing page para la constructora OBEMA S.A, animaciones personalizadas.</motion.p>
-                    <motion.div variants={variantes} initial='mostrar' animate={(proyectos[1]) ? 'esconderIconos': 'mostrarIconos'}  className="tecnologias">
-                    <img src={reactSvg} alt=""  />
-                        <img src={html5} alt="" />
-                        <img src={css3} alt="" />
-                        <img src={js} alt="" />
+        <Grid item xs={12} md={6}>
+          <Typography variant="h4" fontWeight="bold" gutterBottom>
+            Sobre Nosotros
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Somos una empresa de La Rioja, Argentina, con dos pilares
+            principales:
+            <strong> consultoría de software a medida</strong> y una
+            <strong> tienda de componentes para PC</strong>.
+          </Typography>
+          <Grid container spacing={2} mt={2}>
+            {valores.map((valor, index) => (
+              <Grid item xs={6} key={index}>
+                <Paper
+                  elevation={3}
+                  sx={{ p: 2, display: "flex", alignItems: "center", gap: 2 }}
+                >
+                  {valor.icono}
+                  <Typography>{valor.titulo}</Typography>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        </Grid>
+      </Grid>
 
-                    </motion.div>
-                </div>
-                    </a>
-                <a href="">
-                <div className="cardProyecto"  onTouchStart={()=>setProyectos({...proyectos,2:true})} onTouchEnd={()=>setProyectos({...proyectos,2:false})}  onMouseEnter={()=>setProyectos({...proyectos,2:true})} onMouseLeave={()=>setProyectos({...proyectos,2:false})} id='estancia38'>
-                        <h4>MENU ESTANCIA 38</h4>
-                        <motion.p variants={variantes} initial='esconder' animate={(proyectos[2]) ? 'mostrar': 'esconder'}>Menu que se accede mediante un QR del restaurante Estancia 38</motion.p>
-                        <div className="tecnologias">
-                        <motion.div variants={variantes} initial='mostrar' animate={(proyectos[2]) ? 'esconderIconos': 'mostrarIconos'}  className="tecnologias">
-                        <img src={html5} alt="" />
-                        <img src={css3} alt="" />
-                        <img src={js} alt="" />
+      <Divider sx={{ my: 6 }} />
 
-                    </motion.div>
-                        </div>
-                </div>
-                    </a>
-                    <a href="">
-                <div className="cardProyecto"  onTouchStart={()=>setProyectos({...proyectos,3:true})} onTouchEnd={()=>setProyectos({...proyectos,3:false})}  onMouseEnter={()=>setProyectos({...proyectos,3:true})} onMouseLeave={()=>setProyectos({...proyectos,3:false})} id='modex'>
-                        <h4>MODEX E-COMMERCE</h4>
-                        <motion.p variants={variantes} initial='esconder' animate={(proyectos[3]) ? 'mostrar': 'esconder'}>Tienda Online, con pagos usando MODO, un armador de pc personalizado.</motion.p>
-                        <div className="tecnologias">
-                        <motion.div variants={variantes} initial='mostrar' animate={(proyectos[3]) ? 'esconderIconos': 'mostrarIconos'}  className="tecnologias">
-                        <img src={reactSvg} alt=""  />
-                        <img src={js} alt="" />
-                        <img src={html5} alt="" />
-                        <img src={css3} alt="" />
-                        <img src={nodejs} alt="" />
-                        <img src={mysql} alt="" />
+      {/* Secciones adicionales */}
+      <Grid container spacing={4} mt={4}>
+        {secciones.map((seccion, i) => (
+          <Grid item xs={12} md={6} key={i}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: i * 0.2 }}
+            >
+              <Paper elevation={4} sx={{ p: 4, height: "100%" }}>
+                <Box display="flex" alignItems="center" gap={2} mb={1}>
+                  {seccion.icono}
+                  <Typography variant="h6" fontWeight="bold">
+                    {seccion.titulo}
+                  </Typography>
+                </Box>
+                <Typography variant="body2">{seccion.texto}</Typography>
+              </Paper>
+            </motion.div>
+          </Grid>
+        ))}
+      </Grid>
 
-                    </motion.div>
-                        </div>
-                </div>
-                    </a>
-            </div>
-
-                <h2>Software a medida</h2>
-            <div className="software">
-                    <a href=""  onTouchStart={()=>setProyectos({...proyectos,4:true})} onTouchEnd={()=>setProyectos({...proyectos,4:false})}  onMouseEnter={()=>setProyectos({...proyectos,4:true})} onMouseLeave={()=>setProyectos({...proyectos,4:false})}>
-                <div className="cardProyecto" id='pdv'  >
-                    <div className="carousel__viewport" ref={emblaRef} >
-                        <div className="carousel__container">
-                            <div className="carousel__slide"><img src="/images/pdv1.png" /></div>
-                            <div className="carousel__slide"><img src="/images/pdv2.png" /></div>
-                            <div className="carousel__slide"><img src="/images/pdv3.png" /></div>
-                        </div>
-                    </div>
-
-                    <h4>PUNTO DE VENTA</h4>
-                    <motion.p variants={variantes} initial='esconder' animate={(proyectos[4]) ? 'mostrar': 'esconder'}>Punto de venta con gestion de inventario para negocios fisicos</motion.p>
-                        <div className="tecnologias">
-                        <motion.div variants={variantes} initial='mostrar' animate={(proyectos[4]) ? 'esconderIconos': 'mostrarIconos'}  className="tecnologias">
-                        <img src={python} alt="" />
-
-
-                    </motion.div>
-                        </div>
-                </div>
-
-                    </a>
-                    <a href="">
-                <div className="cardProyecto" onTouchStart={()=>setProyectos({...proyectos,5:true})} onTouchEnd={()=>setProyectos({...proyectos,5:false})}   onMouseEnter={()=>setProyectos({...proyectos,5:true})} onMouseLeave={()=>setProyectos({...proyectos,5:false})} id='vales'>
-                <h4>GENERADOR PDFs</h4>
-                <motion.p variants={variantes} initial='esconder' animate={(proyectos[5]) ? 'mostrar': 'esconder'}>Menu interactivo para generar vales con codigo de barras para la empresa Y.P.F</motion.p>
-                        <div className="tecnologias">
-                        <motion.div variants={variantes} initial='mostrar' animate={(proyectos[5]) ? 'esconderIconos': 'mostrarIconos'}  className="tecnologias">
-                        <img src={python} alt="" />
-
-
-                    </motion.div>
-                        </div>
-                </div>
-                    </a>
-            </div>
-        </div>
-    );
+      <Typography
+        variant="h6"
+        align="center"
+        mt={6}
+        fontStyle="italic"
+        color="text.secondary"
+      >
+        Conectamos tecnología, pasión y cercanía para crear valor real.
+      </Typography>
+    </Box>
+  );
 };
 
 export default DesarrolloWeb;

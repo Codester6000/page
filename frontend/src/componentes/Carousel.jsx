@@ -1,84 +1,106 @@
-import { Swiper, SwiperSlide } from 'swiper/react';
-import {  Pagination, Autoplay,} from 'swiper/modules';
-import 'swiper/swiper-bundle.css';
-import './Carousel.css'
-import { useState,useEffect } from 'react';
-// poner en la terminar
-// npm install swiper
+import { useState, useEffect } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Autoplay } from "swiper/modules";
+import "swiper/swiper-bundle.css";
+import "./Carousel.css";
+import { useAuth } from "../Auth"; // importa el hook personalizado
 
-// para tener mejor obtimizadas las imagenes del carusel
-// deben de ser imagenes en 1600 x350px
-// el contenido tiene que estar bien centrado así evitamos
-// que se pierda el contenido importante
-
-// tengo que hacer que tome las imagenes de una carpeta especifica
-//(probablemente "/public/noticias/" y dejar una cantidad especifica)
-// proximamente hacer que no tenga limitacion de cantidad
 const Carousel = () => {
-  const [isMobile, setIsMobile] = useState(true);
+  const { sesion } = useAuth(); // obtenemos la sesión actual
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
+  const [images, setImages] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState({});
+
+  const mobileImages = [
+    "1-mobile.png",
+    "3-mobile.png",
+    "7-mobile.png",
+    "8-mobile.png",
+    "10-mobile.png",
+  ];
+  const desktopImages = ["6.png", "7.png", "8.png"];
+
   useEffect(() => {
-    setIsMobile(window.innerWidth < 800);
     const handleResize = () => {
-        setIsMobile(window.innerWidth < 800);
-      };
-  
-      window.addEventListener("resize", handleResize);
-  
-      //cleanup of event listener
-      return () => window.removeEventListener("resize", handleResize);
-}, []);
+      setIsMobile(window.innerWidth < 800);
+    };
+
+    window.addEventListener("resize", handleResize);
+    setImages(window.innerWidth < 800 ? mobileImages : desktopImages);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const handleFileChange = (event, index) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const newImages = [...images];
+      newImages[index] = reader.result;
+      setImages(newImages);
+
+      const updatedFiles = { ...selectedFiles, [index]: file };
+      setSelectedFiles(updatedFiles);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const isAdmin = sesion?.rol === 2;
+
   return (
-    <Swiper
-      className='swiperRR'
-      pagination={true}
-      modules={[Pagination, Autoplay]}
-      spaceBetween={0} 
-      slidesPerView={1} 
-      loop={true} 
-    > 
-      {isMobile ? 
-      <div>
+    <div>
+      <Swiper
+        className="swiperRR"
+        pagination={{ clickable: true }}
+        modules={[Pagination, Autoplay]}
+        spaceBetween={0}
+        slidesPerView={1}
+        loop
+        autoplay={{
+          delay: 3000,
+          disableOnInteraction: false,
+        }}
+      >
+        {images.map((imageSrc, index) => (
+          <SwiperSlide key={index} style={{ position: "relative" }}>
+            <img
+              className="imgCR"
+              src={
+                imageSrc.startsWith("data:") ? imageSrc : `carousel/${imageSrc}`
+              }
+              alt={`Slide ${index + 1}`}
+            />
 
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/1-mobile.png" alt="Slide 3" />
-      </SwiperSlide>
-
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/3-mobile.png" alt="Slide 3" />
-      </SwiperSlide>
-
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/7-mobile.png" alt="Slide 3" />
-      </SwiperSlide>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/8-mobile.png" alt="Slide 3" />
-      </SwiperSlide>
-
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/10-mobile.png" alt="Slide 3" />
-      </SwiperSlide>
-
-      </div>
-    :
-      <div>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/6.png" alt="Slide 3" />
-      </SwiperSlide>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/7.png" alt="Slide 3" />
-      </SwiperSlide>
-      <SwiperSlide>
-      <img className='imgCR' src="carousel/8.png" alt="Slide 3" />
-      </SwiperSlide>
-    
-
-      </div>
-
-    }
-
-    </Swiper>
+            {isAdmin && (
+              <div style={{ position: "absolute", top: 10, right: 10 }}>
+                <label
+                  htmlFor={`fileInput-${index}`}
+                  style={{
+                    backgroundColor: "rgba(0,0,0,0.6)",
+                    color: "#fff",
+                    padding: "5px 10px",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Cambiar
+                </label>
+                <input
+                  id={`fileInput-${index}`}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={(e) => handleFileChange(e, index)}
+                />
+              </div>
+            )}
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </div>
   );
 };
-
 
 export default Carousel;

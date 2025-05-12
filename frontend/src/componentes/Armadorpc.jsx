@@ -1,441 +1,306 @@
-import { useState, useEffect } from 'react'
-import '../styleArmador.css'
-import icono_cpu from "/iconos/armadorIconos/cpu.png"
-import icono_gpu from "/iconos/armadorIconos/gpu.png"
-import icono_psu from "/iconos/armadorIconos/psu.png"
-import icono_ram from "/iconos/armadorIconos/ram.png"
-import icono_hdd from "/iconos/armadorIconos/hdd.png"
-import icono_mother from "/iconos/armadorIconos/motherboard.png"
-import icono_gabinete from "/iconos/armadorIconos/gabinete.png"
-import icono_cooler from "/iconos/armadorIconos/cooler.png"
-import icono_monitor from "/iconos/armadorIconos/monitor.png"
-import { useAuth } from '../Auth'
+import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  Box,
+  Button,
+  Grid,
+  Container,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setProductos,
+  setTotal,
+  setWatts,
+  setOrder,
+  selectPart,
+  removePart,
+  clearBuild,
+} from "../redux/slices/buildSlice";
+import { useAuth } from "../Auth";
+import { useNavigate, Navigate } from "react-router-dom";
+import { ListadoProductos } from "./armador/listadoProductos";
+import { CategoriasSelector } from "./armador/categoriasSelector";
+import { ProductosSeleccionados } from "./armador/productosSeleccionados";
+import TotalesYComprar from "./armador/totalesYComprar";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
+const categoryMap = {
+  procesadores: "cpu",
+  motherboards: "motherboard",
+  memorias: "ram",
+  gpus: "gpu",
+  almacenamiento: "storage",
+  fuentes: "psu",
+  gabinetes: "case",
+  coolers: "cooler",
+  monitores: "monitor",
+};
 
-import Card from "@mui/joy/Card";
-import Grid from "@mui/joy/Grid";
-import CardContent from "@mui/joy/CardContent";
-import Typography from "@mui/joy/Typography";
-import AspectRatio from "@mui/joy/AspectRatio";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/joy/IconButton";
+const secuenciaCategorias = Object.keys(categoryMap);
 
-import Delete from '@mui/icons-material/Delete'
-import { useNavigate } from 'react-router-dom'
+function ArmadorPc({ category }) {
+  const url = import.meta.env.VITE_URL_BACK;
+  const { sesion } = useAuth();
+  const navigate = useNavigate();
 
+  if (!sesion) {
+    return <Navigate to="/login" replace />;
+  }
 
-function ArmadorPc() {
-const url = import.meta.env.VITE_URL_BACK;
-const { sesion } = useAuth();
-const navigate = useNavigate();
-const [productos,setProductos] =useState({
-    productos:{
-        "procesadores":[],
-        "mothers":[],
-        "placas":[],
-        "almacenamiento":[],
-        "memorias":[],
-        "fuentes":[],
-        "gabinetes":[],
-        "coolers":[],
-        "monitores":[]
-    }});
+  const dispatch = useDispatch();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-// Crear un índice
-const crearIndice = (productos) => {
+  const selectedParts = useSelector((state) => state.build.selectedParts);
+  const productos = useSelector((state) => state.build.productos);
+  const total = useSelector((state) => state.build.total);
+  const watts = useSelector((state) => state.build.watts);
+  const order = useSelector((state) => state.build.order);
+
+  const [tipoIndex, setTipoIndex] = useState(0);
+  const tipo = secuenciaCategorias[tipoIndex];
+
+  const crearIndice = useCallback((productosRaw) => {
     const indice = {};
-    for (const categoria in productos) {
-      productos[categoria].forEach((producto) => {
-        indice[producto.id_producto] = { ...producto, categoria };
-      });
+    for (const categoria in productosRaw?.productos || {}) {
+      const lista = productosRaw.productos[categoria];
+      if (Array.isArray(lista)) {
+        lista.forEach((p) => {
+          if (p.id_producto) {
+            indice[p.id_producto] = { ...p, categoria };
+          }
+        });
+      }
     }
     return indice;
-  };
+  }, []);
 
-  // Crear el índice una vez
-  const indiceProductos = crearIndice(productos.productos);
+  const indiceProductos = productos ? crearIndice(productos) : {};
+  const buscarPorId = useCallback(
+    (id) => indiceProductos[id] || null,
+    [indiceProductos]
+  );
 
-  // Búsqueda rápida
-  const buscarPorId = (id) => indiceProductos[id] || null;
-const [watts,setWatts] = useState(0)
-const [tipo,setTipo] = useState("procesadores")
-const [elecciones, setElecciones] = useState({procesador:"",mother:"",placa:"",memorias:[],almacenamiento:[],coolers:[],fuente:"",gabinete:"",monitores:[]});
-const [total,setTotal] = useState(0)
-const [order,setOrder] = useState('asc')
-const getArmador = async () => {
-    let query = `?`;
-        if (elecciones.procesador !="") {
-            query += `&procesador_id=${elecciones.procesador}`;
+  const calcularTotalesYWatts = useCallback(() => {
+    let total = 0;
+    let watts = 0;
+    Object.entries(selectedParts).forEach(([categoria, ids]) => {
+      const lista = Array.isArray(ids) ? ids : [ids];
+      lista.forEach((id) => {
+        const producto = buscarPorId(id);
+        if (producto) {
+          total += Number(producto.precio_pesos_iva_ajustado || 0);
+          if (
+            producto.consumo &&
+            !producto.nombre?.toLowerCase().includes("fuente")
+          ) {
+            watts += Number(producto.consumo || 0);
+          }
         }
-        if (elecciones.mother !="") {
-            query += `&motherboard_id=${elecciones.mother}`;
-        }
-        if (elecciones.memorias.length>0) {
-            query += `&memoria_id=${elecciones.memorias[0]}`;
-        }
-        if (order != ""){
-            query += `&order=${order}`;
-        }
-        if (watts > 0){
-            query += `&consumoW=${watts}`
-        }
-        
+      });
+    });
+    dispatch(setTotal(total));
+    dispatch(setWatts(watts));
+  }, [selectedParts, buscarPorId, dispatch]);
+
+  useEffect(() => {
+    calcularTotalesYWatts();
+  }, [selectedParts, calcularTotalesYWatts]);
+
+  const getArmador = useCallback(async () => {
+    const query = [];
+    if (selectedParts.cpu) query.push(`procesador_id=${selectedParts.cpu}`);
+    if (selectedParts.motherboard)
+      query.push(`motherboard_id=${selectedParts.motherboard}`);
+    if (selectedParts.ram?.length)
+      query.push(`memoria_id=${selectedParts.ram[0]}`);
+    if (order) query.push(`order=${order}`);
+    if (watts) query.push(`consumoW=${watts}`);
 
     try {
-        const response = await fetch(
-            `${url}/armador${query}`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${sesion.token}`,
-                },
-            }
-        );
-
-        if (response.ok) {
-            const data = await response.json();
-            setProductos(data)
-        } else {
-            console.error("Error al obtener productos:", response.status);
+      const res = await axios.get(
+        `${url}/armador${query.length ? `?${query.join("&")}` : ""}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sesion.token}`,
+          },
         }
+      );
+      if (res.status === 200) {
+        dispatch(setProductos(res.data));
+      }
     } catch (error) {
-        console.error(error)
+      console.error("Error al obtener productos:", error);
     }
-};
-useEffect(() => {
-    getArmador();
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, [elecciones,order]);
-const eliminarID = (id) => {
-  setElecciones((prevElecciones) => {
-    const nuevasElecciones = { ...prevElecciones };
+  }, [url, selectedParts, order, watts, sesion.token, dispatch]);
 
-    Object.keys(nuevasElecciones).forEach((key) => {
-      if (Array.isArray(nuevasElecciones[key])) {
-        // Si es un array, eliminamos el ID si está presente
-        nuevasElecciones[key] = nuevasElecciones[key].filter((item) => item !== id);
-      } else if (nuevasElecciones[key] === id) {
-        // Si no es un array y coincide, lo eliminamos
-        nuevasElecciones[key] = "";
+  const handleSeleccionar = (id) => {
+    const reduxKey = categoryMap[tipo || category];
+    const current = selectedParts[reduxKey];
+    const isArray = Array.isArray(current);
+    if (isArray) {
+      const next = [...current, id];
+      if (next.length <= 4) {
+        dispatch(selectPart({ category: reduxKey, part: id }));
+        if (next.length === 4) {
+          setTimeout(() => {
+            setTipoIndex((prev) =>
+              Math.min(prev + 1, secuenciaCategorias.length - 1)
+            );
+          }, 300);
+        }
+      }
+    } else {
+      dispatch(selectPart({ category: reduxKey, part: id }));
+      setTipoIndex((prev) =>
+        Math.min(prev + 1, secuenciaCategorias.length - 1)
+      );
+    }
+  };
+
+  const eliminarID = (id) => {
+    const producto = buscarPorId(id);
+    if (!producto) return;
+    const reduxKey = categoryMap[producto.categoria] || producto.categoria;
+    dispatch(removePart({ category: reduxKey, part: id }));
+  };
+
+  const handleReset = () => {
+    dispatch(clearBuild());
+    setTipoIndex(0);
+  };
+
+  const cambiarOrden = (orden) => dispatch(setOrder(orden));
+
+  const handleAgregarCarrito = async () => {
+    if (total === 0) return;
+
+    const carritoObj = {};
+
+    Object.entries(selectedParts).forEach(([_, valor]) => {
+      if (!valor || (Array.isArray(valor) && valor.length === 0)) return;
+
+      if (Array.isArray(valor)) {
+        valor.forEach((id) => {
+          carritoObj[id] = (carritoObj[id] || 0) + 1;
+        });
+      } else {
+        carritoObj[valor] = (carritoObj[valor] || 0) + 1;
       }
     });
 
-    return nuevasElecciones;
-  });
-};
-const handleSeleccionar = (id_producto) =>{
-
-    switch (tipo) {
-        case 'procesadores':
-            setElecciones({...elecciones,procesador:id_producto})
-            setTipo('motherboards')
-            break;
-        case 'motherboards':
-            setElecciones({...elecciones,mother:id_producto})
-            setTipo('gpus')
-            break;
-        case 'gpus':
-            setElecciones({...elecciones,placa:id_producto})
-            setTipo('memorias')
-            break;
-        case 'memorias':
-            if(elecciones.memorias.length < 4){
-                setElecciones({...elecciones,memorias:[...elecciones.memorias,id_producto]})
-                if(elecciones.memorias.length == 4){
-                    setTipo('almacenamiento')
-                }
-            }else{
-                setTipo('almacenamiento')
-            }
-
-            break;
-        case 'almacenamiento':
-            if(elecciones.memorias.length < 4){
-                setElecciones({...elecciones,almacenamiento:[...elecciones.almacenamiento,id_producto]})
-                if(elecciones.memorias.length == 4){
-                    setTipo('fuentes')
-                }
-            }else{
-                setTipo('fuentes')
-            }
-            
-            break;
-        case 'fuentes':
-            setElecciones({...elecciones,fuente:id_producto})
-            setTipo('gabinetes')
-            break;
-        case 'gabinetes':
-            setElecciones({...elecciones,gabinete:id_producto})
-            setTipo('coolers')
-            break;
-        case 'coolers':
-            setElecciones({...elecciones,coolers:[...elecciones.coolers, id_producto]})
-            break;
-        case 'monitores':
-            setElecciones({...elecciones,monitores:[...elecciones.monitores, id_producto]})
-            break;
-
-        default:
-            break;
-    }
-
-
-}
-const sleep = ms => new Promise(r => setTimeout(r, ms))
-const handleAgregarCarrito = async () => {
-    if(total == 0){
-        return
-    }
-    const carritoObj = {}; // Objeto para agrupar productos por id y sumar cantidades
-
-    // eslint-disable-next-line no-unused-vars
-    Object.entries(elecciones).forEach(([categoria, valor]) => {
-        if (valor === 0 || valor === "" || (Array.isArray(valor) && valor.length === 0)) {
-            // Ignorar valores vacíos, 0 o arreglos vacíos
-            return;
-        }
-
-        if (Array.isArray(valor)) {
-            // Procesar cada elemento del arreglo
-            valor.forEach((producto) => {
-                if (producto && typeof producto === "number") {
-                    // Asegurarse de que el ID sea un número válido
-                    carritoObj[producto] = (carritoObj[producto] || 0) + 1;
-                }
-            });
-        } else if (typeof valor === "number" && valor > 0) {
-            // Agregar IDs numéricos no pertenecientes a arreglos
-            carritoObj[valor] = (carritoObj[valor] || 0) + 1;
-        }
-    });
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     try {
-        // Procesar cada producto de forma secuencial
-        const entries = Object.entries(carritoObj);
-        
-        for (const [id_producto, cantidad] of entries) {
-            // Esperar 1000ms antes de cada petición
-            await sleep(50);
-            
-            const response = await fetch(
-                `${url}/carrito`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${sesion.token}`,
-                    },
-                    body: JSON.stringify({ "id_producto": id_producto, "cantidad": cantidad })
-                }
-            );
-            
-            if(response.ok){
-                console.log("Producto agregado al carrito");
-            }
-        }
-        
-        // Solo navegar cuando todo esté listo
-        navigate('/checkout');
-    } catch (error) {
-        console.error("Error al agregar productos al carrito:", error);
-        // Manejar el error, tal vez mostrar una notificación al usuario
-    }
-};
-
-// Agregar nuevo useEffect para manejar el cálculo de totales
-useEffect(() => {
-    const calcularTotales = () => {
-        let nuevoTotal = 0;
-        let nuevoWatts = 0;
-
-        Object.entries(elecciones).forEach(([, valor]) => {
-            if (valor) {
-                if (Array.isArray(valor)) {
-                    valor.forEach(productoId => {
-                        const producto = buscarPorId(productoId);
-                        if (producto) {
-                            nuevoTotal += Number(producto.precio_pesos_iva_ajustado);
-                            // Solo suma watts si no es una fuente y tiene consumo
-                            if (producto.consumo && !producto.nombre.toLowerCase().includes("fuente")) {
-                                nuevoWatts += Number(producto.consumo);
-                            }
-                        }
-                    });
-                } else {
-                    const producto = buscarPorId(valor);
-                    if (producto) {
-                        nuevoTotal += Number(producto.precio_pesos_iva_ajustado);
-                        // Solo suma watts si no es una fuente y tiene consumo
-                        if (producto.consumo && !producto.nombre.toLowerCase().includes("fuente")) {
-                            nuevoWatts += Number(producto.consumo);
-                        }
-                    }
-                }
-            }
+      for (const [id_producto, cantidad] of Object.entries(carritoObj)) {
+        await sleep(50);
+        await fetch(`${url}/carrito`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sesion.token}`,
+          },
+          body: JSON.stringify({ id_producto, cantidad }),
         });
+      }
+      navigate("/checkout");
+    } catch (error) {
+      console.error("Error al agregar productos al carrito:", error);
+    }
+  };
 
-        setTotal(nuevoTotal);
-        setWatts(nuevoWatts);
-    };
+  useEffect(() => {
+    getArmador();
+  }, [getArmador]);
 
-    calcularTotales();
-}, [elecciones]);
+  const pdfRef = useRef();
 
-return(
+  const exportarPDF = async () => {
+    const input = pdfRef.current;
+    const canvas = await html2canvas(input, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
 
-    <div className="containerArmador">
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-        <div className="armador">
-            <div className="ladoIzquierdoArmador">
-                <div className="tipo">
-                    <div className="procesador" onClick={()=>setTipo("procesadores")}><img src={icono_cpu}  /></div>
-                    <div className="motherboard" onClick={()=>setTipo("motherboards")}><img src={icono_mother}  /></div>
-                    <div className="gpu" onClick={()=>setTipo("gpus")}><img src={icono_gpu}  /></div>
-                    <div className="memoria" onClick={()=>setTipo("memorias")}><img src={icono_ram}  /></div>
-                    <div className="almacenamiento" onClick={()=>setTipo("almacenamiento")}><img src={icono_hdd}  /></div>
-                    <div className="psu" onClick={()=>setTipo("fuentes")}><img src={icono_psu}  /></div>
-                    <div className="gabinete" onClick={()=>setTipo("gabinetes")}><img src={icono_gabinete}  /></div>
-                    <div className="coolers" onClick={()=>setTipo("coolers")}><img src={icono_cooler}  /></div>
-                    <div className="monitores" onClick={()=>setTipo("monitores")}><img src={icono_monitor}  /></div>
-                </div>
-                <div className="elecciones">
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save("presupuesto_pc.pdf");
+  };
 
-                    {
-                    Object.entries(elecciones).map(([categoria,valor])=>{
-                        if(valor == 0){
-                            return null
-                        }
-                        if(typeof(valor) == "object"){
-                            return valor.map((productoArreglo,index) =>{
-                                const producArreglo = buscarPorId(productoArreglo)
-                                return (
-                                    <div className="productoCarritoArmador" key={`${productoArreglo}+${index}`}> 
-                                        {producArreglo.nombre} :<br></br>  {Number(producArreglo.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
-    style: 'currency',
-    currency: 'ARS',
-    maximumFractionDigits:0
-})} <br />
-                                        <IconButton variant='contained' onClick={()=>eliminarID(producArreglo.id_producto)} sx={{height: 20, width: 20, backgroundColor: "#a111ad", borderRadius: "10px", objectFit: "contain", color: "white",
-                                                "&:active": {
-                                                    transform: "scale(0.95)",
-                                                    transition: "transform 0.2s ease",
-                                                },
-                                                "&:hover": {
-                                                    backgroundColor: "#e0e0e0",
-                                                    color: "black"
-                                                },
-                                            }}><Delete></Delete></IconButton>
-                                    </div>
-                                )
-                            })
-                        }else {
+  return (
+    <Container maxWidth="xl" sx={{ py: 2 }}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={3}>
+          <CategoriasSelector
+            setTipo={(categoria) => {
+              const index = secuenciaCategorias.indexOf(categoria);
+              if (index !== -1) setTipoIndex(index);
+            }}
+            selectedParts={selectedParts}
+            buscarPorId={buscarPorId}
+          />
+        </Grid>
 
+        <Grid item xs={12} md={6}>
+          <Box
+            display="flex"
+            justifyContent="center"
+            gap={2}
+            mb={2}
+            flexWrap="wrap"
+          >
+            <Button
+              variant="outlined"
+              onClick={() => setTipoIndex((prev) => Math.max(prev - 1, 0))}
+              disabled={tipoIndex === 0}
+            >
+              Anterior
+            </Button>
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: "#FF852A" }}
+              onClick={() =>
+                setTipoIndex((prev) =>
+                  Math.min(prev + 1, secuenciaCategorias.length - 1)
+                )
+              }
+              disabled={tipoIndex >= secuenciaCategorias.length - 1}
+            >
+              Siguiente
+            </Button>
+            <Button color="error" onClick={handleReset}>
+              Reiniciar
+            </Button>
+          </Box>
 
-                            const produc = buscarPorId(valor)
-                            return (
-                                <div className="productoCarritoArmador" key={categoria}>
-                                {produc.nombre}: <br></br> {Number(produc.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
-    style: 'currency',
-    currency: 'ARS',
-    maximumFractionDigits:0
-})}
-                                
-                                <div>
-                                <IconButton  onClick={()=>eliminarID(produc.id_producto)} sx={{height: 20, width: 20, backgroundColor: "#a111ad", borderRadius: "10px", objectFit: "contain", color: "white",
-                                                "&:active": {
-                                                    transform: "scale(0.95)",
-                                                    transition: "transform 0.2s ease",
-                                                },
-                                                "&:hover": {
-                                                    backgroundColor: "#e0e0e0",
-                                                    color: "black"
-                                                },
-                                            }}><Delete></Delete></IconButton>
-                                            </div>
-                                </div>
-                            )
+          <div ref={pdfRef}>
+            <ProductosSeleccionados
+              elecciones={selectedParts}
+              buscarPorId={buscarPorId}
+              eliminarID={eliminarID}
+            />
+            <ListadoProductos
+              productos={productos}
+              tipo={tipo}
+              handleSeleccionar={handleSeleccionar}
+            />
+          </div>
+        </Grid>
 
-                        }
-                    })}
-                    <p className='total'>Total: <span style={{marginLeft: "10px", color:"green"}}> {total.toLocaleString('es-ar', {
-    style: 'currency',
-    currency: 'ARS',
-    maximumFractionDigits:0
-})}</span></p>
-<p className='consumo'>{watts} W</p>
-<Button variant="contained" onClick={()=>handleAgregarCarrito()} size="" sx={{ ml: 2, my:1.5, backgroundColor: "#a111ad", height: 40, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Comprar</Button>
-                </div>
-            </div>
-
-            <div className="productos">
-                <div className="chupalaIvan">
-
-
-
-                
-                <form className='filtrosArmador' >
-                    <select className='ordernarPor' name="ordernar Por" value={order} onChange={(e)=>setOrder(e.target.value)}>
-                        <option value="ASC">Precio menor a mayor</option>
-                        <option value="DESC">Precio mayor a menor</option>
-                    </select>
-                    {((tipo =='memorias' && elecciones.memorias.length > 0) || (tipo =='almacenamiento' && elecciones.almacenamiento.length > 0) || (tipo =='coolers' && elecciones.coolers.length > 0) ) && <div className="siguiente" onClick={()=>{
-                        if(tipo == "almacenamiento"){
-                            setTipo("fuentes")}
-                            else if(tipo == "memorias"){
-                                setTipo("almacenamiento")}else if(tipo == "coolers"){
-                                    setTipo("monitores");
-                                }
-                    }}> Siguiente </div>}
-                    
-                </form>
-                <div className="mensajeUsado">
-                <div className='redWrapp' >
-
-<h2 style={{color:'red'}}> ¡Solo se puede agregar hasta 2 productos USADOS al carrito!</h2>
-<p style={{color:'red', fontSize:"15px", textAlign:"center"}}> Si necesitas comprar más consultar por WhatsApp</p>
-</div>
-                </div>
-                </div>
-                <Grid container spacing={2} style={{ marginTop: "10px", justifyContent: "center"}}>
-            {
-                            // eslint-disable-next-line no-unused-vars
-                            productos.productos[`${tipo}`].map((producto, index) => (
-                                <Grid lg={3.9} key={producto.id_producto}>
-                                    <Card orientation='horizontal' sx={{ width: "95%", bgcolor: "#e0e0e0", height: 180 }} >
-                                        <AspectRatio  ratio="1"  sx={{ width: 130 }}>
-                                            <img
-                                                src={producto.url_imagenes[producto.url_imagenes.length -1]}
-                                                alt={producto.nombre}
-                                                loading="lazy"
-                                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                                                />
-                                                <div className="badge">{(producto.nombre_proveedor == 'air') ? <img src="/badges/24HS.png" alt="" /> : (producto.nombre_proveedor == 'elit') ? <img src="/badges/5_DIAS.png" alt="" /> : <img src="/badges/LOCAL.png" alt="" />} </div>
-                                        </AspectRatio>
-                                        <CardContent orientation="horizontal" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                                            <div>
-                                                <Typography level="h5" sx={{ display: "-webkit-box", overflow: "hidden", WebkitBoxOrient: "vertical", WebkitLineClamp: 2, textOverflow: "ellipsis", fontWeight: "bold",}}>{producto.nombre}</Typography>
-                                                <Typography>{producto.descripcion}</Typography>
-                                                <Typography level="h4" sx={{ fontWeight: "xl", mt: 0.8 }}>{Number(producto.precio_pesos_iva_ajustado).toLocaleString('es-ar', {
-    style: 'currency',
-    currency: 'ARS',
-    maximumFractionDigits:0
-})}</Typography>
-                                                <div style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
-                                                    <Button variant="contained" onClick={()=>handleSeleccionar(producto.id_producto)} size="" sx={{ ml: 2, my:1.5, backgroundColor: "#a111ad", height: 40, borderRadius: "20px", fontSize: "0.75rem", objectFit: "contain", }}>Seleccionar</Button>
-
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                    </Grid>
-                            ))
-                        }
-                        </Grid>
-            </div>
-        </div>
-    </div>
-)
+        <Grid item xs={12} md={3}>
+          <TotalesYComprar
+            total={total}
+            watts={watts}
+            handleAgregarCarrito={handleAgregarCarrito}
+          />
+        </Grid>
+      </Grid>
+    </Container>
+  );
 }
 
 export default ArmadorPc;
