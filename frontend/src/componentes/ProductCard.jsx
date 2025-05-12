@@ -362,6 +362,16 @@ export default function ProductCard() {
                         : " NUEVO"}
                     </div>
 
+                    <div className="badge">
+                    {producto.deposito == "CBA" ? (
+                      <img src="/badges/HOTSALE.png" alt="" />
+                    ) : producto.deposito == "LUG" ? (
+                      <img src="/badges/HOTSALE.png" alt="" />
+                    ) : (
+                      <img src="/badges/LOCAL.png" alt="" />
+                    )}{" "}
+                  </div>
+
                     {esAdmin && (
                       <IconButton
                         onClick={() => {

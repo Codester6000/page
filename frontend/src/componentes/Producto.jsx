@@ -97,7 +97,16 @@ export default function Producto() {
   return (
     <div className="productoContainer">
       <div className="responsiveDiv">
-        <div className="productPhoto">
+        <div className="productPhoto" style={{position:"relative"}}>
+          <div className="badge">
+                    {producto?.deposito == "CBA" ? (
+                      <img src="/badges/HOTSALE.png" alt="" />
+                    ) : producto?.deposito == "LUG" ? (
+                      <img src="/badges/HOTSALE.png" alt="" />
+                    ) : (
+                      <img src="/badges/LOCAL.png" alt="" />
+                    )}{" "}
+                  </div>
           <img
             src={producto?.url_imagenes[producto.url_imagenes.length - 1]}
             alt=""
