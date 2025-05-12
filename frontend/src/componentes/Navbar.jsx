@@ -118,7 +118,7 @@ export default function Navbar() {
             <div className="linkPc">
               <Button
                 onClick={handleClick}
-                sx={{ color: "white", fontWeight: "bold" }}
+                sx={{ color: "white", fontWeight: "bold", fontSize:"1.3rem", fontFamily:"Roboto Condensed" }}
               >
                 PRODUCTOS
               </Button>
