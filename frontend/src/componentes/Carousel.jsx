@@ -3,26 +3,14 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/swiper-bundle.css";
 import "./Carousel.css";
-
-// Notas:
-// - Asegurate de instalar Swiper: `npm install swiper`
-// - Imágenes optimizadas: 1600x350px, con contenido centrado
-// - Las imágenes deben estar en: /public/carousel/
-// - Próximamente: eliminar límite de cantidad de imágenes
+import { useAuth } from "../Auth"; // importa el hook personalizado
 
 const Carousel = () => {
+  const { sesion } = useAuth(); // obtenemos la sesión actual
   const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
+  const [images, setImages] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState({});
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 800);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Rutas de imágenes según tipo de dispositivo
   const mobileImages = [
     "1-mobile.png",
     "3-mobile.png",
@@ -30,34 +18,88 @@ const Carousel = () => {
     "8-mobile.png",
     "10-mobile.png",
   ];
-
   const desktopImages = ["6.png", "7.png", "8.png"];
 
-  const images = isMobile ? mobileImages : desktopImages;
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 800);
+    };
+
+    window.addEventListener("resize", handleResize);
+    setImages(window.innerWidth < 800 ? mobileImages : desktopImages);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const handleFileChange = (event, index) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const newImages = [...images];
+      newImages[index] = reader.result;
+      setImages(newImages);
+
+      const updatedFiles = { ...selectedFiles, [index]: file };
+      setSelectedFiles(updatedFiles);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const isAdmin = sesion?.rol === 2;
 
   return (
-    <Swiper
-      className="swiperRR"
-      pagination={{ clickable: true }}
-      modules={[Pagination, Autoplay]}
-      spaceBetween={0}
-      slidesPerView={1}
-      loop
-      autoplay={{
-        delay: 3000,
-        disableOnInteraction: false,
-      }}
-    >
-      {images.map((imageName, index) => (
-        <SwiperSlide key={index}>
-          <img
-            className="imgCR"
-            src={`carousel/${imageName}`}
-            alt={`Slide ${index + 1}`}
-          />
-        </SwiperSlide>
-      ))}
-    </Swiper>
+    <div>
+      <Swiper
+        className="swiperRR"
+        pagination={{ clickable: true }}
+        modules={[Pagination, Autoplay]}
+        spaceBetween={0}
+        slidesPerView={1}
+        loop
+        autoplay={{
+          delay: 3000,
+          disableOnInteraction: false,
+        }}
+      >
+        {images.map((imageSrc, index) => (
+          <SwiperSlide key={index} style={{ position: "relative" }}>
+            <img
+              className="imgCR"
+              src={
+                imageSrc.startsWith("data:") ? imageSrc : `carousel/${imageSrc}`
+              }
+              alt={`Slide ${index + 1}`}
+            />
+
+            {isAdmin && (
+              <div style={{ position: "absolute", top: 10, right: 10 }}>
+                <label
+                  htmlFor={`fileInput-${index}`}
+                  style={{
+                    backgroundColor: "rgba(0,0,0,0.6)",
+                    color: "#fff",
+                    padding: "5px 10px",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Cambiar
+                </label>
+                <input
+                  id={`fileInput-${index}`}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={(e) => handleFileChange(e, index)}
+                />
+              </div>
+            )}
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </div>
   );
 };
 

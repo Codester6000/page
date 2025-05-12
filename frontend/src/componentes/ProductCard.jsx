@@ -523,6 +523,7 @@ export default function ProductCard() {
                 </IconButton>
               </DialogTitle>
               <DialogContent dividers>
+                <Typography>{}</Typography>
                 <TextField
                   fullWidth
                   label="Precio con IVA"

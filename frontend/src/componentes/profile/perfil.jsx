@@ -11,25 +11,81 @@ import {
 import EditLocationAltIcon from "@mui/icons-material/EditLocationAlt";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CloseIcon from "@mui/icons-material/Close";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "../../Auth";
+import Swal from "sweetalert2";
 
 const Perfil = () => {
+  const { sesion } = useAuth();
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
   const [openModal, setOpenModal] = useState(false);
-  const [openFavoritosModal, setOpenFavoritosModal] = useState(false); // nuevo
+  const [openFavoritosModal, setOpenFavoritosModal] = useState(false);
   const [domicilio, setDomicilio] = useState("");
+  const [datosUsuario, setDatosUsuario] = useState({
+    nombre: "",
+    apellido: "",
+    direccion: "",
+    telefono: "",
+  });
 
-  // Simulación de favoritos (puede venir de props o API)
   const favoritos = [
     { nombre: "Auriculares Gamer HyperX", precio: 65000 },
     { nombre: "Notebook Lenovo Ideapad", precio: 434900 },
     { nombre: "Mouse Logitech G305", precio: 35900 },
   ];
 
+  useEffect(() => {
+    const fetchPerfil = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_URL_BACK}/usuarios/perfil`,
+          {
+            headers: {
+              Authorization: `Bearer ${sesion?.token}`,
+            },
+          }
+        );
+        const data = await response.json();
+        setDatosUsuario(data);
+      } catch (error) {
+        console.error("Error al obtener perfil:", error);
+      }
+    };
+    if (sesion?.token) fetchPerfil();
+  }, [sesion]);
+
+  const handleGuardarDatos = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_URL_BACK}/usuarios/agregar-info`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sesion?.token}`,
+          },
+          body: JSON.stringify(datosUsuario),
+        }
+      );
+
+      if (response.ok) {
+        Swal.fire(
+          "Actualizado",
+          "Tus datos fueron actualizados correctamente",
+          "success"
+        );
+        setOpenModal(false);
+      } else {
+        Swal.fire("Error", "No se pudieron actualizar tus datos", "error");
+      }
+    } catch (error) {
+      Swal.fire("Error de red", "No se pudo conectar con el servidor", "error");
+    }
+  };
+
   return (
     <Box display="flex" flexWrap="wrap" gap={3} p={3}>
-      {/* MIS FAVORITOS */}
       <Paper elevation={3} sx={{ flex: 1, minWidth: "300px", p: 2 }}>
         <Typography variant="h6" fontWeight="bold" mb={2}>
           <FavoriteIcon sx={{ mr: 1, color: "red" }} />
@@ -58,19 +114,16 @@ const Perfil = () => {
         </Button>
       </Paper>
 
-      {/* MIS DOMICILIOS */}
       <Paper elevation={3} sx={{ flex: 1, minWidth: "300px", p: 2 }}>
         <Typography variant="h6" fontWeight="bold" mb={2}>
           📍 Mis domicilios
         </Typography>
         <Box>
           <Typography variant="body2" color="textSecondary">
-            Retiro por sucursal
+            Dirección: {datosUsuario.direccion || "No especificado"}
           </Typography>
-          <Typography fontWeight="bold">Sucursal Oca: La Rioja</Typography>
-          <Typography variant="body2">Av. Pte. Carlos Menem 753</Typography>
           <Typography variant="body2" color="textSecondary">
-            Código Postal: 5300
+            Teléfono: {datosUsuario.telefono || "No especificado"}
           </Typography>
         </Box>
         <Button
@@ -82,20 +135,31 @@ const Perfil = () => {
         </Button>
       </Paper>
 
-      {/* MIS CUENTAS */}
       <Paper elevation={3} sx={{ flex: 1, minWidth: "300px", p: 2 }}>
         <Typography variant="h6" fontWeight="bold" mb={2}>
-          🧾 Mis cuentas
+          Mis Datos Personales
         </Typography>
         <Typography>
-          <b>Nombre:</b>
+          <b>Nombre:</b> {datosUsuario.nombre || "-"}
         </Typography>
         <Typography>
-          <b>DNI:</b>
+          <b>Apellido:</b> {datosUsuario.apellido || "-"}
         </Typography>
+        <Typography>
+          <b>Dirección:</b> {datosUsuario.direccion || "-"}
+        </Typography>
+        <Typography>
+          <b>Teléfono:</b> {datosUsuario.telefono || "-"}
+        </Typography>
+        <Button
+          onClick={handleOpenModal}
+          startIcon={<EditLocationAltIcon />}
+          sx={{ mt: 2 }}
+        >
+          Editar datos personales
+        </Button>
       </Paper>
 
-      {/* MODAL DE DOMICILIO */}
       <Modal open={openModal} onClose={handleCloseModal}>
         <Box
           sx={{
@@ -115,38 +179,58 @@ const Perfil = () => {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Typography variant="h6">Nuevo domicilio</Typography>
+            <Typography variant="h6">Editar Información</Typography>
             <IconButton onClick={handleCloseModal}>
               <CloseIcon />
             </IconButton>
           </Box>
           <TextField
-            label="Domicilio"
+            label="Nombre"
             fullWidth
-            variant="outlined"
-            value={domicilio}
-            onChange={(e) => setDomicilio(e.target.value)}
             sx={{ mt: 2 }}
+            value={datosUsuario.nombre}
+            onChange={(e) =>
+              setDatosUsuario({ ...datosUsuario, nombre: e.target.value })
+            }
           />
           <TextField
-            label="Código Postal"
+            label="Apellido"
             fullWidth
-            variant="outlined"
             sx={{ mt: 2 }}
+            value={datosUsuario.apellido}
+            onChange={(e) =>
+              setDatosUsuario({ ...datosUsuario, apellido: e.target.value })
+            }
+          />
+          <TextField
+            label="Dirección"
+            fullWidth
+            sx={{ mt: 2 }}
+            value={datosUsuario.direccion}
+            onChange={(e) =>
+              setDatosUsuario({ ...datosUsuario, direccion: e.target.value })
+            }
+          />
+          <TextField
+            label="Teléfono"
+            fullWidth
+            sx={{ mt: 2 }}
+            value={datosUsuario.telefono}
+            onChange={(e) =>
+              setDatosUsuario({ ...datosUsuario, telefono: e.target.value })
+            }
           />
           <Button
             variant="contained"
             fullWidth
             sx={{ mt: 3, bgcolor: "#FF7D21" }}
-            onClick={() => {
-              // Enviar a backend acá
-              handleCloseModal();
-            }}
+            onClick={handleGuardarDatos}
           >
-            Guardar domicilio
+            Guardar cambios
           </Button>
         </Box>
       </Modal>
+
       <Modal
         open={openFavoritosModal}
         onClose={() => setOpenFavoritosModal(false)}
