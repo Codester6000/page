@@ -79,23 +79,35 @@ WHERE
     const precio_gt = req.query.precio_gt;
     if (precio_gt != undefined) {
         filtros.push(`(
-        CASE
-            WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos_iva * 1.12
-            WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos_iva * 1.12
-            ELSE p.precio_pesos_iva
-        END
-    ) > ?`)
+            CASE
+                WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
+                    SELECT pc2.id_producto
+                    FROM productos_categorias pc2
+                    INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+                    WHERE c2.nombre_categoria IN ('procesadores')
+                    GROUP BY pc2.id_producto
+                ) THEN p.precio_pesos_iva * 1.12
+                WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos_iva * 1.12
+                ELSE p.precio_pesos_iva
+            END
+        ) > ?`)
         parametros.push(precio_gt)
     }
     const precio_lt = req.query.precio_lt;
     if (precio_lt != undefined) {
         filtros.push(`(
-        CASE
-            WHEN pro.nombre_proveedor = 'elit' THEN p.precio_pesos_iva * 1.12
-            WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos_iva * 1.12
-            ELSE p.precio_pesos_iva
-        END
-    ) < ?`)
+            CASE
+                WHEN pro.nombre_proveedor = 'air' AND pr.id_producto IN (
+                    SELECT pc2.id_producto
+                    FROM productos_categorias pc2
+                    INNER JOIN categorias c2 ON pc2.id_categoria = c2.id_categoria
+                    WHERE c2.nombre_categoria IN ('procesadores')
+                    GROUP BY pc2.id_producto
+                ) THEN p.precio_pesos_iva * 1.12
+                WHEN pro.nombre_proveedor = 'air' THEN p.precio_pesos_iva * 1.12
+                ELSE p.precio_pesos_iva
+            END
+        ) < ?`)
         parametros.push(precio_lt)
     }
     const nombre = req.query.nombre;
