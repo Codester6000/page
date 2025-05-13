@@ -13,6 +13,7 @@ productosRouter.get("/",validarQuerysProducto(), verificarValidaciones, async (r
     p.deposito,
     pr.peso,pr.garantia_meses,
     pr.codigo_fabricante,
+    pr.usado,
     (SELECT JSON_ARRAYAGG(nombre_categoria)
         FROM (
             SELECT DISTINCT c.nombre_categoria
@@ -75,6 +76,12 @@ WHERE
     if (subCategoria != undefined) {
         filtros.push("(c.nombre_categoria = ? OR c.nombre_subcategoria = ?)");
         parametros.push(subCategoria, subCategoria);
+    }
+
+    const usado = req.query.usado;
+    if(usado != undefined) {
+        filtros.push("pr.usado = ?")
+        parametros.push(usado);
     }
     const precio_gt = req.query.precio_gt;
     if (precio_gt != undefined) {
@@ -314,6 +321,7 @@ productosRouter.delete("/:id", validarJwt, validarRol(2), validarId, async (req,
 })
 productosRouter.put("/:id", validarJwt, validarRol(2), validarId, verificarValidaciones, async (req, res) => {
     const id = req.params.id
+    "precio_pesos_iva"
     const { nuevo_precio, producto_id, proveedor_id } = req.query
     try {
         const sql = "UPDATE precios SET precio_pesos_iva = ? WHERE (id_producto = ? AND id_proveedor = ?);"

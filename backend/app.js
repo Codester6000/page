@@ -37,7 +37,7 @@ app.use("/auth", authRouter);
 authConfig();
 //interpretar json en el body
 app.use("/productos", productosRouter);
-app.use("/armador", armadorRouter);
+app.use("/armador", armadorRouter);             
 app.use("/usuarios", usuarioRouter);
 app.use("/carrito", carritoRouter);
 app.use("/favorito", favoritoRouter);
