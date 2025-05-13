@@ -118,7 +118,12 @@ export default function Navbar() {
             <div className="linkPc">
               <Button
                 onClick={handleClick}
-                sx={{ color: "white", fontWeight: "bold", fontSize:"1.3rem", fontFamily:"Roboto Condensed" }}
+                sx={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: "1.3rem",
+                  fontFamily: "Roboto Condensed",
+                }}
               >
                 PRODUCTOS
               </Button>
@@ -151,6 +156,14 @@ export default function Navbar() {
                   }}
                 >
                   Nuevos
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    navigate("/productos/hotsale");
+                    handleClose();
+                  }}
+                >
+                  Hot sale
                 </MenuItem>
               </Menu>
             </div>
