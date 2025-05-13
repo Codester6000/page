@@ -30,7 +30,7 @@ let corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 app.use("/auth", authRouter);
 
@@ -44,7 +44,7 @@ app.use("/favorito", favoritoRouter);
 app.use("/checkout", modoCheckoutRouter);
 app.use("/checkoutMP", routerMP);
 app.use("/checkoutGN", getNetRouter);
-app.use('/categorias',categoriasRouter);
+app.use("/categorias", categoriasRouter);
 app.get("/", (req, res) => {
   res.send("hola mundo");
 });
