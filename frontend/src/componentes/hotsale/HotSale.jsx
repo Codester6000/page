@@ -8,6 +8,7 @@ import {
   IconButton,
   Snackbar,
   Alert,
+  Pagination,
 } from "@mui/material";
 import Carousel from "../Carousel";
 import AspectRatio from "@mui/joy/AspectRatio";
@@ -21,6 +22,9 @@ import SkeletonProd from "../SkeletonProd";
 export default function HotSaleCard() {
   const url = import.meta.env.VITE_URL_BACK;
   const [productos, setProductos] = useState([]);
+  const [pagina, setPagina] = useState(1);
+  const itemPorPagina = 32;
+  const [totales, setTotales] = useState(0);
   const [alerta, setAlerta] = useState(false);
   const [favorito, setFavorito] = useState([]);
   const { sesion } = useAuth();
@@ -46,11 +50,13 @@ export default function HotSaleCard() {
 
   const getProductos = async () => {
     try {
+      const offset = (pagina - 1) * itemPorPagina;
       const response = await fetch(
-        `${url}/productos?oferta=0&limit=100&offset=0`
+        `${url}/productos?oferta=1&limit=${itemPorPagina}&offset=${offset}`
       );
       const data = await response.json();
       setProductos(data.productos);
+      setTotales(data.cantidadProductos);
     } catch (error) {
       console.error("Error al cargar productos hotsale", error);
     }
@@ -58,11 +64,20 @@ export default function HotSaleCard() {
 
   useEffect(() => {
     getProductos();
-  }, []);
+    // Scroll al carrusel
+    const carruselElement = document.getElementById("carousel-top");
+    if (carruselElement) {
+      carruselElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [pagina]);
 
   return (
     <>
-      <Carousel />
+      <div id="carousel-top">
+        <Carousel />
+      </div>
       <Container>
         <Typography variant="h4" gutterBottom>
           🔥 Productos en HOT SALE
@@ -139,6 +154,14 @@ export default function HotSaleCard() {
             <SkeletonProd />
           )}
         </Grid>
+
+        <Pagination
+          count={Math.ceil(totales / itemPorPagina)}
+          page={pagina}
+          onChange={(e, value) => setPagina(value)}
+          color="primary"
+          sx={{ mt: 3, display: "flex", justifyContent: "center" }}
+        />
 
         <Snackbar
           open={alerta}
