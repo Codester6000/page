@@ -25,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 import Perfil from "./componentes/profile/perfil";
 import PreguntasFrecuentes from "./componentes/faqs/PreguntasFrecuentes";
 import Metricas from "./componentes/metricas/Metricas";
+import HotSale from "./componentes/hotsale/HotSale";
 
 function App() {
   const { sesion, logout } = useAuth();
@@ -49,10 +50,20 @@ function App() {
       <Routes>
         <Route path="/productos" element={<Inicio />} />
         <Route path="/producto/:id" element={<Producto />} />
+        <Route path="/productos/hotsale" element={<HotSale />} />
+
         <Route path="/" element={<Portada />} />
         <Route path="/armador" element={<Armadorpc />} />
         <Route path="/faqs" element={<PreguntasFrecuentes />} />
-        <Route path="/metricas" element={<Metricas />} />
+
+        <Route
+          path="/metricas"
+          element={
+            <AuthPage>
+              <Metricas />
+            </AuthPage>
+          }
+        />
 
         <Route path="/busqueda" element={<Busqueda />} />
         <Route path="/login" element={<Login />} />
