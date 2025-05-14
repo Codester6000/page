@@ -153,12 +153,20 @@ WHERE
     } else {
         parametros.push(0)
     }
+
+    
     parametros.push(limit)
 
 
     sql += sqlParteFinal
 
-    sql += " ORDER BY pro.id_proveedor DESC LIMIT ? , ? ;"
+    const order = req.query.order
+    if (order != undefined) {
+        sql += ` ORDER BY p.precio_pesos_iva ${order} LIMIT ? , ? ;`
+    }else{
+        sql += " ORDER BY pro.id_proveedor DESC LIMIT ? , ? ;"
+    }
+
 
     const [resultado, fields] = await db.execute(sql, parametros)
     return res.status(200).send({ productos: resultado, cantidadProductos: cuenta[0].cuenta })
