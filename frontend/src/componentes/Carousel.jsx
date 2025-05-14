@@ -64,12 +64,13 @@ const Carousel = () => {
           disableOnInteraction: false,
         }}
       >
+        
         {images.map((imageSrc, index) => (
           <SwiperSlide key={index} style={{ position: "relative" }}>
             <img
               className="imgCR"
               src={
-                imageSrc.startsWith("data:") ? imageSrc : `carousel/${imageSrc}`
+                imageSrc.startsWith("data:") ? imageSrc : `/carousel/${imageSrc}`
               }
               alt={`Slide ${index + 1}`}
             />
