@@ -63,7 +63,7 @@ WHERE
         WHERE id_producto = pr.id_producto AND p.stock > 0 AND p.deshabilitado = 0
     ) `
 
-    let sqlParteFinal = ` group by pr.id_producto,p.deposito,pro.id_proveedor, p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor`
+    let sqlParteFinal = ` group by pr.id_producto,p.deposito,p.oferta,pro.id_proveedor, p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor`
     const filtros = []
     const parametros = []
 
@@ -87,7 +87,7 @@ WHERE
 
     const oferta = req.query.oferta;
     if (oferta != undefined) {
-        filtros.push("pr.oferta = ?")
+        filtros.push("p.oferta = ?")
         parametros.push(oferta)
     }
     const precio_gt = req.query.precio_gt;
@@ -256,7 +256,7 @@ WHERE
         FROM precios 
         WHERE id_producto = pr.id_producto
         ) AND pr.id_producto = ? AND p.deshabilitado = 0
-        group by pr.id_producto ,p.stock,p.precio_dolar, p.deposito,p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor;`, [id])
+        group by pr.id_producto ,p.stock,p.oferta,p.precio_dolar, p.deposito,p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pr.alto,pr.ancho,pr.largo,pro.nombre_proveedor;`, [id])
 
     res.status(200).send({ datos:resultado })
 })
