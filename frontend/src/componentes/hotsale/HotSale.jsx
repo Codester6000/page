@@ -39,6 +39,7 @@ export default function HotSaleCard() {
       setAlerta(true);
     } catch (error) {
       navigate("/login");
+      throw new Error("Error al agregar producto al carrito",error);
     }
   };
 
@@ -47,7 +48,7 @@ export default function HotSaleCard() {
   const getProductos = async () => {
     try {
       const response = await fetch(
-        `${url}/productos?oferta=0&limit=100&offset=0`
+        `${url}/productos?oferta=1&limit=100&offset=0`
       );
       const data = await response.json();
       setProductos(data.productos);
