@@ -14,6 +14,7 @@ productosRouter.get("/",validarQuerysProducto(), verificarValidaciones, async (r
     pr.peso,pr.garantia_meses,
     pr.codigo_fabricante,
     pr.usado,
+    p.oferta,
     (SELECT JSON_ARRAYAGG(nombre_categoria)
         FROM (
             SELECT DISTINCT c.nombre_categoria
@@ -82,6 +83,12 @@ WHERE
     if(usado != undefined) {
         filtros.push("pr.usado = ?")
         parametros.push(usado);
+    }
+
+    const oferta = req.query.oferta;
+    if (oferta != undefined) {
+        filtros.push("pr.oferta = ?")
+        parametros.push(oferta)
     }
     const precio_gt = req.query.precio_gt;
     if (precio_gt != undefined) {
