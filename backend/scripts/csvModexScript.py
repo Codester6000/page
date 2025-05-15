@@ -49,7 +49,7 @@ def extraer_columnas_csv(ruta_csv):
             peso = float(fila["Peso (Kg)"].replace(',','.'))
             codigo_fabricante = fila["ID"]
             marca = fila['Marca']
-            sub_categoria = "a"
+            sub_categoria = "General"
             iva = float(fila['Alicuota IVA'].replace(',','.').replace('%',''))
             proveedor = "Modex"
             categoria = fila["Categoría"]
