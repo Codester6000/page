@@ -9,6 +9,10 @@ Modex is a full-stack e-commerce application built with modern web technologies.
 - Express.js
 - MySQL
 - RESTful API
+- JWT
+-Custom pc builder
+- Modo - MercadoPago - getNet payments 
+
 
 ### Frontend
 - React
