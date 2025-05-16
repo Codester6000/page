@@ -12,14 +12,19 @@ const Carousel = () => {
   const [selectedFiles, setSelectedFiles] = useState({});
 
   const mobileImages = [
-    "11-mobile.png",
-    "1-mobile.png",
-    "3-mobile.png",
-    "7-mobile.png",
-    "8-mobile.png",
-    "10-mobile.png",
+    { src: "11-mobile.png", url: "/productos/hotsale" },
+    { src: "1-mobile.png", url: "" },
+    { src: "3-mobile.png", url: "" },
+    { src: "7-mobile.png", url: "" },
+    { src: "8-mobile.png", url: "" },
+    { src: "10-mobile.png", url: "" },
   ];
-  const desktopImages = ["11.png","6.png", "7.png", "8.png"];
+  const desktopImages = [
+    { src: "11.png", url: "/productos/hotsale" },
+    { src: "6.png", url: "" },
+    { src: "7.png", url: "" },
+    { src: "8.png", url: "" },
+  ];
 
   useEffect(() => {
     const handleResize = () => {
@@ -39,7 +44,7 @@ const Carousel = () => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const newImages = [...images];
-      newImages[index] = reader.result;
+      newImages[index] = { ...newImages[index], src: reader.result };
       setImages(newImages);
 
       const updatedFiles = { ...selectedFiles, [index]: file };
@@ -64,16 +69,17 @@ const Carousel = () => {
           disableOnInteraction: false,
         }}
       >
-        
-        {images.map((imageSrc, index) => (
+        {images.map((image, index) => (
           <SwiperSlide key={index} style={{ position: "relative" }}>
-            <img
-              className="imgCR"
-              src={
-                imageSrc.startsWith("data:") ? imageSrc : `/carousel/${imageSrc}`
-              }
-              alt={`Slide ${index + 1}`}
-            />
+            <a href={image.url || "#"}>
+              <img
+                className="imgCR"
+                src={
+                  `/carousel/${image.src}`
+                }
+                alt={`Slide ${index + 1}`}
+              />
+            </a>
 
             {isAdmin && (
               <div style={{ position: "absolute", top: 10, right: 10 }}>

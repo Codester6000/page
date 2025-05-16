@@ -54,7 +54,7 @@ export default function ProductCard() {
   const { sesion, logout } = useAuth();
   const [alerta, setAlerta] = useState(false);
   const [alertaFav, setAlertaFav] = useState(false);
-  const [orden, setOrden] = useState(searchParams.get("orden") || "");
+  const [orden, setOrden] = useState(searchParams.get("order") || "");
   const esAdmin = sesion && (sesion.rol === "admin" || sesion.rol === 2);
   const [openEditar, setOpenEditar] = useState(false);
   const [productoEditando, setProductoEditando] = useState(null);
@@ -69,7 +69,7 @@ export default function ProductCard() {
     if (precioMax) query += `&precio_lt=${precioMax}`;
     if (categoria) query += `&categoria=${categoria}`;
     if (nombre) query += `&nombre=${nombre}`;
-    if (orden) query += `&orden=${orden}`;
+    if (orden) query += `&order=${orden}`;
     return query;
   };
 
@@ -136,7 +136,7 @@ export default function ProductCard() {
     if (categoria) nuevosParams.set("categoria", categoria);
     if (precioMin) nuevosParams.set("precioMin", precioMin);
     if (precioMax) nuevosParams.set("precioMax", precioMax);
-    if (orden) nuevosParams.set("orden", orden);
+    if (orden) nuevosParams.set("order", orden); // <-- importante
     setPagina(1);
     setSearchParams(nuevosParams);
   };
@@ -155,7 +155,7 @@ export default function ProductCard() {
     const categoriaParam = searchParams.get("categoria");
     const precioMinParam = searchParams.get("precioMin");
     const precioMaxParam = searchParams.get("precioMax");
-    const ordenParam = searchParams.get("orden");
+    const ordenParam = searchParams.get("order"); // <-- importante
 
     if (ordenParam !== orden) setOrden(ordenParam || "");
     if (nombreParam !== nombre) setNombre(nombreParam || "");
@@ -363,14 +363,14 @@ export default function ProductCard() {
                     </div>
 
                     <div className="badge">
-                    {producto.deposito == "CBA" ? (
-                      <img src="/badges/HOTSALE.png" alt="" />
-                    ) : producto.deposito == "LUG" ? (
-                      <img src="/badges/HOTSALE.png" alt="" />
-                    ) : (
-                      <img src="/badges/LOCAL.png" alt="" />
-                    )}{" "}
-                  </div>
+                      {producto.deposito == "CBA" ? (
+                        <img src="/badges/HOTSALE.png" alt="" />
+                      ) : producto.deposito == "LUG" ? (
+                        <img src="/badges/HOTSALE.png" alt="" />
+                      ) : (
+                        <img src="/badges/LOCAL.png" alt="" />
+                      )}{" "}
+                    </div>
 
                     {esAdmin && (
                       <IconButton
