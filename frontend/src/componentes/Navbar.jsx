@@ -12,16 +12,13 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import CustomizedInputBase from "./CustomizedInputBase";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import PersonIcon from "@mui/icons-material/Person";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useState } from "react";
 import "../styles/navBar.css";
 import MenuNavbar from "./MenuNavbar";
 import { AuthStatus } from "../Auth";
-import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
-  const navigate = useNavigate();
   const [abierto, setAbierto] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -58,57 +55,59 @@ export default function Navbar() {
             <MenuNavbar />
           </Drawer>
 
-          <img
-            src="/modex.png"
-            alt="logo modex"
-            onClick={() => navigate("/")}
-            style={{
-              width: "150px",
-              height: "auto",
-              padding: "15px",
-              paddingRight: "10px",
-              filter: "brightness(0) invert(1)",
-              cursor: "pointer",
-            }}
-          />
+          <a href="/" style={{ textDecoration: "none" }}>
+            <img
+              src="/modex.png"
+              alt="logo modex"
+              style={{
+                width: "150px",
+                height: "auto",
+                padding: "15px",
+                paddingRight: "10px",
+                filter: "brightness(0) invert(1)",
+                cursor: "pointer",
+              }}
+            />
+          </a>
 
           <CustomizedInputBase />
           <AuthStatus />
 
-          <IconButton
-            onClick={() => navigate("/favorito")}
-            sx={{
-              ml: 2,
-              backgroundColor: "#F8F8F8",
-              borderRadius: 20,
-              height: "45px",
-              width: "45px",
-              padding: "5px",
-              objectFit: "cover",
-              color: "black",
-            }}
-          >
-            <FavoriteIcon color="inherit" />
-          </IconButton>
+          <a href="/favorito" style={{ textDecoration: "none" }}>
+            <IconButton
+              sx={{
+                ml: 2,
+                backgroundColor: "#F8F8F8",
+                borderRadius: 20,
+                height: "45px",
+                width: "45px",
+                padding: "5px",
+                objectFit: "cover",
+                color: "black",
+              }}
+            >
+              <FavoriteIcon color="inherit" />
+            </IconButton>
+          </a>
 
-          <IconButton
-            onClick={() => navigate("/carrito")}
-            sx={{
-              ml: 2,
-              backgroundColor: "#F8F8F8",
-              borderRadius: 50,
-              height: "45px",
-              width: "45px",
-              padding: "5px",
-              objectFit: "cover",
-              color: "black",
-            }}
-          >
-            <ShoppingCartIcon color="inherit" />
-          </IconButton>
+          <a href="/carrito" style={{ textDecoration: "none" }}>
+            <IconButton
+              sx={{
+                ml: 2,
+                backgroundColor: "#F8F8F8",
+                borderRadius: 50,
+                height: "45px",
+                width: "45px",
+                padding: "5px",
+                objectFit: "cover",
+                color: "black",
+              }}
+            >
+              <ShoppingCartIcon color="inherit" />
+            </IconButton>
+          </a>
         </Toolbar>
 
-        {/* NAV LINKS SOLO EN DESKTOP */}
         {!isMobile && (
           <div className="navLinksPc">
             <div className="linkPc">
@@ -133,35 +132,27 @@ export default function Navbar() {
                 onClose={handleClose}
                 MenuListProps={{ "aria-labelledby": "productos-button" }}
               >
-                <MenuItem
-                  onClick={() => {
-                    navigate("/productos");
-                    handleClose();
-                  }}
-                >
+                <MenuItem component="a" href="/productos" onClick={handleClose}>
                   Todos los productos
                 </MenuItem>
                 <MenuItem
-                  onClick={() => {
-                    navigate("/productos/usados");
-                    handleClose();
-                  }}
+                  component="a"
+                  href="/productos/usados"
+                  onClick={handleClose}
                 >
                   Usados
                 </MenuItem>
                 <MenuItem
-                  onClick={() => {
-                    navigate("/productos/nuevos");
-                    handleClose();
-                  }}
+                  component="a"
+                  href="/productos/nuevos"
+                  onClick={handleClose}
                 >
                   Nuevos
                 </MenuItem>
                 <MenuItem
-                  onClick={() => {
-                    navigate("/productos/hotsale");
-                    handleClose();
-                  }}
+                  component="a"
+                  href="/productos/hotsale"
+                  onClick={handleClose}
                 >
                   Hot sale
                 </MenuItem>

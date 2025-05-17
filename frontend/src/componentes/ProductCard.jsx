@@ -26,7 +26,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 
 import editSvg from "../assets/edit.svg";
 import { useAuth } from "../Auth";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 import "../producto.css";
 import SkeletonProd from "./SkeletonProd";
@@ -61,7 +61,6 @@ export default function ProductCard() {
   const [formEdit, setFormEdit] = useState({});
   const [carrito, setCarrito] = useState([]);
   const [favorito, setFavorito] = useState([]);
-  const navigate = useNavigate();
 
   const construirQuery = () => {
     let query = `offset=${(pagina - 1) * itemPorPagina}&limit=${itemPorPagina}`;
@@ -88,7 +87,7 @@ export default function ProductCard() {
         setCarrito([...carrito, producto_id]);
       }
     } catch (error) {
-      navigate("/login");
+      window.location.href = "/login";
     }
   };
 
@@ -107,7 +106,7 @@ export default function ProductCard() {
         setFavorito([...favorito, producto_id]);
       }
     } catch (error) {
-      navigate("/login");
+      window.location.href = "/login";
     }
   };
 
@@ -136,7 +135,7 @@ export default function ProductCard() {
     if (categoria) nuevosParams.set("categoria", categoria);
     if (precioMin) nuevosParams.set("precioMin", precioMin);
     if (precioMax) nuevosParams.set("precioMax", precioMax);
-    if (orden) nuevosParams.set("order", orden); // <-- importante
+    if (orden) nuevosParams.set("order", orden);
     setPagina(1);
     setSearchParams(nuevosParams);
   };
@@ -155,7 +154,7 @@ export default function ProductCard() {
     const categoriaParam = searchParams.get("categoria");
     const precioMinParam = searchParams.get("precioMin");
     const precioMaxParam = searchParams.get("precioMax");
-    const ordenParam = searchParams.get("order"); // <-- importante
+    const ordenParam = searchParams.get("order");
 
     if (ordenParam !== orden) setOrden(ordenParam || "");
     if (nombreParam !== nombre) setNombre(nombreParam || "");
@@ -325,21 +324,31 @@ export default function ProductCard() {
                     maxHeight="200px"
                     sx={{ position: "relative" }}
                   >
-                    <img
-                      src={
-                        producto.url_imagenes[producto.url_imagenes.length - 1]
-                      }
-                      alt={producto.nombre}
-                      loading="lazy"
+                    <a
+                      href={`/producto/${producto.id_producto}`}
                       style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
+                        position: "absolute",
+                        inset: 0,
+                        zIndex: 2,
                       }}
-                      onClick={() =>
-                        navigate(`/producto/${producto.id_producto}`)
-                      }
-                    />
+                    >
+                      <img
+                        src={
+                          producto.url_imagenes[
+                            producto.url_imagenes.length - 1
+                          ]
+                        }
+                        alt={producto.nombre}
+                        loading="lazy"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          pointerEvents: "none",
+                        }}
+                      />
+                    </a>
+
                     <div
                       style={{
                         position: "absolute",
@@ -355,6 +364,7 @@ export default function ProductCard() {
                         borderRadius: "4px",
                         fontSize: "13px",
                         fontWeight: "bold",
+                        zIndex: 3,
                       }}
                     >
                       {producto.nombre.toLowerCase().includes("usado")
@@ -362,14 +372,14 @@ export default function ProductCard() {
                         : " NUEVO"}
                     </div>
 
-                    <div className="badge">
+                    <div className="badge" style={{ zIndex: 3 }}>
                       {producto.deposito == "CBA" ? (
                         <img src="/badges/HOTSALE.png" alt="" />
                       ) : producto.deposito == "LUG" ? (
                         <img src="/badges/HOTSALE.png" alt="" />
                       ) : (
                         <img src="/badges/LOCAL.png" alt="" />
-                      )}{" "}
+                      )}
                     </div>
 
                     {esAdmin && (
@@ -391,6 +401,7 @@ export default function ProductCard() {
                           backgroundColor: "rgba(255, 255, 255, 0.8)",
                           "&:hover": { backgroundColor: "white" },
                           boxShadow: 1,
+                          zIndex: 4,
                         }}
                       >
                         <img
