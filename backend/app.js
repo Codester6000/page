@@ -12,6 +12,8 @@ import getNetRouter from "./checkoutGetNet.js";
 
 import routerMP from "./checkoutMP.js";
 import { categoriasRouter } from "./categorias.js";
+import transferenciasRouter from "./transferencias.js";
+
 
 const PUERTO = 3000;
 const HOST = "0.0.0.0";
@@ -30,7 +32,7 @@ let corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 app.use("/auth", authRouter);
 
@@ -45,6 +47,7 @@ app.use("/checkout", modoCheckoutRouter);
 app.use("/checkoutMP", routerMP);
 app.use("/checkoutGN", getNetRouter);
 app.use("/categorias", categoriasRouter);
+app.use("/transferencias", transferenciasRouter);
 app.get("/", (req, res) => {
   res.send("hola mundo");
 });
