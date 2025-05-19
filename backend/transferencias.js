@@ -65,11 +65,15 @@ transferenciasRouter.post('/single', validarJwt, upload.single("imagenTransferen
         }
         const id_usuario = req.user.userId
         const id_carrito = await obtener_id_carrito(id_usuario)
-        console.log(id_carrito)        
         const total_carrito = await obtenerTotalCarrito(id_carrito);
-        console.log(total_carrito)
+        const resultado = await transferenciaApendiente(id_carrito, total_carrito);
+        console.log(resultado)
         
-        res.send("ok");
+        if (resultado){
+            return res.status(201).send("Carrito actualizado a pendiente.");
+            
+        }
+        return res.status(400).send("Hubo un error con tu solicitud.")
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
