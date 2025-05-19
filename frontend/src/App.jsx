@@ -26,7 +26,6 @@ import Perfil from "./componentes/profile/perfil";
 import PreguntasFrecuentes from "./componentes/faqs/PreguntasFrecuentes";
 import Metricas from "./componentes/metricas/Metricas";
 import HotSale from "./componentes/hotsale/HotSale";
-import FormularioArchivo from "./componentes/Prueba";
 
 function App() {
   const { sesion, logout } = useAuth();
@@ -114,12 +113,7 @@ function App() {
           }
         />
         <Route 
-        path="/formulario"
-        element= {
-          <AuthPage>
-            <FormularioArchivo />
-          </AuthPage>
-        }
+
         />
         <Route path="/thank-you" element={<ThankYou />} />
         <Route path="/desarrollo" element={<DesarrolloWeb />} />

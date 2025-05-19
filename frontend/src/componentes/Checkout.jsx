@@ -28,7 +28,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { formCheckoutSchema } from "../validations/formcheckout";
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
 import { motion } from "framer-motion";
-import FormularioArchivo from "./Prueba";
+import FormularioArchivo from "./ComprobanteFormulario";
 
 const urlBack = import.meta.env.VITE_URL_BACK;
 const urlFront = "https://modex.com.ar";
@@ -121,24 +121,36 @@ const Checkout = () => {
   const [multiplicador, setMultiplicador] = useState(1);
   const [isArchivoModalOpen, setIsArchivoModalOpen] = useState(false);
   const { sesion } = useAuth();
-  const onSubmit = async (data) => {
-    console.log("entre");
-    const res = await fetch(`${urlBack}/usuarios/agregar-info`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${sesion.token}`,
-      },
-      body: JSON.stringify(data),
-    });
-    console.log(res);
-    console.log("eeee");
-    const resJson = await res.json();
-    console.log(resJson);
-    if (!res.ok) {
-      console.error("Error al enviar la información:", res.status);
+
+
+
+ const onSubmit = async (data) => {
+    console.log("Form data submitted:", data);
+    try {
+      const res = await fetch(`${urlBack}/usuarios/agregar-info`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sesion.token}`,
+        },
+        body: JSON.stringify(data),
+      });
+      
+      const resJson = await res.json();
+      
+      if (!res.ok) {
+        console.error("Error al enviar la información:", res.status);
+        return false; // Indicate failure
+      }
+      
+      console.log("Información enviada correctamente:", resJson);
+      return true; // Indicate success
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+      return false; // Indicate failure
     }
   };
+
   const getCarrito = async () => {
     try {
       const response = await fetch(`${urlBack}/carrito`, {
@@ -257,6 +269,27 @@ const Checkout = () => {
       console.log(error);
     }
   };
+
+  const handleTransferencia = handleSubmit(async (data) => {
+  const success = await onSubmit(data);
+  if (success) {
+    setIsArchivoModalOpen(true);
+  }
+});
+const handleGetnet = handleSubmit(async (data) => {
+  const success = await onSubmit(data);
+  if (success) {
+    handleGN();
+  }
+});
+
+const handlemp = handleSubmit(async (data) => {
+  const success = await onSubmit(data);
+  if (success) {
+    console.log('exito')
+  }
+});
+
   const handleGN = async () => {
     await new Promise((resolve) => setTimeout(resolve, 2000));
     window.open(linkGN);
@@ -274,17 +307,17 @@ const Checkout = () => {
   }, []);
 
   const handleExternalSubmit = () => {
-    productos.map((producto) => {
-      setNombreCompra(
-        producto.categorias + " " + producto.cantidad + " " + nombreCompra
-      );
-    });
+    // productos.map((producto) => {
+    //   setNombreCompra(
+    //     producto.categorias + " " + producto.cantidad + " " + nombreCompra
+    //   );
+    // });
     if (formRef.current) {
       formRef.current.dispatchEvent(
         new Event("submit", { bubbles: true, cancelable: true })
       );
     }
-    console.log(nombreCompra);
+    // console.log(nombreCompra);
   };
   const handleLinkLag = async () => {
     if (linkGN !== "") {
@@ -403,7 +436,7 @@ const Checkout = () => {
             Deja tus datos así podemos contactarte.
           </Typography>
 
-          <Box component="form" noValidate autoComplete="off">
+          <Box component="form" ref={formRef} noValidate autoComplete="off" onSubmit={handleExternalSubmit(onSubmit)} >
             <TextField
               label="Email"
               fullWidth
@@ -736,10 +769,7 @@ const Checkout = () => {
               variant="contained"
               color="success"
               disabled={!isValid}
-              onClick={() => {
-                handleExternalSubmit();
-                handleGN();
-              }}
+              onClick={handleGetnet}
               startIcon={<ShoppingCartCheckoutIcon />}
             >
               Link de Pago
@@ -751,10 +781,7 @@ const Checkout = () => {
               variant="contained"
               color="primary"
               disabled={!isValid}
-              onClick={() => {
-                handleExternalSubmit()
-                setIsArchivoModalOpen(true)
-              }}
+              onClick={handleTransferencia}
             >
               Enviar Comprobante
             </Button>
@@ -769,7 +796,7 @@ const Checkout = () => {
                 ? { opacity: 0, pointerEvents: "none" }
                 : { opacity: 1, disabled: false }
             }
-            onClick={() => handleExternalSubmit()}
+            onClick={handleSubmit(onSubmit)}
           >
             <Box mt={3}>
               <div id="wallet_container">
