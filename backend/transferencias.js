@@ -35,17 +35,39 @@ const transferenciaApendiente = async (id, total_a_pagar) => {
     return response?.affectedRows > 0;
 
 }
-const obtenerTotalCarrito = async(id_productos) => {
-    const sql = "SELECT SUM(p.precio_pesos_iva) FROM precios p INNER JOIN carrito_detalle cd ON p.id_producto = cd.id_producto WHERE id_carrito = ?; "
+const obtenerTotalCarrito = async(id_carrito) => {
+    const [results] = await db.execute("CALL get_total_carrito(?);",[id_carrito])
+    if (results && results.length > 0) {
+  const totalResult = results[0];
+  
+  if (totalResult && totalResult.length > 0) {
+    const total = totalResult[0].total_carrito;
+    return total;
+  } else {
+    console.log("No results found");
+    return null
+  }
+} else {
+  console.log("Error or no results from stored procedure");
+  return null; // or handle error as needed
+}
+}
+
+const obtener_id_carrito = async(id_usuario) => {
+    const sql = "SELECT id_carrito FROM carrito WHERE id_usuario = ? AND estado = 'activo';"
+    const [result] = await db.execute(sql,[id_usuario])
+    return result[0].id_carrito
 }
 transferenciasRouter.post('/single', validarJwt, upload.single("imagenTransferencia"), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
-        console.log(req.file);
-        const {id_carrito, id_productos} = req.body;
-        
+        const id_usuario = req.user.userId
+        const id_carrito = await obtener_id_carrito(id_usuario)
+        console.log(id_carrito)        
+        const total_carrito = await obtenerTotalCarrito(id_carrito);
+        console.log(total_carrito)
         
         res.send("ok");
     } catch (error) {
