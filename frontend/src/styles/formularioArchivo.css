@@ -1,0 +1,166 @@
+/* Modal background overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* When modal is active/visible */
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Modal container */
+.modal-container {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-width: 400px;
+  width: 90%;
+  transform: translateY(-20px);
+  transition: transform 0.3s ease;
+  margin-top: auto;
+  margin-bottom: auto;
+  max-height: 400px;
+  position: relative;
+}
+
+.modal-overlay.active .modal-container {
+  transform: translateY(0);
+}
+
+/* Modal header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  transition: color 0.2s ease;
+}
+
+.close-button:hover {
+  color: #333;
+}
+
+/* Transfer form styles */
+.formularioTransferencia {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formularioTransferencia input[type="file"] {
+  border: 2px dashed #ddd;
+  padding: 12px;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.formularioTransferencia input[type="file"]:hover {
+  border-color: #aaa;
+  background-color: #f0f0f0;
+}
+
+.formularioTransferencia input[type="file"]:focus {
+  outline: none;
+  border-color: #0088cc;
+}
+
+.formularioTransferencia button {
+  background-color: #0088cc;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.formularioTransferencia button:hover {
+  background-color: #006699;
+}
+
+.formularioTransferencia button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 136, 204, 0.3);
+}
+
+/* For upload button custom styling (optional) */
+.file-upload-container {
+  position: relative;
+}
+
+.file-upload-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  background-color: #f9f9f9;
+  border: 2px dashed #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.file-upload-label:hover {
+  background-color: #f0f0f0;
+  border-color: #aaa;
+}
+
+.file-upload-label span {
+  color: #666;
+}
+
+.file-upload-container input[type="file"] {
+  position: absolute;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.selected-file {
+  font-size: 14px;
+  color: #666;
+  margin-top: 8px;
+  word-break: break-all;
+}

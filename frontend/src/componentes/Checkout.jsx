@@ -28,6 +28,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { formCheckoutSchema } from "../validations/formcheckout";
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
 import { motion } from "framer-motion";
+import FormularioArchivo from "./Prueba";
 
 const urlBack = import.meta.env.VITE_URL_BACK;
 const urlFront = "https://modex.com.ar";
@@ -118,6 +119,7 @@ const Checkout = () => {
   const [didMount, setDidMount] = useState(false);
   const [totalMP, setTotalMP] = useState(0);
   const [multiplicador, setMultiplicador] = useState(1);
+  const [isArchivoModalOpen, setIsArchivoModalOpen] = useState(false);
   const { sesion } = useAuth();
   const onSubmit = async (data) => {
     console.log("entre");
@@ -388,6 +390,8 @@ const Checkout = () => {
       console.error("Error en la solicitud:", error);
     }
   };
+
+  
   return (
     <div className="containerCheckout">
       <div className="parteIzq">
@@ -747,10 +751,10 @@ const Checkout = () => {
               variant="contained"
               color="primary"
               disabled={!isValid}
-              onClick={() => handleExternalSubmit()}
-              component="a"
-              href="https://api.whatsapp.com/send/?phone=543804353826&amp;text=Hola,+realice+una+compra+via+transferencia+por+la+pagina!&amp;type=phone_number&amp;app_absent=0"
-              target="_blank"
+              onClick={() => {
+                handleExternalSubmit()
+                setIsArchivoModalOpen(true)
+              }}
             >
               Enviar Comprobante
             </Button>
@@ -775,6 +779,10 @@ const Checkout = () => {
           </motion.div>
         )}
       </Paper>
+      <FormularioArchivo 
+      isModalOpen={isArchivoModalOpen} 
+      setIsModalOpen={setIsArchivoModalOpen}
+    />
     </div>
   );
 };
