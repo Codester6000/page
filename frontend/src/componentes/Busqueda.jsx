@@ -9,6 +9,11 @@ import IconButton from "@mui/joy/IconButton";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Pagination from "@mui/material/Pagination";
+import {
+  Alert,
+  Snackbar,
+} from "@mui/material";
+
 
 import { useAuth } from "../Auth";
 import { SearchContext } from "../searchContext";
@@ -21,9 +26,12 @@ export default function ProductCard() {
   const itemPorPagina = 30;
   const [totales, setTotales] = useState(0);
   const [isMobile, setIsMobile] = useState(true);
+  const [alerta, setAlerta] = useState(false);
+    const [alertaFav, setAlertaFav] = useState(false);
   const navigate = useNavigate();
   const { sesion } = useAuth();
-  const agregarCarrito = async (producto_id) => {
+  const agregarCarrito = async (e,producto_id) => {
+    e.stopPropagation()
     try {
       const response = await fetch(`${url}/carrito`, {
         method: "POST",
@@ -46,7 +54,8 @@ export default function ProductCard() {
     }
   };
 
-  const agregarFavorito = async (producto_id) => {
+  const agregarFavorito = async (e,producto_id) => {
+    e.stopPropagation()
     try {
       const response = await fetch(`${url}/favorito`, {
         method: "POST",
@@ -221,6 +230,7 @@ export default function ProductCard() {
                         size="large"
                         sx={{
                           my: 4,
+                          zIndex:1000,
                           ml: 2,
                           height: 45,
                           width: 45,
@@ -236,7 +246,10 @@ export default function ProductCard() {
                             backgroundColor: "#9e2590",
                           },
                         }}
-                        onClick={() => agregarCarrito(producto.id_producto)}
+                        onClick={(e) => {
+                          agregarCarrito(e,producto.id_producto)
+                          setAlerta(true);
+                        }}
                       >
                         <AddShoppingCartIcon />
                       </IconButton>
@@ -259,7 +272,10 @@ export default function ProductCard() {
                             backgroundColor: "#9e2590",
                           },
                         }}
-                        onClick={() => agregarFavorito(producto.id_producto)}
+                        onClick={(e) => {
+                          agregarFavorito(e,producto.id_producto)
+                          setAlertaFav(true)
+                        }}
                       >
                         <FavoriteIcon />
                       </IconButton>
@@ -272,7 +288,32 @@ export default function ProductCard() {
             <Typography>No se encontraron productos.</Typography>
           )}
         </Grid>
-
+                  <Snackbar
+                    open={alerta}
+                    autoHideDuration={2000}
+                    onClose={() => setAlerta(false)}
+                  >
+                    <Alert
+                      severity="success"
+                      icon={<AddShoppingCartIcon />}
+                      sx={{ backgroundColor: "#a111ad", color: "white" }}
+                    >
+                      El producto fue Añadido al Carrito
+                    </Alert>
+                  </Snackbar>
+                  <Snackbar
+                    open={alertaFav}
+                    autoHideDuration={2000}
+                    onClose={() => setAlertaFav(false)}
+                  >
+                    <Alert
+                      severity="success"
+                      icon={<FavoriteIcon />}
+                      sx={{ backgroundColor: "#a111ad", color: "white" }}
+                    >
+                      El producto fue Añadido a Favorito
+                    </Alert>
+                  </Snackbar>
         <Pagination
           count={Math.ceil(totales / itemPorPagina)}
           pagina={pagina}

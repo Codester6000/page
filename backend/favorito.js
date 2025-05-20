@@ -1,7 +1,7 @@
 import express from "express"
 import { db } from "./database/connectionMySQL.js"
 import { validarJwt } from "./auth.js"
-import { validarBodyCarrito,validarId,verificarValidaciones} from "./middleware/validaciones.js"
+import { validarBodyCarrito,validarBodyFavorito,validarId,verificarValidaciones} from "./middleware/validaciones.js"
 const favoritoRouter = express.Router()
 
 favoritoRouter.get('/',validarJwt,async (req,res) =>{
@@ -62,7 +62,7 @@ group by pr.id_producto, p.stock,p.precio_dolar, p.precio_dolar_iva,p.iva,p.prec
     res.status(200).send({favoritos:resultado})
 })
 
-favoritoRouter.post('/',validarJwt,validarBodyCarrito(),verificarValidaciones, async (req,res) =>{
+favoritoRouter.post('/',validarJwt,validarBodyFavorito(),verificarValidaciones, async (req,res) =>{
     const {id_producto } = req.body;
     const parametros = [req.user.userId,id_producto];
     const sql = 'INSERT INTO favoritos (id_usuario,id_producto) VALUES (?,?);';
