@@ -106,6 +106,22 @@ export default function MenuNavbar() {
           </ListItem>
         ))}
 
+        {/* Productos*/}
+        <ListItem sx={{ my: 1 }}>
+          <ListItemButton
+            sx={{
+              backgroundColor: "#e66c1d",
+              color: "#fff",
+              borderRadius: "10px",
+              "&:hover": {
+                backgroundColor: "#ff832b",
+              },
+            }}
+            onClick={() => navigate(`/productos`)}
+          >
+            Productos
+          </ListItemButton>
+        </ListItem>
         {/* Preguntas frecuentes */}
         <ListItem sx={{ my: 1 }}>
           <ListItemButton
@@ -168,7 +184,6 @@ export default function MenuNavbar() {
               </List>
             </Collapse>
           </ListItem>
-
           <ListItem sx={{ mt: 1 }}>
             <ListItemButton
               sx={{
