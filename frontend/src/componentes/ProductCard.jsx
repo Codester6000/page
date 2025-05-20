@@ -364,9 +364,9 @@ export default function ProductCard() {
 
                     <div className="badge">
                       {producto.deposito == "CBA" ? (
-                        <img src="/badges/HOTSALE.png" alt="" />
+                        <img src="/badges/24HS.png" alt="" />
                       ) : producto.deposito == "LUG" ? (
-                        <img src="/badges/HOTSALE.png" alt="" />
+                        <img src="/badges/5_DIAS.png" alt=""/>
                       ) : (
                         <img src="/badges/LOCAL.png" alt="" />
                       )}{" "}
