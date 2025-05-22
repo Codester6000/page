@@ -26,7 +26,8 @@ import Perfil from "./componentes/profile/perfil";
 import PreguntasFrecuentes from "./componentes/faqs/PreguntasFrecuentes";
 import Metricas from "./componentes/metricas/Metricas";
 import HotSale from "./componentes/hotsale/HotSale";
-
+import ProductosUsados from "./componentes/usado/ProductosUsados";
+import ProductosNuevos from "./componentes/nuevo/ProductosNuevos";
 function App() {
   const { sesion, logout } = useAuth();
   const navigate = useNavigate();
@@ -51,6 +52,8 @@ function App() {
         <Route path="/productos" element={<Inicio />} />
         <Route path="/producto/:id" element={<Producto />} />
         <Route path="/productos/hotsale" element={<HotSale />} />
+        <Route path="/productos/usados" element={<ProductosUsados />} />
+        <Route path="/productos/nuevos" element={<ProductosNuevos />} />
 
         <Route path="/" element={<Portada />} />
         <Route path="/armador" element={<Armadorpc />} />
