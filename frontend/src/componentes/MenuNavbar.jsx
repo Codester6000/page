@@ -1,4 +1,3 @@
-import * as React from "react";
 import Box from "@mui/joy/Box";
 import List from "@mui/joy/List";
 import ListItem from "@mui/joy/ListItem";
@@ -105,6 +104,98 @@ export default function MenuNavbar() {
             </div>
           </ListItem>
         ))}
+
+        {/* Productos */}
+        <ListItem nested sx={{ my: 1 }}>
+          <ListItemButton
+            onClick={() => toggleCategory("Productos")}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              color: "white",
+            }}
+          >
+            <Typography
+              sx={{
+                fontWeight: openCategory === "Productos" ? "bold" : null,
+                color: "white",
+              }}
+            >
+              Productos
+            </Typography>
+            <KeyboardArrowDown
+              sx={{
+                color: "inherit",
+                transition: "transform 0.3s",
+                transform:
+                  openCategory === "Productos"
+                    ? "rotate(0deg)"
+                    : "rotate(-90deg)",
+              }}
+            />
+          </ListItemButton>
+
+          <div
+            style={{
+              maxHeight: openCategory === "Productos" ? `${height}px` : "0",
+              overflow: "hidden",
+              transition: "max-height 0.3s ease-out",
+            }}
+          >
+            {openCategory === "Productos" && (
+              <List sx={{ "--ListItem-paddingY": "8px" }}>
+                <ListItem>
+                  <ListItemButton
+                    sx={{
+                      paddingLeft: "40px",
+                      backgroundColor: "#e66c1d",
+                      color: "#fff",
+                      borderRadius: "10px",
+                      "&:hover": {
+                        backgroundColor: "#ff832b",
+                      },
+                    }}
+                    onClick={() => navigate("/productos/usados")}
+                  >
+                    Usados
+                  </ListItemButton>
+                </ListItem>
+                <ListItem>
+                  <ListItemButton
+                    sx={{
+                      paddingLeft: "40px",
+                      backgroundColor: "#e66c1d",
+                      color: "#fff",
+                      borderRadius: "10px",
+                      "&:hover": {
+                        backgroundColor: "#ff832b",
+                      },
+                    }}
+                    onClick={() => navigate("/productos/nuevos")}
+                  >
+                    Nuevos
+                  </ListItemButton>
+                </ListItem>
+                <ListItem>
+                  <ListItemButton
+                    sx={{
+                      paddingLeft: "40px",
+                      backgroundColor: "#e66c1d",
+                      color: "#fff",
+                      borderRadius: "10px",
+                      "&:hover": {
+                        backgroundColor: "#ff832b",
+                      },
+                    }}
+                    onClick={() => navigate("/productos")}
+                  >
+                    Todos los productos
+                  </ListItemButton>
+                </ListItem>
+              </List>
+            )}
+          </div>
+        </ListItem>
 
         {/* Preguntas frecuentes */}
         <ListItem sx={{ my: 1 }}>
