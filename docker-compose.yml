@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_modex
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: schemamodex
+      MYSQL_USER: modex
+      MYSQL_PASSWORD: modex123
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./backend/database/schemaDb.sql:/docker-entrypoint-initdb.d/schema.sql
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: backend_modex
+    restart: always
+    environment:
+      DB_HOST: mysql
+      DB_USER: modex
+      DB_PASS: modex123
+      DB_NAME: schemamodex
+    ports:
+      - "3000:3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    container_name: frontend_modex
+    restart: always
+    environment:
+      VITE_URL_BACK: http://backend:3000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend 
