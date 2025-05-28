@@ -16,6 +16,7 @@ import NuevoProducto from "./componentes/nuevoProducto";
 import Checkout from "./componentes/Checkout";
 import Ventas from "./componentes/ventas";
 import ThankYou from "./componentes/ThankYou";
+import IngresoMantenimiento from "./componentes/mantenimiento/ingresoMantenimiento";
 import DesarrolloWeb from "./componentes/DesarrolloWeb";
 import Portada from "./componentes/Portada";
 import Producto from "./componentes/Producto";
@@ -28,6 +29,7 @@ import Metricas from "./componentes/metricas/Metricas";
 import HotSale from "./componentes/hotsale/HotSale";
 import ProductosUsados from "./componentes/usado/ProductosUsados";
 import ProductosNuevos from "./componentes/nuevo/ProductosNuevos";
+import CargarProducto from "./componentes/mantenimiento/cargaDeProducto";
 function App() {
   const { sesion, logout } = useAuth();
   const navigate = useNavigate();
@@ -49,11 +51,18 @@ function App() {
         <Navbar />
       </header>
       <Routes>
+
+        {/* Producots */}
         <Route path="/productos" element={<Inicio />} />
         <Route path="/producto/:id" element={<Producto />} />
         <Route path="/productos/hotsale" element={<HotSale />} />
         <Route path="/productos/usados" element={<ProductosUsados />} />
         <Route path="/productos/nuevos" element={<ProductosNuevos />} />
+        {/*-------------------------------------------------------------  */}
+        {/* Mantenimiento */}
+        <Route path="/mantenimiento" element={<IngresoMantenimiento />} />
+        <Route path="/mantenimiento/ingreso" element={<AuthPage><CargarProducto /></AuthPage>} />
+        {/*-------------------------------------------------------------  */}
 
         <Route path="/" element={<Portada />} />
         <Route path="/armador" element={<Armadorpc />} />

@@ -259,7 +259,8 @@ export default function MenuNavbar() {
               </List>
             </Collapse>
           </ListItem>
-
+        
+        {/* BOTON DE CARGA DE PRODUCTOS */}
           <ListItem sx={{ mt: 1 }}>
             <ListItemButton
               sx={{
@@ -273,6 +274,22 @@ export default function MenuNavbar() {
               onClick={() => navigate(`/cargar-producto`)}
             >
               Cargar producto
+            </ListItemButton>
+          </ListItem>
+          {/* Ingreso de mantenimiento */}
+          <ListItem sx={{ mt: 1 }}>
+            <ListItemButton
+              sx={{
+                backgroundColor: "#e66c1d",
+                color: "#fff",
+                borderRadius: "10px",
+                "&:hover": {
+                  backgroundColor: "#ff832b",
+                },
+              }}
+              onClick={() => navigate(`/Mantenimiento/ingreso`)}
+            >
+              Ingreso de mantenimiento
             </ListItemButton>
           </ListItem>
         </AuthRol>

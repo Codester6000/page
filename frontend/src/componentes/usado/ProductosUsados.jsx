@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Carousel from "../Carousel";
 import {
   Container,
   TextField,
@@ -135,6 +136,9 @@ export default function ProductCardUsados() {
   };
 
   return (
+
+    <>
+    <Carousel/>
     <Container sx={{ mt: 10 }}>
       <Typography level="h2" sx={{ mb: 2 }}>
         Productos Usados
@@ -384,5 +388,6 @@ export default function ProductCardUsados() {
         </Alert>
       </Snackbar>
     </Container>
+    </>
   );
 }

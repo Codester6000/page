@@ -163,7 +163,7 @@ export default function Navbar() {
               <a href="/armador">ARMA TU PC</a>
             </div>
             <div className="linkPc">
-              <a href="/desarrollo">DESARROLLO</a>
+              <a href="/desarrollo">DESARROLLO WEB</a>
             </div>
           </div>
         )}
