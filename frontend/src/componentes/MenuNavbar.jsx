@@ -31,9 +31,7 @@ export default function MenuNavbar() {
   };
 
   return (
-    <Box
-      sx={{ width: 320, pl: "24px", bgcolor: "#e66c1d", minHeight: "100vh" }}
-    >
+    <Box sx={{ width: 320, pl: "24px", bgcolor: "#e66c1d", minHeight: "100vh" }}>
       <List
         size="sm"
         sx={{
@@ -43,69 +41,131 @@ export default function MenuNavbar() {
           "--ListItem-paddingLeft": "21px",
         }}
       >
-        {Object.entries(data).map(([category, subcategories]) => (
-          <ListItem key={category} nested sx={{ my: 1 }}>
-            <ListItemButton
-              onClick={() => toggleCategory(category)}
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                color: "white",
-              }}
-            >
-              <Typography
-                level="inherit"
+        {/* Render dinámico sin AuthRol */}
+        {Object.entries(data).map(([category, subcategories]) => {
+          if (category === "Productos") return null; // Sección especial más abajo
+          if (category === "Área técnica") {
+            // Pública
+            return (
+              <ListItem key={category} nested sx={{ my: 1 }}>
+                <ListItemButton
+                  onClick={() => toggleCategory(category)}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    color: "white",
+                  }}
+                >
+                  <Typography
+                    level="inherit"
+                    sx={{ fontWeight: openCategory === category ? "bold" : null }}
+                  >
+                    {category}
+                  </Typography>
+                  <KeyboardArrowDown
+                    sx={{
+                      color: "inherit",
+                      transition: "transform 0.3s",
+                      transform:
+                        openCategory === category ? "rotate(0deg)" : "rotate(-90deg)",
+                    }}
+                  />
+                </ListItemButton>
+                <div
+                  style={{
+                    maxHeight: openCategory === category ? `${height}px` : "0",
+                    overflow: "hidden",
+                    transition: "max-height 0.3s ease-out",
+                  }}
+                >
+                  {openCategory === category && (
+                    <List sx={{ "--ListItem-paddingY": "8px" }}>
+                      {subcategories.map((subcategory) => (
+                        <ListItem key={subcategory}>
+                          <ListItemButton
+                            sx={{
+                              paddingLeft: "40px",
+                              backgroundColor: "#e66c1d",
+                              color: "#fff",
+                              borderRadius: "10px",
+                              "&:hover": {
+                                backgroundColor: "#ff832b",
+                              },
+                            }}
+                            onClick={() => navigate(`/${subcategory}`)}
+                          >
+                            {subcategory}
+                          </ListItemButton>
+                        </ListItem>
+                      ))}
+                    </List>
+                  )}
+                </div>
+              </ListItem>
+            );
+          }
+
+          // Otros ítems que no son Productos ni Área técnica
+          return (
+            <ListItem key={category} nested sx={{ my: 1 }}>
+              <ListItemButton
+                onClick={() => toggleCategory(category)}
                 sx={{
-                  fontWeight: openCategory === category ? "bold" : null,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  color: "white",
                 }}
               >
-                {category}
-              </Typography>
-              <KeyboardArrowDown
-                sx={{
-                  color: "inherit",
-                  transition: "transform 0.3s",
-                  transform:
-                    openCategory === category
-                      ? "rotate(0deg)"
-                      : "rotate(-90deg)",
+                <Typography
+                  level="inherit"
+                  sx={{ fontWeight: openCategory === category ? "bold" : null }}
+                >
+                  {category}
+                </Typography>
+                <KeyboardArrowDown
+                  sx={{
+                    color: "inherit",
+                    transition: "transform 0.3s",
+                    transform:
+                      openCategory === category ? "rotate(0deg)" : "rotate(-90deg)",
+                  }}
+                />
+              </ListItemButton>
+              <div
+                style={{
+                  maxHeight: openCategory === category ? `${height}px` : "0",
+                  overflow: "hidden",
+                  transition: "max-height 0.3s ease-out",
                 }}
-              />
-            </ListItemButton>
-            <div
-              style={{
-                maxHeight: openCategory === category ? `${height}px` : "0",
-                overflow: "hidden",
-                transition: "max-height 0.3s ease-out",
-              }}
-            >
-              {openCategory === category && (
-                <List sx={{ "--ListItem-paddingY": "8px" }}>
-                  {subcategories.map((subcategory) => (
-                    <ListItem key={subcategory}>
-                      <ListItemButton
-                        sx={{
-                          paddingLeft: "40px",
-                          backgroundColor: "#e66c1d",
-                          color: "#fff",
-                          borderRadius: "10px",
-                          "&:hover": {
-                            backgroundColor: "#ff832b",
-                          },
-                        }}
-                        onClick={() => navigate(`/${subcategory}`)}
-                      >
-                        {subcategory}
-                      </ListItemButton>
-                    </ListItem>
-                  ))}
-                </List>
-              )}
-            </div>
-          </ListItem>
-        ))}
+              >
+                {openCategory === category && (
+                  <List sx={{ "--ListItem-paddingY": "8px" }}>
+                    {subcategories.map((subcategory) => (
+                      <ListItem key={subcategory}>
+                        <ListItemButton
+                          sx={{
+                            paddingLeft: "40px",
+                            backgroundColor: "#e66c1d",
+                            color: "#fff",
+                            borderRadius: "10px",
+                            "&:hover": {
+                              backgroundColor: "#ff832b",
+                            },
+                          }}
+                          onClick={() => navigate(`/${subcategory}`)}
+                        >
+                          {subcategory}
+                        </ListItemButton>
+                      </ListItem>
+                    ))}
+                  </List>
+                )}
+              </div>
+            </ListItem>
+          );
+        })}
 
-        {/* Productos */}
+        {/* Productos - hardcodeado */}
         <ListItem nested sx={{ my: 1 }}>
           <ListItemButton
             onClick={() => toggleCategory("Productos")}
@@ -134,7 +194,6 @@ export default function MenuNavbar() {
               }}
             />
           </ListItemButton>
-
           <div
             style={{
               maxHeight: openCategory === "Productos" ? `${height}px` : "0",
@@ -216,7 +275,7 @@ export default function MenuNavbar() {
 
         <Divider sx={{ my: 2, borderColor: "#fff" }} />
 
-        {/* Sección para admin (rol 2) */}
+        {/* Sección restringida para admins */}
         <AuthRol rol="2">
           <ListItem nested>
             <ListItemButton
@@ -233,7 +292,6 @@ export default function MenuNavbar() {
               <ListItemText primary="Ventas" />
               {ventas ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
-
             <Collapse in={ventas} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
                 <ListItemButton
@@ -259,8 +317,7 @@ export default function MenuNavbar() {
               </List>
             </Collapse>
           </ListItem>
-        
-        {/* BOTON DE CARGA DE PRODUCTOS */}
+
           <ListItem sx={{ mt: 1 }}>
             <ListItemButton
               sx={{
@@ -276,7 +333,6 @@ export default function MenuNavbar() {
               Cargar producto
             </ListItemButton>
           </ListItem>
-          {/* Ingreso de mantenimiento */}
           <ListItem sx={{ mt: 1 }}>
             <ListItemButton
               sx={{

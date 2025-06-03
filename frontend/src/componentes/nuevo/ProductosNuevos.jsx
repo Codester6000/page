@@ -207,7 +207,7 @@ export default function ProductCardNuevos() {
           </div>
         </Card>
 
-        <Grid container spacing={5}>
+        <Grid container spacing={5} sx={{mb:20}}>
           {productos.length > 0 ? (
             productos.map((producto) => (
               <Grid
@@ -387,7 +387,7 @@ export default function ProductCardNuevos() {
             icon={<FavoriteIcon />}
             sx={{ backgroundColor: "#a111ad", color: "white" }}
           >
-            El producto fue Añadido a Favorito
+            El producto fue Añadido a Favoritos
           </Alert>
         </Snackbar>
       </Container>

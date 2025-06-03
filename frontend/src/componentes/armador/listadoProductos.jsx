@@ -87,6 +87,7 @@ export function ListadoProductos({ productos, tipo, handleSeleccionar }) {
             >
               <div>
                 <Typography
+                  title={producto.nombre}
                   sx={{
                     display: "-webkit-box",
                     overflow: "hidden",
@@ -94,10 +95,12 @@ export function ListadoProductos({ productos, tipo, handleSeleccionar }) {
                     WebkitLineClamp: 2,
                     fontWeight: "bold",
                     mb: 1,
+                    cursor: "default",
                   }}
                 >
                   {producto.nombre}
                 </Typography>
+
 
                 <Typography
                   variant="body2"
