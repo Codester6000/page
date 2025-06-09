@@ -41,11 +41,9 @@ export default function MenuNavbar() {
           "--ListItem-paddingLeft": "21px",
         }}
       >
-        {/* Render dinámico sin AuthRol */}
         {Object.entries(data).map(([category, subcategories]) => {
-          if (category === "Productos") return null; // Sección especial más abajo
+          if (category === "Productos") return null;
           if (category === "Área técnica") {
-            // Pública
             return (
               <ListItem key={category} nested sx={{ my: 1 }}>
                 <ListItemButton
@@ -92,7 +90,7 @@ export default function MenuNavbar() {
                                 backgroundColor: "#ff832b",
                               },
                             }}
-                            onClick={() => navigate(`/${subcategory}`)}
+                            onClick={() => navigate(`/${subcategory.toLowerCase()}`)}
                           >
                             {subcategory}
                           </ListItemButton>
@@ -105,7 +103,6 @@ export default function MenuNavbar() {
             );
           }
 
-          // Otros ítems que no son Productos ni Área técnica
           return (
             <ListItem key={category} nested sx={{ my: 1 }}>
               <ListItemButton
@@ -152,7 +149,7 @@ export default function MenuNavbar() {
                               backgroundColor: "#ff832b",
                             },
                           }}
-                          onClick={() => navigate(`/${subcategory}`)}
+                          onClick={() => navigate(`/${subcategory.toLowerCase()}`)}
                         >
                           {subcategory}
                         </ListItemButton>
@@ -165,7 +162,7 @@ export default function MenuNavbar() {
           );
         })}
 
-        {/* Productos - hardcodeado */}
+        {/* Productos hardcodeado */}
         <ListItem nested sx={{ my: 1 }}>
           <ListItemButton
             onClick={() => toggleCategory("Productos")}
@@ -256,7 +253,6 @@ export default function MenuNavbar() {
           </div>
         </ListItem>
 
-        {/* Preguntas frecuentes */}
         <ListItem sx={{ my: 1 }}>
           <ListItemButton
             sx={{
@@ -275,7 +271,6 @@ export default function MenuNavbar() {
 
         <Divider sx={{ my: 2, borderColor: "#fff" }} />
 
-        {/* Sección restringida para admins */}
         <AuthRol rol="2">
           <ListItem nested>
             <ListItemButton

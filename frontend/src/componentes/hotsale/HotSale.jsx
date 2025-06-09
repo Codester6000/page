@@ -9,6 +9,9 @@ import {
   Snackbar,
   Alert,
   Pagination,
+  TextField,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import Carousel from "../Carousel";
 import AspectRatio from "@mui/joy/AspectRatio";
@@ -27,8 +30,54 @@ export default function HotSaleCard() {
   const [totales, setTotales] = useState(0);
   const [alerta, setAlerta] = useState(false);
   const [favorito, setFavorito] = useState([]);
+  const [carrito, setCarrito] = useState([]);
+  const [nombre, setNombre] = useState("");
+  const [precioMin, setPrecioMin] = useState("");
+  const [precioMax, setPrecioMax] = useState("");
+  const [orden, setOrden] = useState("");
+  const [categoriasDisponibles, setCategoriasDisponibles] = useState([]);
+  const [categoria, setCategoria] = useState("");
   const { sesion } = useAuth();
   const navigate = useNavigate();
+
+  const estaEnFavoritos = (id) => favorito.includes(id);
+
+  const construirQuery = () => {
+    let query = `oferta=1&offset=${(pagina - 1) * itemPorPagina}&limit=${itemPorPagina}`;
+    if (nombre) query += `&nombre=${nombre}`;
+    if (categoria) query += `&categoria=${categoria}`;
+    if (precioMin) query += `&precio_gt=${precioMin}`;
+    if (precioMax) query += `&precio_lt=${precioMax}`;
+    if (orden) query += `&order=${orden}`;
+    return query;
+  };
+
+  const getProductos = async () => {
+    try {
+      const query = construirQuery();
+      const response = await fetch(`${url}/productos?${query}`);
+      const data = await response.json();
+      setProductos(data.productos);
+      setTotales(data.cantidadProductos);
+    } catch (error) {
+      console.error("Error al cargar productos hotsale", error);
+    }
+  };
+
+  const fetchCategorias = async () => {
+    try {
+      const response = await fetch(`${url}/categorias`);
+      const data = await response.json();
+      setCategoriasDisponibles(data.categorias || []);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const aplicarFiltros = () => {
+    setPagina(1);
+    getProductos();
+  };
 
   const agregarCarrito = async (id_producto) => {
     try {
@@ -41,37 +90,19 @@ export default function HotSaleCard() {
         body: JSON.stringify({ id_producto, cantidad: 1 }),
       });
       setAlerta(true);
+      setCarrito([...carrito, id_producto]);
     } catch (error) {
       navigate("/login");
     }
   };
 
-  const estaEnFavoritos = (id) => favorito.includes(id);
-
-  const getProductos = async () => {
-    try {
-      const offset = (pagina - 1) * itemPorPagina;
-      const response = await fetch(
-        `${url}/productos?oferta=1&limit=${itemPorPagina}&offset=${offset}`
-      );
-      const data = await response.json();
-      setProductos(data.productos);
-      setTotales(data.cantidadProductos);
-    } catch (error) {
-      console.error("Error al cargar productos hotsale", error);
-    }
-  };
-
   useEffect(() => {
     getProductos();
-    // Scroll al carrusel
-    const carruselElement = document.getElementById("carousel-top");
-    if (carruselElement) {
-      carruselElement.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
   }, [pagina]);
+
+  useEffect(() => {
+    fetchCategorias();
+  }, []);
 
   return (
     <>
@@ -79,9 +110,70 @@ export default function HotSaleCard() {
         <Carousel />
       </div>
       <Container>
-        <Typography variant="h4" gutterBottom>
-          🔥 Productos en HOT SALE
+        <Typography variant="h4" gutterBottom sx={{ mt: 10, mb: 5 }}>
+          🔥 Productos en SALE!
         </Typography>
+
+        <Card sx={{ bgcolor: "#fff", padding: 5, mb: 4 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+            <TextField
+              label="Buscar por Nombre"
+              variant="outlined"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              size="small"
+            />
+            <TextField
+              label="Precio Mínimo"
+              variant="outlined"
+              type="number"
+              value={precioMin}
+              onChange={(e) => setPrecioMin(e.target.value)}
+              size="small"
+            />
+            <TextField
+              label="Precio Máximo"
+              variant="outlined"
+              type="number"
+              value={precioMax}
+              onChange={(e) => setPrecioMax(e.target.value)}
+              size="small"
+            />
+            <Select
+              value={categoria}
+              onChange={(e) => setCategoria(e.target.value)}
+              displayEmpty
+              size="small"
+              renderValue={categoria !== "" ? undefined : () => <span>Categoría</span>}
+            >
+              <MenuItem disabled value="">
+                Categoría
+              </MenuItem>
+              {categoriasDisponibles.map((cat) => (
+                <MenuItem key={cat.id_categoria} value={cat.nombre_categoria}>
+                  {cat.nombre_categoria}
+                </MenuItem>
+              ))}
+            </Select>
+            <Select
+              value={orden}
+              onChange={(e) => setOrden(e.target.value)}
+              displayEmpty
+              size="small"
+              renderValue={orden !== "" ? undefined : () => <span>Ordenar por</span>}
+            >
+              <MenuItem disabled value="">
+                Ordenar por
+              </MenuItem>
+              <MenuItem value="asc">Precio: Menor a Mayor</MenuItem>
+              <MenuItem value="desc">Precio: Mayor a Menor</MenuItem>
+            </Select>
+            <Button variant="contained" onClick={aplicarFiltros}>
+              Aplicar Filtros
+            </Button>
+          </div>
+        </Card>
+
         <Grid container spacing={3}>
           {productos.length > 0 ? (
             productos.map((producto) => (
@@ -99,9 +191,7 @@ export default function HotSaleCard() {
                     sx={{ position: "relative", cursor: "pointer" }}
                   >
                     <img
-                      src={
-                        producto.url_imagenes[producto.url_imagenes.length - 1]
-                      }
+                      src={producto.url_imagenes[producto.url_imagenes.length - 1]}
                       alt={producto.nombre}
                       style={{ objectFit: "cover" }}
                       onClick={() =>
@@ -121,7 +211,7 @@ export default function HotSaleCard() {
                         borderRadius: "5px",
                       }}
                     >
-                      HOT SALE
+                      Modex SALE
                     </div>
                   </AspectRatio>
                   <CardContent>

@@ -154,7 +154,7 @@ export default function Navbar() {
                   href="/productos/hotsale"
                   onClick={handleClose}
                 >
-                  Hot sale
+                  Modex sale
                 </MenuItem>
               </Menu>
             </div>

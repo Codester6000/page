@@ -14,7 +14,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
 import axios from "axios";
-import { useAuth } from "../../Auth";
+import { useAuth } from "../../Auth"; // Ajustá el path si está en otra carpeta
 
 const validationSchema = Yup.object().shape({
   nombre: Yup.string().required("Nombre requerido"),
@@ -98,7 +98,9 @@ export default function AltaEmpleado() {
               Swal.fire({
                 icon: "error",
                 title: "Error",
-                text: error.response?.data?.error || "Error al guardar el empleado.",
+                text:
+                  error.response?.data?.error ||
+                  "Error al guardar el empleado.",
               });
             }
           }}
@@ -113,29 +115,84 @@ export default function AltaEmpleado() {
           }) => (
             <Form>
               <Grid container spacing={3}>
-                {[
-                  { name: "nombre", label: "Nombre" },
-                  { name: "email", label: "Email" },
-                  { name: "apellido", label: "Apellido" },
-                  { name: "direccion", label: "Dirección" },
-                  { name: "dni", label: "DNI" },
-                  { name: "telefono", label: "Teléfono" },
-                ].map(({ name, label }) => (
-                  <Grid item xs={12} md={6} key={name}>
-                    <TextField
-                      fullWidth
-                      label={label}
-                      name={name}
-                      variant="standard"
-                      value={values[name]}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      error={touched[name] && Boolean(errors[name])}
-                      helperText={touched[name] && errors[name]}
-                    />
-                  </Grid>
-                ))}
-
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Nombre"
+                    name="nombre"
+                    variant="standard"
+                    value={values.nombre}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.nombre && Boolean(errors.nombre)}
+                    helperText={touched.nombre && errors.nombre}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    name="email"
+                    variant="standard"
+                    value={values.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.email && Boolean(errors.email)}
+                    helperText={touched.email && errors.email}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Apellido"
+                    name="apellido"
+                    variant="standard"
+                    value={values.apellido}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.apellido && Boolean(errors.apellido)}
+                    helperText={touched.apellido && errors.apellido}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Direccion"
+                    name="direccion"
+                    variant="standard"
+                    value={values.direccion}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.direccion && Boolean(errors.direccion)}
+                    helperText={touched.direccion && errors.direccion}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Dni"
+                    name="dni"
+                    variant="standard"
+                    value={values.dni}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.dni && Boolean(errors.dni)}
+                    helperText={touched.dni && errors.dni}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Telefono"
+                    name="telefono"
+                    variant="standard"
+                    value={values.telefono}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.telefono && Boolean(errors.telefono)}
+                    helperText={touched.telefono && errors.telefono}
+                  />
+                </Grid>
                 <Grid item xs={12}>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DatePicker
@@ -160,7 +217,6 @@ export default function AltaEmpleado() {
                     />
                   </LocalizationProvider>
                 </Grid>
-
                 <Grid item xs={12}>
                   <Button
                     fullWidth
