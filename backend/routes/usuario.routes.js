@@ -1,5 +1,5 @@
 import express from 'express';
-import { buscarUsuariosPorUsername } from '../controllers/usuarios.controller.js';
+import { buscarUsuariosPorUsername } from '../controllers/usuarios.controllers.js';
 
 const router = express.Router();
 

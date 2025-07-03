@@ -15,7 +15,7 @@ import { categoriasRouter } from "./categorias.js";
 import transferenciasRouter from "./transferencias.js";
 import mantenimientoRoutes from './routes/mantenimiento.routes.js';
 import { verificarToken } from "./middleware/verificarToken.js";
-import { buscarUsuariosPorUsername } from "./controllers/usuarios.controller.js";
+import { buscarUsuariosPorUsername } from "./controllers/usuarios.controllers.js";
 
 const PUERTO = 3000;
 const HOST = "0.0.0.0";
