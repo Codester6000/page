@@ -13,9 +13,10 @@ import empleadosRoutes from './routes/empleados.routes.js';
 import routerMP from "./checkoutMP.js";
 import { categoriasRouter } from "./categorias.js";
 import transferenciasRouter from "./transferencias.js";
-import mantenimientoRoutes from './routes/mantenimiento.routes.js';
+import mantenimientoRoutes from './routes/mantenimientos.routes.js';
 import { verificarToken } from "./middleware/verificarToken.js";
-import { buscarUsuariosPorUsername } from "./controllers/usuarios.controllers.js";
+import usuariosRouter from './routes/usuarios.routes.js';
+import mantenimientosRouter from './routes/mantenimientos.routes.js';
 
 const PUERTO = 3000;
 const HOST = "0.0.0.0";
@@ -40,9 +41,10 @@ app.use("/auth", authRouter);
 
 authConfig();
 //interpretar json en el body
-app.use(empleadosRoutes);
-app.use("/usuarios", verificarToken,buscarUsuariosPorUsername);
-app.use('/api/mantenimientos',verificarToken, mantenimientoRoutes);
+app.use('/api', mantenimientosRouter);
+app.use('/api/empleados', empleadosRoutes); // ✅ Esto monta correctamente en "/api/empleados"
+app.use('/api', usuariosRouter);
+app.use('/api/mantenimientos', mantenimientoRoutes);
 app.use("/productos", productosRouter);
 app.use("/armador", armadorRouter);             
 app.use("/usuarios", usuarioRouter);

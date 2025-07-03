@@ -1,4 +1,4 @@
-import {db} from '../database/connectionMySQL.js';
+import { db } from '../database/connectionMySQL.js';
 
 export const buscarUsuariosPorUsername = async (req, res) => {
   try {
@@ -16,4 +16,3 @@ export const buscarUsuariosPorUsername = async (req, res) => {
     res.status(500).json({ error: 'Error interno' });
   }
 };
-
