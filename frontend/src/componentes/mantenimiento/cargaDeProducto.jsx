@@ -1,229 +1,227 @@
-// Componente para el formulario de carga de productos en mantenimiento
+import { useEffect, useState } from "react";
 import {
+  Autocomplete,
+  Box,
   Button,
-  Container,
   Grid,
+  MenuItem,
   Paper,
+  Select,
   TextField,
   Typography,
-  MenuItem,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
-import { Formik, Form } from "formik";
-import * as Yup from "yup";
-import Swal from "sweetalert2";
-import axios from "axios";
-import { useState, useEffect } from "react";
-import { useAuth } from "../../Auth";
 
+export default function FormularioMantenimiento() {
+  const [form, setForm] = useState({
+    username: "",
+    dni_propietario: "",
+    nombre_producto: "Notebook",
+    responsable_de_retiro: "",
+    telefono: "",
+    direccion_propietario: "",
+    mail: "",
+    empleado_asignado: "",
+    descripcion_producto: "",
+    observaciones: "",
+    fecha_inicio: "",
+    estado: "",
+  });
 
+  const [detalles, setDetalles] = useState({});
+  const [usuarios, setUsuarios] = useState([]);
 
+  const tipos = {
+    PC: ["placa_madre", "procesador", "ram", "disco", "gpu", "fuente", "gabinete"],
+    Notebook: ["marca", "modelo", "pantalla", "teclado", "bateria", "disco", "ram"],
+    Celular: ["marca", "modelo", "pantalla", "bateria", "camara", "botones", "carga"],
+    Otro: ["detalle"],
+  };
 
-const validacionSchema = Yup.object({
-  nombre_producto: Yup.string().required("Requerido"),
-  responsable_de_retiro: Yup.string().required("Requerido"),
-  telefono: Yup.string().required("Requerido"),
-  direccion_propietario: Yup.string().required("Requerido"),
-  mail: Yup.string().email("Email inválido").required("Requerido"),
-  empleado_asignado: Yup.number().required("Seleccione un empleado"),
-  descripcion_producto: Yup.string(),
-  observaciones: Yup.string(),
-});
+  useEffect(() => {
+    const fetchUsuarios = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_URL_BACK}/api/usuarios/usuarios`);
+        const data = await res.json();
+        setUsuarios(data);
+      } catch (error) {
+        console.error("Error al obtener usuarios:", error);
+      }
+    };
 
+    fetchUsuarios();
+  }, []);
 
-const FormularioMantenimiento = () => {
-  const {sesion} = useAuth();
-  const url = import.meta.env.VITE_URL_BACK;
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
+  const handleDetallesChange = (e) => {
+    const { name, value } = e.target;
+    setDetalles((prev) => ({ ...prev, [name]: value }));
+  };
 
-//Funcion para traerme los empleados de la base de datos
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-const [empleados, setEmpleados] = useState([]);
-useEffect(() => {
-  const fetchEmpleados = async () => {
+    const payload = {
+      ...form,
+      ...(form.username.trim() === "" && { username: null }),
+      detalles,
+    };
+
     try {
-      const res = await axios.get(`${url}/empleados`);
-      setEmpleados(res.data.empleados || []);
+      const res = await fetch(`${import.meta.env.VITE_URL_BACK}/api/mantenimientos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert("❌ Error: " + (data.error || "Error inesperado"));
+        return;
+      }
+
+      alert(`✅ Ficha generada con éxito. Nº: ${data.numero_ficha}`);
     } catch (error) {
-      console.log("Error al obtener empleados:", error);
+      console.error("❌ Error al enviar el formulario:", error);
+      alert("Error al conectar con el servidor.");
     }
   };
 
-
-  fetchEmpleados();
-
-},[url]);
-
   return (
-    <Container maxWidth="md" sx={{ mt: 6,mb:10 }}>
-      <Paper elevation={10} sx={{ p: 4, borderRadius: 3 }}>
-        <Typography variant="h5" fontWeight="bold" align="center" gutterBottom>
-          Ingreso de Mantenimiento
-        </Typography>
-        <Typography variant="body1" align="center" sx={{ mb: 4 }}>
-          Complete el formulario para registrar un nuevo producto en mantenimiento
-        </Typography>
+    <Paper elevation={3} sx={{ p: 4, mt: 4, maxWidth: 1000, mx: "auto" }}>
+      <Typography variant="h5" mb={3}>
+        Ficha de Mantenimiento
+      </Typography>
 
-        <Formik
-          initialValues={{
-            nombre_producto: "",
-            responsable_de_retiro: "",
-            telefono: "",
-            direccion_propietario: "",
-            mail: "",
-            empleado_asignado: "",
-            descripcion_producto: "",
-            observaciones: "",
-          }}
-          validationSchema={validacionSchema}
-          onSubmit={async (values, { resetForm }) => {
-            try {
-
-              const res = await axios.post(`${url}/mantenimiento`, values, {
-                headers: {
-                  Authorization: `Bearer ${sesion?.token}`,
-                },
-              });
-              console.log("")
-
-              Swal.fire({
-                title: "Éxito",
-                text: res.data.message,
-                icon: "success",
-              });
-
-              resetForm();
-            } catch (error) {
-              Swal.fire({
-                title: "Error",
-                text: error.response?.data?.error || "Error al guardar",
-                icon: "error",
-              });
-            }
-          }}
-        >
-          {({ values, handleChange, touched, errors }) => (
-            <Form>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Nombre del Producto"
-                    name="nombre_producto"
-                    value={values.nombre_producto}
-                    onChange={handleChange}
-                    error={touched.nombre_producto && Boolean(errors.nombre_producto)}
-                    helperText={touched.nombre_producto && errors.nombre_producto}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Responsable de retiro"
-                    name="responsable_de_retiro"
-                    value={values.responsable_de_retiro}
-                    onChange={handleChange}
-                    error={touched.responsable_de_retiro && Boolean(errors.responsable_de_retiro)}
-                    helperText={touched.responsable_de_retiro && errors.responsable_de_retiro}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Teléfono"
-                    name="telefono"
-                    value={values.telefono}
-                    onChange={handleChange}
-                    error={touched.telefono && Boolean(errors.telefono)}
-                    helperText={touched.telefono && errors.telefono}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Dirección del Propietario"
-                    name="direccion_propietario"
-                    value={values.direccion_propietario}
-                    onChange={handleChange}
-                    error={touched.direccion_propietario && Boolean(errors.direccion_propietario)}
-                    helperText={touched.direccion_propietario && errors.direccion_propietario}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    name="mail"
-                    type="email"
-                    value={values.mail}
-                    onChange={handleChange}
-                    error={touched.mail && Boolean(errors.mail)}
-                    helperText={touched.mail && errors.mail}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
+      <form onSubmit={handleSubmit}>
+        <Grid container spacing={2}>
+          {/* Usuario (opcional) */}
+          <Grid item xs={12} sm={6}>
+            <Autocomplete
+              freeSolo
+              options={usuarios.map((u) => u.username)}
+              value={form.username}
+              onInputChange={(event, newValue) =>
+                setForm((prev) => ({ ...prev, username: newValue }))
+              }
+              renderInput={(params) => (
                 <TextField
-                    select
-                    fullWidth
-                    label="Empleado Asignado"
-                    name="empleado_asignado"
-                    value={values.empleado_asignado || 0}
-                    onChange={handleChange}
-                    error={touched.empleado_asignado && Boolean(errors.empleado_asignado)}
-                    helperText={touched.empleado_asignado && errors.empleado_asignado}
-                  >
-                    <MenuItem value={0} disabled>
-                      Seleccione un empleado
-                    </MenuItem>
-                    {empleados.map((emp) => (
-                      <MenuItem key={emp.id_empleado} value={emp.id_empleado}>
-                        {emp.id_empleado} - {emp.nombre}
-                      </MenuItem>
-                    ))}
-                  </TextField>
+                  {...params}
+                  label="Usuario (opcional)"
+                  fullWidth
+                />
+              )}
+            />
+          </Grid>
 
-                </Grid>
+          {/* Campos generales */}
+          {[
+            ["DNI Propietario", "dni_propietario"],
+            ["Responsable de Retiro", "responsable_de_retiro"],
+            ["Teléfono", "telefono"],
+            ["Dirección", "direccion_propietario"],
+            ["Email", "mail"],
+            ["Empleado Asignado", "empleado_asignado"],
+            ["Descripción", "descripcion_producto"],
+            ["Observaciones", "observaciones"],
+          ].map(([label, name]) => (
+            <Grid item xs={12} sm={6} key={name}>
+              <TextField
+                label={label}
+                name={name}
+                value={form[name]}
+                onChange={handleFormChange}
+                fullWidth
+                required
+              />
+            </Grid>
+          ))}
 
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Descripción del Producto"
-                    name="descripcion_producto"
-                    value={values.descripcion_producto}
-                    onChange={handleChange}
-                    multiline
-                    rows={2}
-                  />
-                </Grid>
+          {/* Fecha */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              type="date"
+              name="fecha_inicio"
+              label="Fecha de Inicio"
+              InputLabelProps={{ shrink: true }}
+              value={form.fecha_inicio}
+              onChange={handleFormChange}
+              fullWidth
+              required
+            />
+          </Grid>
 
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Observaciones"
-                    name="observaciones"
-                    value={values.observaciones}
-                    onChange={handleChange}
-                    multiline
-                    rows={3}
-                  />
-                </Grid>
+          {/* Estado */}
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth required>
+              <InputLabel>Estado</InputLabel>
+              <Select
+                name="estado"
+                value={form.estado}
+                onChange={handleFormChange}
+                label="Estado"
+              >
+                <MenuItem value="pendiente">Pendiente</MenuItem>
+                <MenuItem value="en_proceso">En proceso</MenuItem>
+                <MenuItem value="finalizado">Finalizado</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
 
-                <Grid item xs={12} textAlign="center">
-                  <Button type="submit" variant="contained" size="large">
-                    Guardar Mantenimiento
-                  </Button>
-                </Grid>
-              </Grid>
-            </Form>
-          )}
-        </Formik>
-      </Paper>
-    </Container>
+          {/* Tipo de producto */}
+          <Grid item xs={12}>
+            <FormControl fullWidth required>
+              <InputLabel>Tipo de Producto</InputLabel>
+              <Select
+                name="nombre_producto"
+                value={form.nombre_producto}
+                onChange={handleFormChange}
+                label="Tipo de Producto"
+              >
+                <MenuItem value="PC">PC</MenuItem>
+                <MenuItem value="Notebook">Notebook</MenuItem>
+                <MenuItem value="Celular">Celular</MenuItem>
+                <MenuItem value="Otro">Otro</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          {/* Detalles técnicos */}
+          <Grid item xs={12}>
+            <Typography variant="h6" mt={2}>
+              Detalles del producto ({form.nombre_producto})
+            </Typography>
+          </Grid>
+
+          {tipos[form.nombre_producto].map((campo) => (
+            <Grid item xs={12} sm={6} key={campo}>
+              <TextField
+                name={campo}
+                label={campo.replaceAll("_", " ").replace(/^\w/, (l) => l.toUpperCase())}
+                value={detalles[campo] || ""}
+                onChange={handleDetallesChange}
+                fullWidth
+                required
+              />
+            </Grid>
+          ))}
+
+          {/* Botón de envío */}
+          <Grid item xs={12}>
+            <Box display="flex" justifyContent="flex-end">
+              <Button type="submit" variant="contained" color="primary">
+                Enviar
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
+      </form>
+    </Paper>
   );
-};
-
-export default FormularioMantenimiento;
+}

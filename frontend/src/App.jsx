@@ -32,7 +32,7 @@ import ProductosNuevos from "./componentes/nuevo/ProductosNuevos";
 import AltaEmpleado from "./componentes/empleados/AltaEmpleado";
 import PanelEmpleados from "./componentes/empleados/panelEmpleados";
 import CargarProducto from "./componentes/mantenimiento/cargaDeProducto"; 
-
+import VerMantenimiento from "./componentes/mantenimiento/VerMantenimiento";
 
 function App() {
   const { sesion, logout } = useAuth();
@@ -69,7 +69,7 @@ function App() {
         {/* Mantenimiento */}
         <Route path="/mantenimiento" element={<IngresoMantenimiento />} />
         <Route path="/mantenimiento/ingreso" element={<AuthPage><AuthRol rol="2">< CargarProducto /></AuthRol></AuthPage>} />
-
+        <Route path="/mantenimiento/ver" element={<AuthPage><VerMantenimiento/></AuthPage>} />
         <Route path="/" element={<Portada />} />
         <Route path="/armador" element={<Armadorpc />} />
         <Route path="/faqs" element={<PreguntasFrecuentes />} />

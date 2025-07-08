@@ -44,22 +44,36 @@ const Login = () => {
   };
 
   const onSubmit = async (datos) => {
-    const response = await fetch(`${url}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(datos),
-    });
-    const mensaje = await response.json();
-    if (response.ok) {
+    try {
+      const response = await fetch(`${url}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos),
+      });
+
+      const mensaje = await response.json();
+
+      if (!response.ok) {
+        setError(mensaje.error || "Error al iniciar sesión");
+        return;
+      }
+
+      // ✅ Guardar token en localStorage
+      localStorage.setItem("token", mensaje.token);
+
       resetField("username");
       resetField("password");
+
+      login(
+        datos.username,
+        datos.password,
+        () => navigate(from, { replace: true }),
+        () => setError("Contraseña o usuario incorrecto.")
+      );
+    } catch (err) {
+      console.error("Error al iniciar sesión:", err);
+      setError("Ocurrió un error en la conexión con el servidor.");
     }
-    login(
-      datos.username,
-      datos.password,
-      () => navigate(from, { replace: true }),
-      () => setError("Contraseña o usuario incorrecto.")
-    );
   };
 
   return (
