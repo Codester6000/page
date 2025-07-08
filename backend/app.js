@@ -14,15 +14,17 @@ import routerMP from "./checkoutMP.js";
 import { categoriasRouter } from "./categorias.js";
 import transferenciasRouter from "./transferencias.js";
 import mantenimientoRoutes from './routes/mantenimientos.routes.js';
-import { verificarToken } from "./middleware/verificarToken.js";
 import usuariosRouter from './routes/usuarios.routes.js';
-import mantenimientosRouter from './routes/mantenimientos.routes.js';
 
 const PUERTO = 3000;
 const HOST = "0.0.0.0";
 const app = express();
+
+// Conexión a la base de datos
 conectarDB();
-/* let corsOptions = {
+
+/* // Configuración avanzada de CORS (opcional para producción)
+let corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = ["https://modex.com.ar", "https://www.modex.com.ar"];
     if (allowedOrigins.includes(origin) || !origin) {
@@ -34,17 +36,23 @@ conectarDB();
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
-}; */
+};
+app.use(cors(corsOptions));
+*/
+
 app.use(cors());
 app.use(express.json());
-app.use("/auth", authRouter);
 
+// Autenticación
+app.use("/auth", authRouter);
 authConfig();
-//interpretar json en el body
-app.use('/api', mantenimientosRouter);
-app.use('/api/empleados', empleadosRoutes); // ✅ Esto monta correctamente en "/api/empleados"
-app.use('/api', usuariosRouter);
-app.use('/api/mantenimientos', mantenimientoRoutes);
+
+// ✅ Rutas API
+app.use('/api/mantenimientos', mantenimientoRoutes);  // POST y GET de mantenimientos
+app.use('/api/usuarios', usuariosRouter);             // /usuarios y /buscar-usuarios
+app.use('/api/empleados', empleadosRoutes);           // /api/empleados
+
+// 🔁 Otras rutas generales
 app.use("/productos", productosRouter);
 app.use("/armador", armadorRouter);             
 app.use("/usuarios", usuarioRouter);
@@ -55,10 +63,13 @@ app.use("/checkoutMP", routerMP);
 app.use("/checkoutGN", getNetRouter);
 app.use("/categorias", categoriasRouter);
 app.use("/transferencias", transferenciasRouter);
+
+// 🌐 Ruta raíz
 app.get("/", (req, res) => {
   res.send("hola mundo");
 });
 
+// 🚀 Inicio del servidor
 app.listen(PUERTO, HOST, () => {
-  console.log(`La app esta esuchando en ${HOST} y en el puerto ${PUERTO}`);
+  console.log(`✅ La app está escuchando en ${HOST} y en el puerto ${PUERTO}`);
 });
