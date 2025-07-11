@@ -1,60 +1,48 @@
-import express, { json } from "express";
+import express from "express";
 import cors from "cors";
-import armadorRouter from "./armador.js";
 import { conectarDB } from "./database/connectionMySQL.js";
+
+// Rutas personalizadas
+import authRouter, { authConfig } from "./auth.js";
 import productosRouter from "./productos.js";
 import usuarioRouter from "./usuarios.js";
 import carritoRouter from "./carrito.js";
-import authRouter, { authConfig } from "./auth.js";
 import favoritoRouter from "./favorito.js";
 import modoCheckoutRouter from "./checkout.js";
 import getNetRouter from "./checkoutGetNet.js";
-import empleadosRoutes from './routes/empleados.routes.js';
 import routerMP from "./checkoutMP.js";
 import { categoriasRouter } from "./categorias.js";
 import transferenciasRouter from "./transferencias.js";
-import mantenimientoRoutes from './routes/mantenimientos.routes.js';
-import usuariosRouter from './routes/usuarios.routes.js';
+import armadorRouter from "./armador.js";
 
-const PUERTO = 3000;
-const HOST = "0.0.0.0";
+// Rutas con prefijo /api
+import mantenimientoRoutes from "./routes/mantenimientos.routes.js";
+import usuariosRouter from "./routes/usuarios.routes.js";
+import empleadosRoutes from "./routes/empleados.routes.js";
+
 const app = express();
+const PORT = 3000;
+const HOST = "0.0.0.0";
 
-// Conexión a la base de datos
+// ✅ Conexión a la BD
 conectarDB();
 
-/* // Configuración avanzada de CORS (opcional para producción)
-let corsOptions = {
-  origin: function (origin, callback) {
-    const allowedOrigins = ["https://modex.com.ar", "https://www.modex.com.ar"];
-    if (allowedOrigins.includes(origin) || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-};
-app.use(cors(corsOptions));
-*/
-
+// ✅ Middleware
 app.use(cors());
 app.use(express.json());
 
-// Autenticación
+// ✅ Rutas de autenticación
 app.use("/auth", authRouter);
-authConfig();
+authConfig(); // Setup de autenticación y estrategia JWT
 
-// ✅ Rutas API
-app.use('/api/mantenimientos', mantenimientoRoutes);  // POST y GET de mantenimientos
-app.use('/api/usuarios', usuariosRouter);             // /usuarios y /buscar-usuarios
-app.use('/api/empleados', empleadosRoutes);           // /api/empleados
+// ✅ Rutas protegidas con /api
+app.use("/api/mantenimientos", mantenimientoRoutes);
+app.use("/api/usuarios", usuariosRouter); // Incluye /api/usuarios y /api/usuarios/buscar-usuarios
+app.use("/api/empleados", empleadosRoutes);
 
-// 🔁 Otras rutas generales
+// ✅ Rutas de frontend (sin prefijo /api)
 app.use("/productos", productosRouter);
-app.use("/armador", armadorRouter);             
+app.use("/armador", armadorRouter);
 app.use("/usuarios", usuarioRouter);
 app.use("/carrito", carritoRouter);
 app.use("/favorito", favoritoRouter);
@@ -64,12 +52,12 @@ app.use("/checkoutGN", getNetRouter);
 app.use("/categorias", categoriasRouter);
 app.use("/transferencias", transferenciasRouter);
 
-// 🌐 Ruta raíz
+// ✅ Ruta raíz
 app.get("/", (req, res) => {
-  res.send("hola mundo");
+  res.send("🟢 API funcionando correctamente");
 });
 
-// 🚀 Inicio del servidor
-app.listen(PUERTO, HOST, () => {
-  console.log(`✅ La app está escuchando en ${HOST} y en el puerto ${PUERTO}`);
+// ✅ Inicio del servidor
+app.listen(PORT, HOST, () => {
+  console.log(`✅ La app está escuchando en http://${HOST}:${PORT}`);
 });
