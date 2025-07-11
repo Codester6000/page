@@ -12,6 +12,7 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
+import { generarFichaMantenimiento } from "../../../utils/pdfHelper";
 
 export default function FormularioMantenimiento() {
   const [form, setForm] = useState({
@@ -26,11 +27,12 @@ export default function FormularioMantenimiento() {
     descripcion_producto: "",
     observaciones: "",
     fecha_inicio: "",
-    estado: "",
+    estado: "pendiente",
   });
 
   const [detalles, setDetalles] = useState({});
   const [usuarios, setUsuarios] = useState([]);
+  const [empleados, setEmpleados] = useState([]);
 
   const tipos = {
     PC: ["placa_madre", "procesador", "ram", "disco", "gpu", "fuente", "gabinete"],
@@ -40,9 +42,13 @@ export default function FormularioMantenimiento() {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
     const fetchUsuarios = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_URL_BACK}/api/usuarios/usuarios`);
+        const res = await fetch(`${import.meta.env.VITE_URL_BACK}/api/usuarios`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         const data = await res.json();
         setUsuarios(data);
       } catch (error) {
@@ -50,7 +56,20 @@ export default function FormularioMantenimiento() {
       }
     };
 
+    const fetchEmpleados = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_URL_BACK}/api/empleados`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setEmpleados(data);
+      } catch (error) {
+        console.error("Error al obtener empleados:", error);
+      }
+    };
+
     fetchUsuarios();
+    fetchEmpleados();
   }, []);
 
   const handleFormChange = (e) => {
@@ -65,28 +84,47 @@ export default function FormularioMantenimiento() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
 
     const payload = {
       ...form,
-      ...(form.username.trim() === "" && { username: null }),
+      username: form.username?.trim() || null,
+      empleado_asignado: form.empleado_asignado || null,
       detalles,
     };
 
     try {
       const res = await fetch(`${import.meta.env.VITE_URL_BACK}/api/mantenimientos`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
-        alert("❌ Error: " + (data.error || "Error inesperado"));
+        const errorData = await res.json();
+        alert("❌ Error: " + (errorData.error || "Error inesperado"));
         return;
       }
 
-      alert(`✅ Ficha generada con éxito. Nº: ${data.numero_ficha}`);
+      const data = await res.json();
+
+      if (data.numero_ficha) {
+        generarFichaMantenimiento({
+          numero: data.numero_ficha,
+          cliente: form.dni_propietario,
+          producto: form.nombre_producto,
+          fecha: new Date().toLocaleDateString(),
+          tipo: form.nombre_producto,
+          detalles,
+        });
+
+        alert(`✅ Ficha generada con éxito. Nº: ${data.numero_ficha}`);
+      } else {
+        alert("⚠️ Mantenimiento guardado, pero sin número de ficha.");
+      }
     } catch (error) {
       console.error("❌ Error al enviar el formulario:", error);
       alert("Error al conectar con el servidor.");
@@ -101,33 +139,26 @@ export default function FormularioMantenimiento() {
 
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
-          {/* Usuario (opcional) */}
           <Grid item xs={12} sm={6}>
             <Autocomplete
               freeSolo
               options={usuarios.map((u) => u.username)}
               value={form.username}
-              onInputChange={(event, newValue) =>
+              onInputChange={(e, newValue) =>
                 setForm((prev) => ({ ...prev, username: newValue }))
               }
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Usuario (opcional)"
-                  fullWidth
-                />
+                <TextField {...params} label="Usuario (opcional)" fullWidth />
               )}
             />
           </Grid>
 
-          {/* Campos generales */}
           {[
             ["DNI Propietario", "dni_propietario"],
             ["Responsable de Retiro", "responsable_de_retiro"],
             ["Teléfono", "telefono"],
             ["Dirección", "direccion_propietario"],
             ["Email", "mail"],
-            ["Empleado Asignado", "empleado_asignado"],
             ["Descripción", "descripcion_producto"],
             ["Observaciones", "observaciones"],
           ].map(([label, name]) => (
@@ -135,7 +166,7 @@ export default function FormularioMantenimiento() {
               <TextField
                 label={label}
                 name={name}
-                value={form[name]}
+                value={form[name] || ""}
                 onChange={handleFormChange}
                 fullWidth
                 required
@@ -143,7 +174,24 @@ export default function FormularioMantenimiento() {
             </Grid>
           ))}
 
-          {/* Fecha */}
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth required>
+              <InputLabel>Empleado Asignado</InputLabel>
+              <Select
+                name="empleado_asignado"
+                value={form.empleado_asignado}
+                onChange={handleFormChange}
+                label="Empleado Asignado"
+              >
+                {empleados.map((emp) => (
+                  <MenuItem key={emp.id_empleado} value={emp.id_empleado}>
+                    {emp.nombre}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
           <Grid item xs={12} sm={6}>
             <TextField
               type="date"
@@ -157,7 +205,6 @@ export default function FormularioMantenimiento() {
             />
           </Grid>
 
-          {/* Estado */}
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth required>
               <InputLabel>Estado</InputLabel>
@@ -174,7 +221,6 @@ export default function FormularioMantenimiento() {
             </FormControl>
           </Grid>
 
-          {/* Tipo de producto */}
           <Grid item xs={12}>
             <FormControl fullWidth required>
               <InputLabel>Tipo de Producto</InputLabel>
@@ -184,15 +230,15 @@ export default function FormularioMantenimiento() {
                 onChange={handleFormChange}
                 label="Tipo de Producto"
               >
-                <MenuItem value="PC">PC</MenuItem>
-                <MenuItem value="Notebook">Notebook</MenuItem>
-                <MenuItem value="Celular">Celular</MenuItem>
-                <MenuItem value="Otro">Otro</MenuItem>
+                {Object.keys(tipos).map((tipo) => (
+                  <MenuItem key={tipo} value={tipo}>
+                    {tipo}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
 
-          {/* Detalles técnicos */}
           <Grid item xs={12}>
             <Typography variant="h6" mt={2}>
               Detalles del producto ({form.nombre_producto})
@@ -212,7 +258,6 @@ export default function FormularioMantenimiento() {
             </Grid>
           ))}
 
-          {/* Botón de envío */}
           <Grid item xs={12}>
             <Box display="flex" justifyContent="flex-end">
               <Button type="submit" variant="contained" color="primary">

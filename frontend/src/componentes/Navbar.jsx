@@ -16,17 +16,25 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useState } from "react";
 import "../styles/navBar.css";
 import MenuNavbar from "./MenuNavbar";
-import { AuthStatus } from "../Auth";
+import { AuthStatus, useAuth } from "../Auth.jsx";
 
 export default function Navbar() {
   const [abierto, setAbierto] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+  const [anchorElProductos, setAnchorElProductos] = useState(null);
+  const [anchorElMantenimientos, setAnchorElMantenimientos] = useState(null);
+
+  const openProductos = Boolean(anchorElProductos);
+  const openMantenimientos = Boolean(anchorElMantenimientos);
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const handleClick = (event) => setAnchorEl(event.currentTarget);
-  const handleClose = () => setAnchorEl(null);
+  const { sesion } = useAuth();
+
+  const handleClickProductos = (event) => setAnchorElProductos(event.currentTarget);
+  const handleClickMantenimientos = (event) => setAnchorElMantenimientos(event.currentTarget);
+  const handleCloseProductos = () => setAnchorElProductos(null);
+  const handleCloseMantenimientos = () => setAnchorElMantenimientos(null);
 
   return (
     <>
@@ -116,7 +124,7 @@ export default function Navbar() {
 
             <div className="linkPc">
               <Button
-                onClick={handleClick}
+                onClick={handleClickProductos}
                 sx={{
                   color: "white",
                   fontWeight: "bold",
@@ -127,33 +135,21 @@ export default function Navbar() {
                 PRODUCTOS
               </Button>
               <Menu
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
+                anchorEl={anchorElProductos}
+                open={openProductos}
+                onClose={handleCloseProductos}
                 MenuListProps={{ "aria-labelledby": "productos-button" }}
               >
-                <MenuItem component="a" href="/productos" onClick={handleClose}>
+                <MenuItem component="a" href="/productos" onClick={handleCloseProductos}>
                   Todos los productos
                 </MenuItem>
-                <MenuItem
-                  component="a"
-                  href="/productos/usados"
-                  onClick={handleClose}
-                >
+                <MenuItem component="a" href="/productos/usados" onClick={handleCloseProductos}>
                   Usados
                 </MenuItem>
-                <MenuItem
-                  component="a"
-                  href="/productos/nuevos"
-                  onClick={handleClose}
-                >
+                <MenuItem component="a" href="/productos/nuevos" onClick={handleCloseProductos}>
                   Nuevos
                 </MenuItem>
-                <MenuItem
-                  component="a"
-                  href="/productos/hotsale"
-                  onClick={handleClose}
-                >
+                <MenuItem component="a" href="/productos/hotsale" onClick={handleCloseProductos}>
                   Modex sale
                 </MenuItem>
               </Menu>
@@ -162,9 +158,48 @@ export default function Navbar() {
             <div className="linkPc">
               <a href="/armador">ARMA TU PC</a>
             </div>
+
             <div className="linkPc">
               <a href="/desarrollo">DESARROLLO WEB</a>
             </div>
+
+                <div className="linkPc">
+  <Button
+    onClick={handleClickMantenimientos}
+    sx={{
+      color: "white",
+      fontWeight: "bold",
+      fontSize: "1.3rem",
+      fontFamily: "Roboto Condensed",
+    }}
+  >
+    MANTENIMIENTOS
+  </Button>
+  <Menu
+    anchorEl={anchorElMantenimientos}
+    open={openMantenimientos}
+    onClose={handleCloseMantenimientos}
+    MenuListProps={{ "aria-labelledby": "mantenimientos-button" }}
+  >
+    {sesion && String(sesion.rol) === "2" && (
+      <MenuItem
+        component="a"
+        href="/mantenimiento/ingreso"
+        onClick={handleCloseMantenimientos}
+      >
+        Cargar un mantenimiento
+      </MenuItem>
+    )}
+    <MenuItem
+      component="a"
+      href="/mantenimiento/ver"
+      onClick={handleCloseMantenimientos}
+    >
+      Ver mi mantenimiento
+    </MenuItem>
+  </Menu>
+</div>
+
           </div>
         )}
       </AppBar>

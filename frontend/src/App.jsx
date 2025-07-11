@@ -16,7 +16,7 @@ import NuevoProducto from "./componentes/nuevoProducto";
 import Checkout from "./componentes/Checkout";
 import Ventas from "./componentes/ventas";
 import ThankYou from "./componentes/ThankYou";
-import IngresoMantenimiento from "./componentes/mantenimiento/ingresoMantenimiento";
+import IngresoMantenimiento from "./componentes/mantenimiento/cargaDeProducto";
 import DesarrolloWeb from "./componentes/DesarrolloWeb";
 import Portada from "./componentes/Portada";
 import Producto from "./componentes/Producto";
@@ -67,9 +67,8 @@ function App() {
         <Route path="/productos/nuevos" element={<ProductosNuevos />} />
 
         {/* Mantenimiento */}
-        <Route path="/mantenimiento" element={<IngresoMantenimiento />} />
         <Route path="/mantenimiento/ingreso" element={<AuthPage><AuthRol rol="2">< CargarProducto /></AuthRol></AuthPage>} />
-        <Route path="/mantenimiento/ver" element={<AuthPage><VerMantenimiento/></AuthPage>} />
+        <Route path="/mantenimiento/ver" element={<VerMantenimiento/>} />
         <Route path="/" element={<Portada />} />
         <Route path="/armador" element={<Armadorpc />} />
         <Route path="/faqs" element={<PreguntasFrecuentes />} />
