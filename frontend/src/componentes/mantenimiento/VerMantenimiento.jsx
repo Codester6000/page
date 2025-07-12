@@ -1,194 +1,310 @@
-import { useState } from "react";
+// VerMantenimiento.jsx – Producción
 import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
   Box,
+  Typography,
   TextField,
   Button,
-  Typography,
-  Stepper,
-  Step,
-  StepLabel,
   Paper,
-} from "@mui/material";
-import BuildIcon from "@mui/icons-material/Build";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import SearchIcon from "@mui/icons-material/Search";
-import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
-import { useAuth } from "../../Auth";
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+  Divider,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {
+  HourglassEmpty,
+  Search,
+  Build,
+  CheckCircle,
+} from '@mui/icons-material';
+import { useEffect, useState } from 'react';
+import { useAuth } from '../../Auth.jsx';
 
-const pasos = [
-  "Su computadora está en espera a revisión.",
-  "Su computadora se encuentra en revisión.",
-  "En proceso de ensamble.",
-  "Listo para retirar.",
-];
-
-const iconos = {
-  1: <HourglassEmptyIcon />,
-  2: <SearchIcon />,
-  3: <BuildIcon />,
-  4: <CheckCircleIcon />,
+const iconMap = {
+  Reloj: <HourglassEmpty />,
+  Lupa: <Search />,
+  Llave: <Build />,
+  Check: <CheckCircle />,
 };
 
-function CustomStepIcon(props) {
-  const { active, completed, icon } = props;
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: 24,
-        height: 24,
-        borderRadius: "50%",
-        bgcolor: completed ? "green" : active ? "orange" : "grey.400",
-        color: "#fff",
-      }}
-    >
-      {iconos[icon]}
-    </Box>
-  );
-}
+const iconOptions = ['Reloj', 'Lupa', 'Llave', 'Check'];
 
-export default function ConsultaEstado() {
-  const [dni, setDni] = useState("");
-  const [ficha, setFicha] = useState("");
-  const [resultado, setResultado] = useState(null);
-  const [comentario, setComentario] = useState("");
+export default function VerMantenimiento() {
   const { sesion } = useAuth();
+  const [dni, setDni] = useState('');
+  const [ficha, setFicha] = useState('');
+  const [datos, setDatos] = useState(null);
+  const [pasos, setPasos] = useState([]);
+  const [pasoActual, setPasoActual] = useState(0);
+  const [comentario, setComentario] = useState('');
+  const [error, setError] = useState('');
+  const [expanded, setExpanded] = useState(true);
 
-  const buscar = async () => {
-    const res = await fetch(
-      `http://localhost:3000/api/mantenimientos/consulta?dni=${dni}&ficha=${ficha}`
-    );
-    const data = await res.json();
-    if (res.ok) {
-      setResultado(data);
-      setComentario(data.observaciones || "");
-    } else {
-      alert(data.error);
-    }
-  };
-
-  const estadoActual = () => {
-    switch (resultado?.estado) {
-      case "En espera":
-        return 0;
-      case "En revisión":
-        return 1;
-      case "En ensamble":
-        return 2;
-      case "Listo":
-        return 3;
-      default:
-        return 0;
-    }
-  };
-
-  const actualizarEstado = async (nuevoEstado) => {
+  const buscarFicha = async () => {
+    setError('');
     try {
       const res = await fetch(
-        `http://localhost:3000/api/mantenimientos/actualizar-estado/${resultado.id_mantenimiento}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sesion?.token}`,
-          },
-          body: JSON.stringify({
-            estado: nuevoEstado,
-            observaciones: comentario,
-          }),
-        }
+        `${import.meta.env.VITE_URL_BACK}/api/mantenimientos/consulta?dni=${dni}&ficha=${ficha}`
       );
+      if (!res.ok) throw new Error('No encontrado');
+      const data = await res.json();
+      setDatos(data);
+      const estados = typeof data.detalles === 'string'
+      ? JSON.parse(data.detalles || '[]')
+      : data.detalles || [];
+
+      setPasos(estados);
+      setPasoActual(estados.findIndex((e) => !e.completado));
+    } catch (err) {
+      setError('Ficha no encontrada o datos incorrectos.');
+    }
+  };
+
+  const avanzarPaso = async () => {
+    if (!datos) return;
+    const nuevosPasos = pasos.map((p, i) =>
+      i === pasoActual ? { ...p, completado: true, comentario } : p
+    );
+    const payload = {
+      estado: pasoActual + 1,
+      observaciones: comentario,
+      detalles: nuevosPasos,
+    };
+    await fetch(
+      `${import.meta.env.VITE_URL_BACK}/api/mantenimientos/actualizar-estado/${datos.id_mantenimiento}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${sesion.token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+    setComentario('');
+    setPasoActual(pasoActual + 1);
+    setPasos(nuevosPasos);
+  };
+
+  const editarPaso = (index, campo, valor) => {
+    const copia = [...pasos];
+    copia[index][campo] = valor;
+    setPasos(copia);
+  };
+
+  const handleFoto = async (index, file) => {
+    if (!file || !datos?.numero_ficha || !datos?.nombre_producto) return;
+
+    const formData = new FormData();
+    formData.append('imagen', file);
+    formData.append('numero_ficha', datos.numero_ficha);
+    formData.append('tipo_producto', datos.nombre_producto);
+    formData.append('orden_paso', index);
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_URL_BACK}/api/mantenimientos/subir-imagen-paso`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${sesion.token}`,
+        },
+        body: formData,
+      });
 
       const data = await res.json();
-      if (res.ok) {
-        alert("Estado actualizado");
-        buscar();
-      } else {
-        alert(data.error || "Error al actualizar");
+      if (!res.ok) throw new Error(data.error || 'Error al subir imagen');
+
+      const copia = [...pasos];
+      copia[index].foto = `${import.meta.env.VITE_URL_BACK}${data.url}`;
+      setPasos(copia);
+    } catch (err) {
+      console.error('❌ Error al subir imagen del paso:', err);
+      alert('No se pudo subir la imagen');
+    }
+  };
+
+  const guardarCambios = async () => {
+    if (!datos) return;
+    const payload = {
+      estado: pasoActual,
+      observaciones: '',
+      detalles: pasos,
+    };
+    await fetch(
+      `${import.meta.env.VITE_URL_BACK}/api/mantenimientos/actualizar-estado/${datos.id_mantenimiento}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${sesion.token}`,
+        },
+        body: JSON.stringify(payload),
       }
-    } catch (error) {
-      alert("Error al actualizar estado");
-    }
+    );
   };
 
-  const avanzar = () => {
-    const actual = estadoActual();
-    if (actual < pasos.length - 1) {
-      const siguiente = ["En espera", "En revisión", "En ensamble", "Listo"][actual + 1];
-      actualizarEstado(siguiente);
-    }
-  };
-
-  const retroceder = () => {
-    const actual = estadoActual();
-    if (actual > 0) {
-      const anterior = ["En espera", "En revisión", "En ensamble", "Listo"][actual - 1];
-      actualizarEstado(anterior);
-    }
+  const agregarPaso = () => {
+    setPasos([
+      ...pasos,
+      {
+        titulo: 'Nuevo paso',
+        icono: 'Llave',
+        comentario: '',
+        completado: false,
+        foto: null,
+      },
+    ]);
   };
 
   return (
-    <Box sx={{ maxWidth: 700, mx: "auto", mt: 6 }}>
-      <Typography variant="h5" align="center" gutterBottom>
-        Consultar Estado de Mantenimiento
-      </Typography>
-      <Box component={Paper} elevation={3} sx={{ p: 3, borderRadius: 2, bgcolor: "#fafafa" }}>
-        <TextField
-          fullWidth
-          label="DNI"
-          value={dni}
-          onChange={(e) => setDni(e.target.value)}
-          margin="normal"
-        />
-        <TextField
-          fullWidth
-          label="Número de Ficha"
-          value={ficha}
-          onChange={(e) => setFicha(e.target.value)}
-          margin="normal"
-        />
-        <Button fullWidth variant="contained" onClick={buscar} sx={{ mt: 2 }}>
-          Buscar
-        </Button>
-      </Box>
-
-      {resultado && (
-        <Paper elevation={3} sx={{ mt: 4, p: 4, borderRadius: 3 }}>
-          <Typography variant="h6" align="center" fontWeight="bold" gutterBottom>
-            FICHA NUMERO Nº {resultado.numero_ficha}
+    <Box p={3} display="flex" justifyContent="center">
+      {!datos ? (
+        <Paper sx={{ p: 3, width: '100%', maxWidth: 500 }}>
+          <Typography variant="h6" mb={2} textAlign="center">
+            Consultar estado de mantenimiento
+          </Typography>
+          <TextField
+            fullWidth
+            label="DNI"
+            value={dni}
+            onChange={(e) => setDni(e.target.value)}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            fullWidth
+            label="Número de ficha"
+            value={ficha}
+            onChange={(e) => setFicha(e.target.value)}
+            sx={{ mb: 2 }}
+          />
+          {error && (
+            <Typography color="error" textAlign="center" mb={2}>
+              {error}
+            </Typography>
+          )}
+          <Button fullWidth variant="contained" onClick={buscarFicha}>
+            Ver mi mantenimiento
+          </Button>
+        </Paper>
+      ) : (
+        <Paper
+          sx={{
+            p: 3,
+            width: '100%',
+            maxWidth: 700,
+            borderRadius: 3,
+            boxShadow: 5,
+            backgroundColor: '#fafafa',
+          }}
+        >
+          <Typography variant="h6" align="center" fontWeight="bold" mb={1}>
+            FICHA N° {datos.numero_ficha}
           </Typography>
 
-          <Typography variant="body1" align="center" gutterBottom sx={{ mb: 3 }}>
-            Estado de mantenimiento 🔧
-          </Typography>
+          {datos.estado === 'Finalizado' && (
+            <Typography variant="body2" align="center" color="success.main" mb={2}>
+              Finalizado el: {new Date(datos.fecha_finalizacion).toLocaleDateString()}
+            </Typography>
+          )}
 
-          <Stepper activeStep={estadoActual()} orientation="vertical" connector={null}>
-            {pasos.map((label) => (
-              <Step key={label}>
-                <StepLabel StepIconComponent={CustomStepIcon}>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+          <Accordion expanded={expanded} onChange={() => setExpanded(!expanded)}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography fontWeight="bold">Estado de mantenimiento</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              {pasos.map((paso, i) => (
+                <Box key={i} mt={2}>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Box color={i === pasoActual ? 'green' : 'gray'}>
+                      {iconMap[paso.icono] || <Build />}
+                    </Box>
+                    {sesion?.rol === 'admin' || sesion?.rol === 2 ? (
+                      <>
+                        <TextField
+                          value={paso.titulo}
+                          onChange={(e) => editarPaso(i, 'titulo', e.target.value)}
+                          variant="standard"
+                          sx={{ width: 200 }}
+                        />
+                        <FormControl size="small" sx={{ ml: 2 }}>
+                          <InputLabel>Icono</InputLabel>
+                          <Select
+                            value={paso.icono}
+                            label="Icono"
+                            onChange={(e) => editarPaso(i, 'icono', e.target.value)}
+                          >
+                            {iconOptions.map((icon) => (
+                              <MenuItem key={icon} value={icon}>
+                                {icon}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </>
+                    ) : (
+                      <Typography>{paso.titulo}</Typography>
+                    )}
+                  </Box>
+                  {paso.comentario && (
+                    <Paper
+                      elevation={2}
+                      sx={{ p: 2, mt: 1, backgroundColor: '#f5f5f5', borderLeft: '4px solid #2196f3' }}
+                    >
+                      <Typography fontWeight="bold">Comentario del técnico:</Typography>
+                      <Typography>{paso.comentario}</Typography>
+                    </Paper>
+                  )}
+                  {paso.foto && (
+                    <Box mt={1}>
+                      <img
+                        src={paso.foto}
+                        alt="Foto del paso"
+                        style={{ maxWidth: '100%', borderRadius: 8 }}
+                      />
+                    </Box>
+                  )}
+                  {(sesion?.rol === 'admin' || sesion?.rol === 2) && (
+                    <Box mt={1}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFoto(i, e.target.files[0])}
+                      />
+                    </Box>
+                  )}
+                  <Divider sx={{ mt: 2 }} />
+                </Box>
+              ))}
+            </AccordionDetails>
+          </Accordion>
 
-          {sesion?.rol === 2 && (
-            <Box sx={{ mt: 4 }}>
+          {(sesion?.rol === 'admin' || sesion?.rol === 2) && (
+            <Box mt={4}>
               <TextField
-                label="Comentario del técnico"
                 fullWidth
                 multiline
-                rows={3}
+                label="Comentario del técnico"
                 value={comentario}
                 onChange={(e) => setComentario(e.target.value)}
               />
-              <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
-                <Button variant="outlined" color="warning" onClick={retroceder}>
-                  Retroceder
+              <Box mt={2} display="flex" justifyContent="space-between">
+                <Button variant="outlined" color="warning" onClick={() => window.location.reload()}>
+                  Volver
                 </Button>
-                <Button variant="contained" color="success" onClick={avanzar}>
-                  Avanzar
-                </Button>
+                <Box>
+                  <Button variant="outlined" sx={{ mr: 2 }} onClick={guardarCambios}>
+                    Guardar cambios
+                  </Button>
+                  <Button variant="outlined" sx={{ mr: 2 }} onClick={agregarPaso}>
+                    Agregar paso
+                  </Button>
+                  <Button variant="contained" color="success" onClick={avanzarPaso}>
+                    Avanzar
+                  </Button>
+                </Box>
               </Box>
             </Box>
           )}
