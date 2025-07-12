@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { conectarDB } from "./database/connectionMySQL.js";
+import path from 'path';
 
 // Rutas personalizadas
 import authRouter, { authConfig } from "./auth.js";
@@ -27,6 +28,9 @@ const HOST = "0.0.0.0";
 // ✅ Conexión a la BD
 conectarDB();
 
+
+
+
 // ✅ Middleware
 app.use(cors());
 app.use(express.json());
@@ -34,6 +38,11 @@ app.use(express.json());
 // ✅ Rutas de autenticación
 app.use("/auth", authRouter);
 authConfig(); // Setup de autenticación y estrategia JWT
+
+
+//para servir las imagenes
+app.use('/uploads', express.static(path.join('public', 'uploads')));
+
 
 // ✅ Rutas protegidas con /api
 app.use("/api/mantenimientos", mantenimientoRoutes);
