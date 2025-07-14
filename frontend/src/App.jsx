@@ -33,6 +33,7 @@ import AltaEmpleado from "./componentes/empleados/AltaEmpleado";
 import PanelEmpleados from "./componentes/empleados/panelEmpleados";
 import CargarProducto from "./componentes/mantenimiento/cargaDeProducto"; 
 import VerMantenimiento from "./componentes/mantenimiento/VerMantenimiento";
+import TablaMantenimientos from "./componentes/mantenimiento/TablaMantenimientos";
 
 function App() {
   const { sesion, logout } = useAuth();
@@ -69,6 +70,8 @@ function App() {
         {/* Mantenimiento */}
         <Route path="/mantenimiento/ingreso" element={<AuthPage><AuthRol rol="2">< CargarProducto /></AuthRol></AuthPage>} />
         <Route path="/mantenimiento/ver" element={<VerMantenimiento/>} />
+        <Route path="/mantenimiento/tabla" element={ <AuthPage><AuthRol rol='2'><TablaMantenimientos/></AuthRol></AuthPage>} />
+
         <Route path="/" element={<Portada />} />
         <Route path="/armador" element={<Armadorpc />} />
         <Route path="/faqs" element={<PreguntasFrecuentes />} />

@@ -181,15 +181,25 @@ export default function Navbar() {
     onClose={handleCloseMantenimientos}
     MenuListProps={{ "aria-labelledby": "mantenimientos-button" }}
   >
-    {sesion && String(sesion.rol) === "2" && (
-      <MenuItem
-        component="a"
-        href="/mantenimiento/ingreso"
-        onClick={handleCloseMantenimientos}
-      >
-        Cargar un mantenimiento
-      </MenuItem>
-    )}
+      {sesion && String(sesion.rol) === "2" && (
+        <>
+          <MenuItem
+            component="a"
+            href="/mantenimiento/ingreso"
+            onClick={handleCloseMantenimientos}
+          >
+            Cargar un mantenimiento
+          </MenuItem>
+          <MenuItem
+            component="a"
+            href="/mantenimiento/tabla"
+            onClick={handleCloseMantenimientos}
+          >
+            Tabla de mantenimientos
+          </MenuItem>
+        </>
+      )}
+
     <MenuItem
       component="a"
       href="/mantenimiento/ver"
