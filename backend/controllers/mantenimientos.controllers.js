@@ -78,112 +78,95 @@ export const crearMantenimiento = async (req, res) => {
   }
 };
 
+// 🔍 NUEVA VERSIÓN COMPLETA
 export const consultarMantenimientoPublico = async (req, res) => {
   const { dni, ficha } = req.query;
 
   if (!dni || !ficha) {
-    return res.status(400).json({ error: "Faltan parámetros: dni y ficha" });
+    return res.status(400).json({ error: 'Faltan parámetros: dni o ficha' });
   }
 
   try {
-    const [resultado] = await db.query(
-      `
-      SELECT *
-      FROM vista_mantenimientos_dni
-      WHERE dni_propietario = ? AND numero_ficha = ?
-      `,
+    // Consulta principal al mantenimiento
+    const [mantenimientos] = await db.query(
+      'SELECT * FROM vista_mantenimientos_dni WHERE dni_propietario = ? AND numero_ficha = ?',
       [dni, ficha]
     );
 
-    if (resultado.length === 0) {
-      return res.status(404).json({ mensaje: "No se encontró mantenimiento con esos datos." });
+    if (mantenimientos.length === 0) {
+      return res.status(404).json({ error: 'Mantenimiento no encontrado' });
     }
 
-    res.json(resultado[0]);
+    const mantenimiento = mantenimientos[0];
+
+    // Consulta de pasos técnicos (detalles del proceso)
+    const [pasos] = await db.query(
+      `SELECT orden_paso, titulo, comentario, icono, imagen, fecha
+       FROM imagenes_pasos_mantenimiento
+       WHERE numero_ficha = ?
+       ORDER BY orden_paso ASC`,
+      [ficha]
+    );
+
+    // Devolver mantenimiento + pasos (si hay)
+    res.json({
+      ...mantenimiento,
+      detalles_proceso: pasos.length > 0 ? pasos : null
+    });
+
   } catch (error) {
-    console.error("❌ Error al consultar mantenimiento público:", error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    console.error('Error al consultar mantenimiento público:', error);
+    res.status(500).json({ error: 'Error del servidor' });
   }
 };
 
-// ✅ ACTUALIZAR ESTADO Y DETALLES DE UN PASO INDIVIDUAL
+
 export const actualizarEstadoMantenimiento = async (req, res) => {
   const { id } = req.params;
-  const {
-    estado,
-    observaciones,
-    pasoIndex,
-    nuevoComentario,
-    nuevoIcono,
-    nuevoTitulo,
-  } = req.body;
-
-  const tablas = [
-    'mantenimientos_pc',
-    'mantenimientos_notebook',
-    'mantenimientos_celular',
-    'mantenimientos_general',
-  ];
-
-  const connection = await db.getConnection();
+  const { estado, observaciones, detalles } = req.body;
 
   try {
-    let encontrado = false;
+    const tablas = [
+      'mantenimientos_pc',
+      'mantenimientos_notebook',
+      'mantenimientos_celular',
+      'mantenimientos_general'
+    ];
+
+    let tablaEncontrada = null;
 
     for (const tabla of tablas) {
-      const [rows] = await connection.query(
-        `SELECT * FROM ${tabla} WHERE id_mantenimiento = ?`,
+      const [rows] = await db.query(
+        `SELECT nombre_producto FROM ${tabla} WHERE id_mantenimiento = ?`,
         [id]
       );
-
       if (rows.length > 0) {
-        let detalles = [];
-        try {
-          detalles = JSON.parse(rows[0].detalles || '[]');
-        } catch (e) {
-          detalles = [];
-        }
-
-        if (!detalles[pasoIndex]) {
-          detalles[pasoIndex] = {
-            titulo: nuevoTitulo || 'Paso sin título',
-            icono: nuevoIcono || '🔧',
-            comentario: nuevoComentario || '',
-            completado: false,
-            foto: null,
-          };
-        } else {
-          if (nuevoComentario !== undefined) detalles[pasoIndex].comentario = nuevoComentario;
-          if (nuevoIcono !== undefined) detalles[pasoIndex].icono = nuevoIcono;
-          if (nuevoTitulo !== undefined) detalles[pasoIndex].titulo = nuevoTitulo;
-        }
-
-        await connection.query(
-          `UPDATE ${tabla} SET estado = ?, observaciones = ?, detalles = ?, fecha_finalizacion = ? WHERE id_mantenimiento = ?`,
-          [
-            estado,
-            observaciones,
-            JSON.stringify(detalles),
-            estado === 1 ? new Date() : null,
-            id,
-          ]
-        );
-
-        encontrado = true;
+        tablaEncontrada = tabla;
         break;
       }
     }
 
-    if (!encontrado) {
+    if (!tablaEncontrada) {
       return res.status(404).json({ error: 'Mantenimiento no encontrado' });
     }
 
-    return res.status(200).json({ mensaje: 'Paso actualizado correctamente' });
+    const actualizarFecha =
+      estado === 'finalizado' || estado === 1 || estado === '1'
+        ? ', fecha_finalizacion = NOW()'
+        : '';
+
+    await db.query(
+      `UPDATE ${tablaEncontrada}
+       SET estado = ?, observaciones = ?, detalles_proceso = ?
+       ${actualizarFecha}
+       WHERE id_mantenimiento = ?`,
+      [estado, observaciones || '', JSON.stringify(detalles || []), id]
+    );
+
+    res.json({ mensaje: 'Estado actualizado correctamente' });
   } catch (error) {
-    console.error('❌ Error al actualizar estado de mantenimiento:', error);
-    return res.status(500).json({ error: 'Error interno del servidor' });
-  } finally {
-    connection.release();
+    console.error('❌ Error al actualizar mantenimiento:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
