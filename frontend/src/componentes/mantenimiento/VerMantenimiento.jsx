@@ -1,3 +1,4 @@
+// src/pages/VerMantenimiento.jsx
 import {
   Accordion,
   AccordionSummary,
@@ -26,10 +27,10 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../Auth.jsx';
 
 const iconMap = {
-  Reloj: <HourglassEmpty />,
-  Lupa: <Search />,
-  Llave: <Build />,
-  Check: <CheckCircle />,
+  Reloj: <HourglassEmpty />, 
+  Lupa: <Search />, 
+  Llave: <Build />, 
+  Check: <CheckCircle />, 
 };
 
 const iconOptions = ['Reloj', 'Lupa', 'Llave', 'Check'];
@@ -54,11 +55,10 @@ export default function VerMantenimiento() {
       if (!res.ok) throw new Error('No encontrado');
       const data = await res.json();
       setDatos(data);
-      const estados = typeof data.detalles === 'string'
-        ? JSON.parse(data.detalles || '[]')
-        : data.detalles || [];
+      const estados = Array.isArray(data.detalles_proceso) ? data.detalles_proceso : [];
       setPasos(estados);
-      setPasoActual(estados.findIndex((e) => !e.completado));
+      const index = estados.findIndex((e) => !e.completado);
+      setPasoActual(index === -1 ? estados.length : index);
     } catch (err) {
       setError('Ficha no encontrada o datos incorrectos.');
     }
@@ -67,11 +67,17 @@ export default function VerMantenimiento() {
   const avanzarPaso = async () => {
     if (!datos) return;
 
+    const copia = [...pasos];
+    copia[pasoActual].comentario = comentario;
+    copia[pasoActual].completado = true;
+
+    const finalizado = copia.some(p => p.icono === 'Check' && p.completado)
+      && copia.filter(p => p.completado).length >= 2;
+
     const payload = {
-      estado: pasoActual + 1,
+      estado: finalizado ? 1 : pasoActual + 1,
       observaciones: datos.observaciones || '',
-      pasoIndex: pasoActual,
-      nuevoComentario: comentario,
+      detalles: copia,
     };
 
     const res = await fetch(
@@ -87,9 +93,6 @@ export default function VerMantenimiento() {
     );
 
     if (res.ok) {
-      const copia = [...pasos];
-      copia[pasoActual].comentario = comentario;
-      copia[pasoActual].completado = true;
       setComentario('');
       setPasoActual(pasoActual + 1);
       setPasos(copia);
@@ -210,7 +213,6 @@ export default function VerMantenimiento() {
       },
     ]);
   };
-
   return (
     <Box p={3} display="flex" justifyContent="center">
       {!datos ? (
@@ -231,7 +233,7 @@ export default function VerMantenimiento() {
 
           {datos.estado === 1 && (
             <Typography variant="body2" align="center" color="success.main" mb={2}>
-              Finalizado el: {new Date(datos.fecha_finalizacion).toLocaleDateString()}
+              Finalizado el: {datos.fecha_finalizacion ? new Date(datos.fecha_finalizacion).toLocaleDateString() : '—'}
             </Typography>
           )}
 
