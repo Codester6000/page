@@ -55,7 +55,11 @@ export default function VerMantenimiento() {
       if (!res.ok) throw new Error('No encontrado');
       const data = await res.json();
       setDatos(data);
-      const estados = Array.isArray(data.detalles_proceso) ? data.detalles_proceso : [];
+const estados = Array.isArray(data.detalles_proceso)
+  ? data.detalles_proceso
+  : Array.isArray(data.detalles)
+    ? data.detalles
+    : [];
       setPasos(estados);
       const index = estados.findIndex((e) => !e.completado);
       setPasoActual(index === -1 ? estados.length : index);
