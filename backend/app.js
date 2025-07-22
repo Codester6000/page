@@ -27,12 +27,24 @@ const HOST = "0.0.0.0";
 
 // ✅ Conexión a la BD
 conectarDB();
-
+let corsOptions = {
+  origin: function (origin, callback) {
+    const allowedOrigins = ["https://modex.com.ar", "https://www.modex.com.ar"];
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
 
 
 
 // ✅ Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // ✅ Rutas de autenticación
