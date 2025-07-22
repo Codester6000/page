@@ -138,7 +138,7 @@ carritoRouter.get("/ventas",validarJwt,validarRol(2), async(req ,res) =>{
     ) AS productos
 FROM carrito c
 INNER JOIN usuarios u ON u.id_usuario = c.id_usuario
-WHERE c.estado = 'completado';`
+WHERE c.estado = 'completado' OR c.estado = 'pendiente';`
 
     const [resultado] = await db.execute(sql)
 
@@ -154,7 +154,7 @@ carritoRouter.get('/stats',validarJwt,validarRol(2),async(req,res)=>{
 count(c.id_carrito) AS pedidos,
 count(distinct c.id_usuario) AS clientes
 FROM carrito c 
-WHERE c.estado = 'completado';`
+WHERE c.estado = 'completado' OR c.estado = 'pendiente';`
         const [resultado] = await db.execute(sql)
         res.status(200).send(resultado)
     } catch (error) {
