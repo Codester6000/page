@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { conectarDB } from "./database/connectionMySQL.js";
-import path from 'path';
+import path from "path";
 
 // Rutas personalizadas
 import authRouter, { authConfig } from "./auth.js";
@@ -20,6 +20,8 @@ import armadorRouter from "./armador.js";
 import mantenimientoRoutes from "./routes/mantenimientos.routes.js";
 import usuariosRouter from "./routes/usuarios.routes.js";
 import empleadosRoutes from "./routes/empleados.routes.js";
+import routerCargaProducto from "./cargaDeProductos.js";
+import routerCargaProductoModex from "./cargaDeProductosModex.js";
 
 const app = express();
 const PORT = 3000;
@@ -29,7 +31,11 @@ const HOST = "0.0.0.0";
 conectarDB();
 let corsOptions = {
   origin: function (origin, callback) {
-    const allowedOrigins = ["https://modex.com.ar", "https://www.modex.com.ar"];
+    const allowedOrigins = [
+      "https://modex.com.ar",
+      "https://www.modex.com.ar",
+      "http://localhost:5173",
+    ];
     if (allowedOrigins.includes(origin) || !origin) {
       callback(null, true);
     } else {
@@ -41,8 +47,6 @@ let corsOptions = {
   credentials: true,
 };
 
-
-
 // ✅ Middleware
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -51,10 +55,8 @@ app.use(express.json());
 app.use("/auth", authRouter);
 authConfig(); // Setup de autenticación y estrategia JWT
 
-
 //para servir las imagenes
-app.use('/uploads', express.static(path.join('public', 'uploads')));
-
+app.use("/uploads", express.static(path.join("public", "uploads")));
 
 // ✅ Rutas protegidas con /api
 app.use("/api/mantenimientos", mantenimientoRoutes);
@@ -72,6 +74,8 @@ app.use("/checkoutMP", routerMP);
 app.use("/checkoutGN", getNetRouter);
 app.use("/categorias", categoriasRouter);
 app.use("/transferencias", transferenciasRouter);
+app.use("/renovar", routerCargaProducto);
+app.use("/renovar-modex", routerCargaProductoModex);
 
 // ✅ Ruta raíz
 app.get("/", (req, res) => {

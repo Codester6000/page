@@ -31,7 +31,9 @@ export default function MenuNavbar() {
   };
 
   return (
-    <Box sx={{ width: 320, pl: "24px", bgcolor: "#e66c1d", minHeight: "100vh" }}>
+    <Box
+      sx={{ width: 320, pl: "24px", bgcolor: "#e66c1d", minHeight: "100vh" }}
+    >
       <List
         size="sm"
         sx={{
@@ -56,7 +58,9 @@ export default function MenuNavbar() {
                 >
                   <Typography
                     level="inherit"
-                    sx={{ fontWeight: openCategory === category ? "bold" : null }}
+                    sx={{
+                      fontWeight: openCategory === category ? "bold" : null,
+                    }}
                   >
                     {category}
                   </Typography>
@@ -65,7 +69,9 @@ export default function MenuNavbar() {
                       color: "inherit",
                       transition: "transform 0.3s",
                       transform:
-                        openCategory === category ? "rotate(0deg)" : "rotate(-90deg)",
+                        openCategory === category
+                          ? "rotate(0deg)"
+                          : "rotate(-90deg)",
                     }}
                   />
                 </ListItemButton>
@@ -90,7 +96,9 @@ export default function MenuNavbar() {
                                 backgroundColor: "#ff832b",
                               },
                             }}
-                            onClick={() => navigate(`/${subcategory.toLowerCase()}`)}
+                            onClick={() =>
+                              navigate(`/${subcategory.toLowerCase()}`)
+                            }
                           >
                             {subcategory}
                           </ListItemButton>
@@ -124,7 +132,9 @@ export default function MenuNavbar() {
                     color: "inherit",
                     transition: "transform 0.3s",
                     transform:
-                      openCategory === category ? "rotate(0deg)" : "rotate(-90deg)",
+                      openCategory === category
+                        ? "rotate(0deg)"
+                        : "rotate(-90deg)",
                   }}
                 />
               </ListItemButton>
@@ -149,7 +159,9 @@ export default function MenuNavbar() {
                               backgroundColor: "#ff832b",
                             },
                           }}
-                          onClick={() => navigate(`/${subcategory.toLowerCase()}`)}
+                          onClick={() =>
+                            navigate(`/${subcategory.toLowerCase()}`)
+                          }
                         >
                           {subcategory}
                         </ListItemButton>
@@ -251,6 +263,22 @@ export default function MenuNavbar() {
               </List>
             )}
           </div>
+        </ListItem>
+
+        <ListItem sx={{ my: 1 }}>
+          <ListItemButton
+            sx={{
+              backgroundColor: "#e66c1d",
+              color: "#fff",
+              borderRadius: "10px",
+              "&:hover": {
+                backgroundColor: "#ff832b",
+              },
+            }}
+            onClick={() => navigate("/carga-productos-patri")}
+          >
+            Carga Productos Patri
+          </ListItemButton>
         </ListItem>
 
         <ListItem sx={{ my: 1 }}>
