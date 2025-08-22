@@ -1,234 +1,183 @@
 import express from "express";
 import multer from "multer";
-import ExcelJS from "exceljs";
-import axios from "axios";
 import fs from "fs";
+import csv from "csv-parser";
+import axios from "axios";
 import { db } from "./database/connectionMySQL.js";
 import { categorias_final_air } from "./recursos/categorias.js";
-import {
-  normalize,
-  cellToString,
-  parseNum,
-  pickCodigoFabricante,
-  wanted,
-} from "./middleware/verificarCargaProducto.js";
 
 const routerCargaProducto = express.Router();
 const upload = multer({ dest: "uploads/" });
 
-const categorias_por_nombre = Object.entries(categorias_final_air).reduce(
-  (acc, [key, value]) => {
-    acc[value] = key;
-    return acc;
-  },
-  {}
-);
-
 routerCargaProducto.post(
   "/cargar-productos",
-  upload.single("archivo_excel"),
+  upload.single("archivo_csv"),
   async (req, res) => {
     const filePath = req.file?.path;
     if (!filePath)
-      return res
-        .status(400)
-        .json({ error: "No se envió ningún archivo Excel." });
+      return res.status(400).json({ error: "No se envió ningún archivo CSV." });
 
-    let dolar_venta = null;
-
+    let dolar_venta = 1;
     try {
       await db.query("CALL deshabilitar_air()");
-
       const { data } = await axios.get(
         "https://dolarapi.com/v1/dolares/oficial"
       );
-      dolar_venta = Number(data?.venta) || null;
+      dolar_venta = Number(data?.venta) || 1;
+      console.log("Dólar oficial:", dolar_venta);
+    } catch (err) {
+      console.error("Error obteniendo dólar oficial:", err.message);
+      return res.status(500).json({ error: "Error obteniendo dólar oficial" });
+    }
 
-      const workbook = new ExcelJS.Workbook();
-      await workbook.xlsx.readFile(filePath);
-      const worksheet = workbook.worksheets[0];
+    const resultados = [];
+    const errores = [];
 
-      if (!worksheet)
-        throw new Error("No se encontró la primera hoja del Excel.");
+    try {
+      await new Promise((resolve, reject) => {
+        fs.createReadStream(filePath)
+          .pipe(
+            csv({
+              separator: ",",
+              quote: '"',
+              mapHeaders: ({ header }) => header.trim().replace(/^"|"$/g, ""),
+            })
+          )
+          .on("headers", (headers) => {
+            console.log("Encabezados :", headers);
+          })
+          .on("data", async (fila) => {
+            try {
+              // Extracción y validación de datos
+              const deposito =
+                parseInt(fila["CBA"]) > 0
+                  ? "CBA"
+                  : parseInt(fila["LUG"]) > 0
+                  ? "LUG"
+                  : "";
+              const stock =
+                parseInt(fila["CBA"]) > 0
+                  ? parseInt(fila["CBA"])
+                  : parseInt(fila["LUG"]) > 0
+                  ? parseInt(fila["LUG"])
+                  : 0;
 
-      // Mapear encabezados
-      let headerRowIdx = 1;
-      let columnMap = {};
-      for (let i = 1; i <= Math.min(10, worksheet.rowCount); i++) {
-        const row = worksheet.getRow(i);
-        const tempMap = {};
-        row.eachCell((cell, colIndex) => {
-          const key = normalize(cellToString(cell.value));
-          if (key) tempMap[key] = colIndex;
-        });
-        if (
-          tempMap["id"] != null &&
-          tempMap["producto"] != null &&
-          tempMap["categoria"] != null &&
-          tempMap["costo"] != null
-        ) {
-          headerRowIdx = i;
-          columnMap = tempMap;
-          break;
-        }
-      }
-      if (Object.keys(columnMap).length === 0) {
-        throw new Error(
-          "No se encontraron encabezados válidos en las primeras filas."
-        );
-      }
+              const nombre = (fila["Descripcion"] || "").trim();
+              const codigo_fabricante = (
+                fila["Part Number"] ||
+                fila['"Part Number"'] ||
+                ""
+              ).trim();
+              const codigo_categoria = (fila["Rubro"] || "").trim();
 
-      const resolveCol = (aliases) => {
-        for (const a of aliases) {
-          const key = normalize(a);
-          if (columnMap[key] != null) return columnMap[key];
-        }
-        return null;
-      };
+              const garantia_meses = 6;
+              const detalle = "a";
+              const largo = 0.0,
+                alto = 0.0,
+                ancho = 0.0,
+                peso = 0.0;
+              const marca = "a";
+              const sub_categoria = "a";
+              const proveedor = "air";
+              const precio_dolares = parseFloat(fila["lista5"]) || 0;
+              const iva = parseFloat(fila["IVA"]) || 0;
+              const precio_dolares_iva = +(
+                precio_dolares *
+                (iva / 100 + 1)
+              ).toFixed(2);
+              const precio_pesos = +(precio_dolares * dolar_venta).toFixed(2);
+              const precio_pesos_iva = +(
+                precio_dolares *
+                dolar_venta *
+                (iva / 100 + 1)
+              ).toFixed(2);
+              const url_imagen = "https://i.imgur.com/0wbrCkz.png";
 
-      const cols = {};
-      for (const key in wanted) cols[key] = resolveCol(wanted[key]);
-      if (!cols.producto || !cols.categoria || !cols.costo)
-        throw new Error(
-          `Encabezados requeridos no encontrados. Detectados: ${JSON.stringify(
-            columnMap
-          )}`
-        );
+              // Categoría
+              const categoria = categorias_final_air[codigo_categoria] || 0;
 
-      const getVal = (row, colIndex) =>
-        colIndex == null ? null : row.getCell(colIndex)?.value ?? null;
+              // Validaciones
+              if (!categoria || codigo_fabricante.length <= 2) {
+                resultados.push({
+                  nombre,
+                  codigo_fabricante,
+                  categoria,
+                  status: "omitida",
+                  motivo: !categoria
+                    ? "Sin categoría válida"
+                    : "Código de fabricante corto",
+                });
+                return;
+              }
 
-      const resultados = [];
-      const errores = [];
+              // Precio final según categoría
+              const precio_general =
+                categoria === "Procesadores" || codigo_categoria === "001-0056"
+                  ? precio_pesos_iva * 1.2
+                  : precio_pesos_iva * 1.27;
 
-      for (let i = headerRowIdx + 1; i <= worksheet.rowCount; i++) {
-        const row = worksheet.getRow(i);
-        try {
-          const nombre = cellToString(getVal(row, cols.producto)).trim();
+              const parametros = [
+                nombre,
+                stock,
+                garantia_meses,
+                detalle,
+                largo,
+                alto,
+                ancho,
+                peso,
+                codigo_fabricante,
+                marca,
+                String(categoria),
+                sub_categoria,
+                proveedor,
+                precio_dolares,
+                precio_dolares_iva,
+                iva,
+                precio_pesos,
+                precio_general,
+                url_imagen,
+                deposito,
+              ];
 
-          const nombre_categoria_xlsx = cellToString(
-            getVal(row, cols.categoria)
-          ).trim();
+              console.log("Parámetros para el SP:", parametros);
 
-          const codigo_categoria =
-            categorias_por_nombre[nombre_categoria_xlsx] || 0;
-
-          if (!nombre || !codigo_categoria) {
-            resultados.push({
-              fila: i,
-              status: "omitida",
-              motivo: "Sin nombre o categoría válida",
-            });
-            continue;
-          }
-
-          // Stock y depósito
-          let stock = 0;
-          let deposito = "Local";
-          const cba = parseNum(getVal(row, columnMap["cba"]));
-          const lug = parseNum(getVal(row, columnMap["lug"]));
-          if (cba > 0) {
-            stock = cba;
-            deposito = "CBA";
-          } else if (lug > 0) {
-            stock = lug;
-            deposito = "LUG";
-          } else {
-            stock = Number.isFinite(parseNum(getVal(row, cols.p)))
-              ? parseNum(getVal(row, cols.p))
-              : 0;
-          }
-
-          const marca = cellToString(getVal(row, cols.marca))?.trim() || "a";
-          const iva = Number.isFinite(parseNum(getVal(row, cols.iva)))
-            ? parseNum(getVal(row, cols.iva))
-            : 0;
-          const monedaStr =
-            cellToString(getVal(row, cols.moneda))?.trim() || "";
-          const costo = parseNum(getVal(row, cols.costo));
-          const codInt = cellToString(getVal(row, cols.codInt)).trim();
-          const codBarras = cellToString(getVal(row, cols.codBarras)).trim();
-          const idHoja = cellToString(getVal(row, cols.id)).trim();
-          const codigo_fabricante = pickCodigoFabricante([
-            codInt,
-            codBarras,
-            idHoja,
-          ]);
-
-          let precio_dolares = null;
-          let precio_pesos = null;
-          const isUSD = ["usd", "dolares", "$usd", "u$s"].includes(
-            normalize(monedaStr)
-          );
-          if (isUSD) {
-            precio_dolares = costo;
-            precio_pesos =
-              precio_dolares != null && dolar_venta
-                ? precio_dolares * dolar_venta
-                : null;
-          } else {
-            precio_pesos = costo;
-            precio_dolares =
-              precio_pesos != null && dolar_venta
-                ? precio_pesos / dolar_venta
-                : null;
-          }
-
-          const precio_dolares_iva =
-            precio_dolares != null
-              ? +(precio_dolares * (1 + iva / 100)).toFixed(2)
-              : null;
-          const precio_pesos_iva =
-            precio_pesos != null
-              ? +(precio_pesos * (1 + iva / 100)).toFixed(2)
-              : null;
-
-          const toFixedOrNull = (n) => (n == null ? null : +(+n).toFixed(2));
-
-          const params = [
-            nombre,
-            Number.isFinite(stock) ? stock : 0,
-            6,
-            "a",
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            codigo_fabricante || null,
-            marca || "a",
-            nombre_categoria_xlsx,
-            "a",
-            "air",
-            toFixedOrNull(precio_dolares),
-            toFixedOrNull(precio_dolares_iva),
-            toFixedOrNull(iva),
-            toFixedOrNull(precio_pesos),
-            toFixedOrNull(precio_pesos_iva),
-            "https://i.imgur.com/0wbrCkz.png",
-            deposito,
-          ];
-
-          console.log("Params a SP:", params);
-
-          await db.query(
-            "CALL cargarDatosProducto(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-            params
-          );
-
-          resultados.push({
-            fila: i,
-            status: "ok",
-            nombre,
-            categoria: nombre_categoria_xlsx,
-            codigo_fabricante,
+              try {
+                const [result] = await db.query(
+                  "CALL cargarDatosProducto(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                  parametros
+                );
+                console.log("SP ejecutado:", result[0]);
+                resultados.push({
+                  nombre,
+                  codigo_fabricante,
+                  categoria,
+                  status: "ok",
+                });
+              } catch (error) {
+                console.error("Error ejecutando SP:", error.message);
+                errores.push({
+                  nombre,
+                  codigo_fabricante,
+                  categoria,
+                  error: error.message,
+                });
+              }
+            } catch (err) {
+              console.error("Error procesando fila:", err.message);
+              errores.push({ error: err.message });
+            }
+          })
+          .on("end", () => {
+            console.log("Lectura CSV finalizada");
+            resolve();
+          })
+          .on("error", (err) => {
+            console.error("Error leyendo CSV:", err.message);
+            reject(err);
           });
-        } catch (err) {
-          errores.push({ fila: i, error: err?.message || String(err) });
-        }
-      }
+      });
 
       res.json({
-        total_filas_excel: Math.max(worksheet.rowCount - headerRowIdx, 0),
         procesadas_ok: resultados.filter((r) => r.status === "ok").length,
         omitidas: resultados.filter((r) => r.status === "omitida").length,
         errores: errores.length,
@@ -239,6 +188,7 @@ routerCargaProducto.post(
         },
       });
     } catch (error) {
+      console.error("Error general:", error.message);
       res.status(500).json({
         error: "Error en el servidor",
         detalle: error?.message || String(error),
@@ -247,7 +197,10 @@ routerCargaProducto.post(
       if (filePath && fs.existsSync(filePath)) {
         try {
           fs.unlinkSync(filePath);
-        } catch {}
+          console.log("Archivo CSV eliminado:", filePath);
+        } catch (err) {
+          console.error("No se pudo eliminar el archivo:", err.message);
+        }
       }
     }
   }

@@ -38,7 +38,7 @@ const CargaProductos = () => {
     setCargando(true);
     try {
       const response = await axios.post(
-        "http://localhost:3000/renovar/cargar-productos",
+        "http://localhost:3000/renovar-modex/cargar-articulos",
         formData,
         {
           headers: {
@@ -72,7 +72,7 @@ const CargaProductos = () => {
     setCargandoCSV(true);
     try {
       const response = await axios.post(
-        "http://localhost:3000/renovar-modex/cargar-articulos",
+        "http://localhost:3000/renovar/cargar-productos",
         formData,
         {
           headers: {
