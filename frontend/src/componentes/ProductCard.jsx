@@ -118,8 +118,9 @@ export default function ProductCard() {
       const response = await fetch(`${url}/productos?${query}`);
       if (response.ok) {
         const data = await response.json();
-        setTotales(data.cantidadProductos);
-        if (Array.isArray(data.productos)) setProductos(data.productos);
+        console.log(Array.isArray(data));
+        setTotales(data.cantidadProductos || 0);
+        setProductos(Array.isArray(data.productos) ? data.productos : []);
       } else {
         localStorage.removeItem("sesion");
         logout();
@@ -334,9 +335,12 @@ export default function ProductCard() {
                     >
                       <img
                         src={
-                          producto.url_imagenes[
-                            producto.url_imagenes.length - 1
-                          ]
+                          Array.isArray(producto.url_imagenes) &&
+                          producto.url_imagenes.length > 0
+                            ? producto.url_imagenes[
+                                producto.url_imagenes.length - 1
+                              ]
+                            : "/img/placeholder.png"
                         }
                         alt={producto.nombre}
                         loading="lazy"
