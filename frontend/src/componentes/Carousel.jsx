@@ -12,7 +12,6 @@ const Carousel = () => {
   const [selectedFiles, setSelectedFiles] = useState({});
 
   const mobileImages = [
-    { src: "11-mobile.png", url: "/productos/hotsale" },
     { src: "1-mobile.png", url: "" },
     { src: "3-mobile.png", url: "" },
     { src: "7-mobile.png", url: "" },
@@ -20,7 +19,6 @@ const Carousel = () => {
     { src: "10-mobile.png", url: "" },
   ];
   const desktopImages = [
-    { src: "11.png", url: "/productos/hotsale" },
     { src: "6.png", url: "" },
     { src: "7.png", url: "" },
     { src: "8.png", url: "" },
@@ -74,9 +72,7 @@ const Carousel = () => {
             <a href={image.url || "#"}>
               <img
                 className="imgCR"
-                src={
-                  `/carousel/${image.src}`
-                }
+                src={`/carousel/${image.src}`}
                 alt={`Slide ${index + 1}`}
               />
             </a>

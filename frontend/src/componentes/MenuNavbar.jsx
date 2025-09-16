@@ -264,8 +264,7 @@ export default function MenuNavbar() {
             )}
           </div>
         </ListItem>
-
-        <ListItem sx={{ my: 1 }}>
+        <ListItem sx={{ mt: 1 }}>
           <ListItemButton
             sx={{
               backgroundColor: "#e66c1d",
@@ -275,9 +274,9 @@ export default function MenuNavbar() {
                 backgroundColor: "#ff832b",
               },
             }}
-            onClick={() => navigate("/carga-productos-patri")}
+            onClick={() => navigate(`/Mantenimiento/ver`)}
           >
-            Carga Productos Patri
+            Ver mi mantenimiento
           </ListItemButton>
         </ListItem>
 
@@ -356,6 +355,21 @@ export default function MenuNavbar() {
               Cargar producto
             </ListItemButton>
           </ListItem>
+          <ListItem sx={{ my: 1 }}>
+            <ListItemButton
+              sx={{
+                backgroundColor: "#e66c1d",
+                color: "#fff",
+                borderRadius: "10px",
+                "&:hover": {
+                  backgroundColor: "#ff832b",
+                },
+              }}
+              onClick={() => navigate("/carga-productos-patri")}
+            >
+              Carga Productos Patri
+            </ListItemButton>
+          </ListItem>
           <ListItem sx={{ mt: 1 }}>
             <ListItemButton
               sx={{
@@ -369,6 +383,21 @@ export default function MenuNavbar() {
               onClick={() => navigate(`/Mantenimiento/ingreso`)}
             >
               Ingreso de mantenimiento
+            </ListItemButton>
+          </ListItem>
+          <ListItem sx={{ mt: 1 }}>
+            <ListItemButton
+              sx={{
+                backgroundColor: "#e66c1d",
+                color: "#fff",
+                borderRadius: "10px",
+                "&:hover": {
+                  backgroundColor: "#ff832b",
+                },
+              }}
+              onClick={() => navigate(`/Mantenimiento/tabla`)}
+            >
+              Tabla de mantenimiento
             </ListItemButton>
           </ListItem>
         </AuthRol>

@@ -31,8 +31,10 @@ export default function Navbar() {
 
   const { sesion } = useAuth();
 
-  const handleClickProductos = (event) => setAnchorElProductos(event.currentTarget);
-  const handleClickMantenimientos = (event) => setAnchorElMantenimientos(event.currentTarget);
+  const handleClickProductos = (event) =>
+    setAnchorElProductos(event.currentTarget);
+  const handleClickMantenimientos = (event) =>
+    setAnchorElMantenimientos(event.currentTarget);
   const handleCloseProductos = () => setAnchorElProductos(null);
   const handleCloseMantenimientos = () => setAnchorElMantenimientos(null);
 
@@ -140,17 +142,26 @@ export default function Navbar() {
                 onClose={handleCloseProductos}
                 MenuListProps={{ "aria-labelledby": "productos-button" }}
               >
-                <MenuItem component="a" href="/productos" onClick={handleCloseProductos}>
+                <MenuItem
+                  component="a"
+                  href="/productos"
+                  onClick={handleCloseProductos}
+                >
                   Todos los productos
                 </MenuItem>
-                <MenuItem component="a" href="/productos/usados" onClick={handleCloseProductos}>
+                <MenuItem
+                  component="a"
+                  href="/productos/usados"
+                  onClick={handleCloseProductos}
+                >
                   Usados
                 </MenuItem>
-                <MenuItem component="a" href="/productos/nuevos" onClick={handleCloseProductos}>
+                <MenuItem
+                  component="a"
+                  href="/productos/nuevos"
+                  onClick={handleCloseProductos}
+                >
                   Nuevos
-                </MenuItem>
-                <MenuItem component="a" href="/productos/hotsale" onClick={handleCloseProductos}>
-                  Modex sale
                 </MenuItem>
               </Menu>
             </div>
@@ -162,54 +173,6 @@ export default function Navbar() {
             <div className="linkPc">
               <a href="/desarrollo">DESARROLLO WEB</a>
             </div>
-
-                <div className="linkPc">
-  <Button
-    onClick={handleClickMantenimientos}
-    sx={{
-      color: "white",
-      fontWeight: "bold",
-      fontSize: "1.3rem",
-      fontFamily: "Roboto Condensed",
-    }}
-  >
-    MANTENIMIENTOS
-  </Button>
-  <Menu
-    anchorEl={anchorElMantenimientos}
-    open={openMantenimientos}
-    onClose={handleCloseMantenimientos}
-    MenuListProps={{ "aria-labelledby": "mantenimientos-button" }}
-  >
-      {sesion && String(sesion.rol) === "2" && (
-        <>
-          <MenuItem
-            component="a"
-            href="/mantenimiento/ingreso"
-            onClick={handleCloseMantenimientos}
-          >
-            Cargar un mantenimiento
-          </MenuItem>
-          <MenuItem
-            component="a"
-            href="/mantenimiento/tabla"
-            onClick={handleCloseMantenimientos}
-          >
-            Tabla de mantenimientos
-          </MenuItem>
-        </>
-      )}
-
-    <MenuItem
-      component="a"
-      href="/mantenimiento/ver"
-      onClick={handleCloseMantenimientos}
-    >
-      Ver mi mantenimiento
-    </MenuItem>
-  </Menu>
-</div>
-
           </div>
         )}
       </AppBar>

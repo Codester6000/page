@@ -141,8 +141,8 @@ routerCargaProductoModexExcel.post(
             );
             iva = 21; // IVA por defecto
           }
-
-          const esUsado = nombre.includes("(USADO)");
+          const listaUsado = ["(USADO)", "(USADO SIN CAJA)"];
+          const esUsado = nombre.includes(listaUsado);
           // Datos fijos para productos Modex
           const deposito = "Local";
           const stock = 0; // Excel no incluye stock, se maneja por separado
@@ -175,6 +175,20 @@ routerCargaProductoModexExcel.post(
             precioPesosIVA = +(costo * (1 + iva / 100)).toFixed(2);
             precioDolares = +(costo / dolarVenta).toFixed(2);
             precioDolaresIVA = +(precioPesosIVA / dolarVenta).toFixed(2);
+          }
+
+          if (precioPesosIVA <= 64999) {
+            console.warn(
+              `⚠️ Fila ${i}: Precio muy bajo (${precioPesosIVA}) para producto: ${nombre}`
+            );
+            resultados.push({
+              fila: i,
+              codigo: codigo_fabricante,
+              nombre,
+              status: "omitida",
+              motivo: "Precio inválido o cero",
+            });
+            continue;
           }
 
           if (esUsado && precioPesosIVA <= 300000) {

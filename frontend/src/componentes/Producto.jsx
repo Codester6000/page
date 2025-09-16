@@ -93,21 +93,26 @@ export default function Producto() {
 
     getProducto();
   }, [id]);
+
   return (
     <div className="productoContainer">
       <div className="responsiveDiv">
         <div className="productPhoto" style={{ position: "relative" }}>
           <div className="badge">
             {producto?.deposito == "CBA" ? (
-              <img src="/badges/HOTSALE.png" alt="" />
+              <img src="/badges/24HS.png" alt="" />
             ) : producto?.deposito == "LUG" ? (
-              <img src="/badges/HOTSALE.png" alt="" />
+              <img src="/badges/5_DIAS.png" alt="" />
             ) : (
               <img src="/badges/LOCAL.png" alt="" />
             )}{" "}
           </div>
           <img
-            src={producto?.url_imagenes[producto.url_imagenes.length - 1]}
+            src={
+              producto?.url_imagenes && producto?.url_imagenes.length > 0
+                ? producto?.url_imagenes[producto.url_imagenes.length - 1]
+                : "/carousel/3-mobile.png"
+            }
             alt=""
             className="productImage"
           />
@@ -265,7 +270,11 @@ export default function Producto() {
                   >
                     <img
                       src={
-                        similar.url_imagenes[similar.url_imagenes.length - 1]
+                        similar.url_imagenes && similar.url_imagenes.length > 0
+                          ? similar.url_imagenes[
+                              similar.url_imagenes.length - 1
+                            ]
+                          : "/carousel/3-mobile.png" // o alguna imagen por defecto
                       }
                       alt={similar.nombre}
                       width={"150"}
