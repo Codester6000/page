@@ -35,9 +35,33 @@ export default function FormularioMantenimiento() {
   const [empleados, setEmpleados] = useState([]);
 
   const tipos = {
-    PC: ["placa_madre", "procesador", "ram", "disco", "gpu", "fuente", "gabinete"],
-    Notebook: ["marca", "modelo", "pantalla", "teclado", "bateria", "disco", "ram"],
-    Celular: ["marca", "modelo", "pantalla", "bateria", "camara", "botones", "carga"],
+    PC: [
+      "placa_madre",
+      "procesador",
+      "ram",
+      "disco",
+      "gpu",
+      "fuente",
+      "gabinete",
+    ],
+    Notebook: [
+      "marca",
+      "modelo",
+      "pantalla",
+      "teclado",
+      "bateria",
+      "disco",
+      "ram",
+    ],
+    Celular: [
+      "marca",
+      "modelo",
+      "pantalla",
+      "bateria",
+      "camara",
+      "botones",
+      "carga",
+    ],
     Otro: ["detalle"],
   };
 
@@ -46,9 +70,12 @@ export default function FormularioMantenimiento() {
 
     const fetchUsuarios = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_URL_BACK}/api/usuarios`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_URL_BACK}/api/usuarios`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         const data = await res.json();
         setUsuarios(data);
       } catch (error) {
@@ -58,9 +85,12 @@ export default function FormularioMantenimiento() {
 
     const fetchEmpleados = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_URL_BACK}/api/empleados`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_URL_BACK}/api/empleados`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         const data = await res.json();
         setEmpleados(data);
       } catch (error) {
@@ -94,14 +124,17 @@ export default function FormularioMantenimiento() {
     };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_URL_BACK}/api/mantenimientos`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_URL_BACK}/api/mantenimientos`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!res.ok) {
         const errorData = await res.json();
@@ -112,29 +145,33 @@ export default function FormularioMantenimiento() {
       const data = await res.json();
 
       if (data.numero_ficha) {
-generarFichaMantenimiento({
-  numero: data.numero_ficha,
-  fecha: new Date().toLocaleDateString("es-AR"),
-  clienteDNI: form.dni_propietario,
-  clienteNombre:
-    usuarios.find((u) => u.username === form.username)?.nombre || form.username || "Sin nombre",
-  responsable:
-    empleados.find((e) => e.id_empleado === form.empleado_asignado)?.nombre || "Sin asignar",
-  telefono: form.telefono,
-  direccion: form.direccion_propietario,
-  mail: form.mail,
-  producto: form.nombre_producto,
-  estado: form.estado,
-  fecha_inicio: new Date(form.fecha_inicio).toLocaleDateString("es-AR"),
-  descripcion: Object.entries(detalles)
-    .map(
-      ([key, val]) =>
-        `${key.replace(/_/g, " ").replace(/^\w/, (l) => l.toUpperCase())}: ${val}`
-    )
-    .join("\n"),
-  observaciones: form.observaciones || "Sin observaciones",
-});
-
+        generarFichaMantenimiento({
+          numero: data.numero_ficha,
+          fecha: new Date().toLocaleDateString("es-AR"),
+          clienteDNI: form.dni_propietario,
+          clienteNombre:
+            usuarios.find((u) => u.username === form.username)?.nombre ||
+            form.username ||
+            "Sin nombre",
+          responsable:
+            empleados.find((e) => e.id_empleado === form.empleado_asignado)
+              ?.nombre || "Sin asignar",
+          telefono: form.telefono,
+          direccion: form.direccion_propietario,
+          mail: form.mail,
+          producto: form.nombre_producto,
+          estado: form.estado,
+          fecha_inicio: new Date(form.fecha_inicio).toLocaleDateString("es-AR"),
+          descripcion: Object.entries(detalles)
+            .map(
+              ([key, val]) =>
+                `${key
+                  .replace(/_/g, " ")
+                  .replace(/^\w/, (l) => l.toUpperCase())}: ${val}`
+            )
+            .join("\n"),
+          observaciones: form.observaciones || "Sin observaciones",
+        });
 
         alert(`✅ Ficha generada con éxito. Nº: ${data.numero_ficha}`);
       } else {
@@ -264,7 +301,9 @@ generarFichaMantenimiento({
             <Grid item xs={12} sm={6} key={campo}>
               <TextField
                 name={campo}
-                label={campo.replaceAll("_", " ").replace(/^\w/, (l) => l.toUpperCase())}
+                label={campo
+                  .replaceAll("_", " ")
+                  .replace(/^\w/, (l) => l.toUpperCase())}
                 value={detalles[campo] || ""}
                 onChange={handleDetallesChange}
                 fullWidth

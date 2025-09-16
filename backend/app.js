@@ -23,6 +23,7 @@ import usuariosRouter from "./routes/usuarios.routes.js";
 import empleadosRoutes from "./routes/empleados.routes.js";
 import routerCargaProducto from "./cargaDeProductos.js";
 import routerCargaProductoModex from "./cargaDeProductosModex.js";
+import routerimagenes from "./cargaDeImagenes.js";
 
 const app = express();
 const PORT = 3000;
@@ -86,6 +87,7 @@ const inicializarServidor = async () => {
     app.use("/transferencias", transferenciasRouter);
     app.use("/renovar", routerCargaProducto);
     app.use("/renovar-modex", routerCargaProductoModex);
+    app.use("/cargar", routerimagenes);
 
     app.get("/", (req, res) => {
       res.send("🟢 API funcionando correctamente");

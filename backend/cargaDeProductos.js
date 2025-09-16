@@ -9,8 +9,20 @@ import { categorias_final_air } from "./recursos/categorias.js";
 const routerCargaProducto = express.Router();
 const upload = multer({ dest: "uploads/" });
 
-const RUBROS_PROCESADORES = ["001-0056"];
-
+const RUBROS_PROCESADORES = ["001-0056", "001-0330"];
+const RUBROS_ALMACENAMIENTO = [
+  "001-0167",
+  "001-0155",
+  "001-0525",
+  "001-0524",
+  "001-0134",
+  "001-0133",
+  "001-0131",
+  "001-0137",
+  "002-0137",
+  "001-0527",
+  "001-0526",
+];
 // Detectar separador según la primera línea
 function detectarSeparador(linea) {
   const countComas = (linea.match(/,/g) || []).length;
@@ -173,9 +185,38 @@ routerCargaProducto.post(
           ).toFixed(2);
 
           const esProcesador = RUBROS_PROCESADORES.includes(codigo_categoria);
+          const esAlmacenamiento =
+            RUBROS_ALMACENAMIENTO.includes(codigo_categoria);
           const precio_general = +(
             precio_pesos_iva * (esProcesador ? 1.2 : 1.27)
           ).toFixed(2);
+
+          if (esProcesador && precio_general < 64999) {
+            console.warn(
+              `⚠️ Precio muy bajo: ${precio_general} y encima procesador para producto: ${nombre}`
+            );
+            resultados.push({
+              nombre,
+              codigo_fabricante,
+              categoria,
+              status: "omitida",
+              motivo: "Precio muy bajo",
+            });
+            continue;
+          }
+
+          if (!esAlmacenamiento && precio_general < 64999) {
+            console.warn(
+              `Precio muy bajo: ${precio_general}, ademas no es almacenamiento`
+            );
+            resultados.push({
+              nombre,
+              codigo_fabricante,
+              categoria,
+              status: "omitida",
+              motivo: "precio muy bajo",
+            });
+          }
 
           const detalle = (fila["Tipo"] || "").trim() || "N/A";
 

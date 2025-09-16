@@ -31,7 +31,7 @@ productosRouter.get(
       } = req.query;
 
       const [productos] = await db.execute(
-        "CALL SP_GETPRODUCTOS(?,?,?,?,?,?,?,?,?,?)",
+        "CALL sp_getproductosalternativo(?,?,?,?,?,?,?,?,?,?)",
         [
           categoria || null,
           sub_categoria || null,

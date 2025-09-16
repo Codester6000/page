@@ -33,7 +33,7 @@ const categoryMap = {
   memorias: "ram",
   gpus: "gpu",
   almacenamiento: "storage",
-  fuentes: "psu",
+  fuentes: "fuentes",
   gabinetes: "case",
   coolers: "cooler",
   monitores: "monitor",
