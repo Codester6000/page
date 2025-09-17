@@ -28,8 +28,8 @@ export const categorias_final_air = {
   "001-3562": "Auriculares",
   "001-0260": "Cinta Rotuladoras",
   "001-0155": "Discos Externos",
-  "002-0015": "Computadoras",
-  "001-0014": "Computadoras",
+  "002-0015": "Computadoras", //codigo necesario
+  "001-0014": "Computadoras", // otro codigo necesario
   "002-0997": "Computadoras",
   "001-0528": "Conect. placas de red servers",
   "001-0055": "Conectividad",
