@@ -1,64 +1,221 @@
+// src/components/CargaProductos.jsx
 import { useState } from "react";
 import axios from "axios";
+import "../styles/CargaProductos.css";
 
+// ================== COMPONENTES DE RESULTADOS ==================
+const ResultadosGenericos = ({ titulo, resultados }) => {
+  if (!resultados) return null;
+
+  const { mensaje, estadisticas, detalles } = resultados;
+
+  return (
+    <div className="resultados">
+      <h3>{titulo}</h3>
+
+      {/* Caso CSV (formateado) */}
+      {mensaje && (
+        <>
+          <p>
+            <strong>{mensaje}</strong>
+          </p>
+
+          {estadisticas && (
+            <div className="estadisticas">
+              <h4>📌 Estadísticas</h4>
+              <ul>
+                <li>Total filas: {estadisticas.totalFilasCSV}</li>
+                <li>
+                  Procesadas exitosamente: {estadisticas.procesadasExitosamente}
+                </li>
+                <li>Omitidas: {estadisticas.omitidas}</li>
+                <li>Errores: {estadisticas.errores}</li>
+                <li>Total procesadas: {estadisticas.totalProcesadas}</li>
+              </ul>
+
+              {estadisticas.detallesAdicionales && (
+                <>
+                  <h5>📂 Detalles adicionales</h5>
+                  <p>
+                    <strong>Procesadores:</strong>{" "}
+                    {estadisticas.detallesAdicionales.procesadores ?? 0}
+                  </p>
+                  <p>
+                    <strong>Almacenamiento:</strong>{" "}
+                    {estadisticas.detallesAdicionales.almacenamiento ?? 0}
+                  </p>
+                  {Array.isArray(
+                    estadisticas.detallesAdicionales.categoriasUnicas
+                  ) && (
+                    <p>
+                      <strong>Categorías únicas:</strong>{" "}
+                      {estadisticas.detallesAdicionales.categoriasUnicas.join(
+                        ", "
+                      )}
+                    </p>
+                  )}
+                  {Array.isArray(
+                    estadisticas.detallesAdicionales.rubrosUnicos
+                  ) && (
+                    <p>
+                      <strong>Rubros únicos:</strong>{" "}
+                      {estadisticas.detallesAdicionales.rubrosUnicos.join(", ")}
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </>
+      )}
+      {/* Caso Excel u otros (fallback genérico) */}
+      {!mensaje && <pre>{JSON.stringify(resultados, null, 2)}</pre>}
+    </div>
+  );
+};
+
+const ResultadosImagenes = ({ resultados }) => {
+  if (!resultados) return null;
+
+  const { mensaje, estadisticas, estadoInicial, detalleResultados } =
+    resultados;
+
+  return (
+    <div className="resultados">
+      <h3>🖼️ Resultados Imágenes</h3>
+      {mensaje && (
+        <p>
+          <strong>{mensaje}</strong>
+        </p>
+      )}
+
+      {estadisticas && (
+        <>
+          <h4>📌 Estadísticas</h4>
+          <ul>
+            <li>Total productos: {estadisticas.totalProductos}</li>
+            <li>Procesados: {estadisticas.productosProcesados}</li>
+            <li>Ya con imagen: {estadisticas.productosYaConImagen}</li>
+            <li>✔️ Exitosos: {estadisticas.resultados.exitosos}</li>
+            <li>⚠️ Sin imagen: {estadisticas.resultados.sinImagen}</li>
+            <li>
+              ❌ Imágenes inválidas: {estadisticas.resultados.imagenesInvalidas}
+            </li>
+            <li>Errores: {estadisticas.resultados.errores}</li>
+          </ul>
+        </>
+      )}
+
+      {estadoInicial && (
+        <>
+          <h4>⚙️ Estado inicial</h4>
+          <ul>
+            <li>Total imágenes: {estadoInicial.totalImagenes}</li>
+            <li>Total relaciones: {estadoInicial.totalRelaciones}</li>
+            <li>URLs únicas: {estadoInicial.urlsUnicas}</li>
+          </ul>
+        </>
+      )}
+
+      {detalleResultados?.length > 0 && (
+        <div className="detalle-productos">
+          <h4>📌 Detalle de productos (máx. 15 mostrados)</h4>
+          <table className="tabla-resultados">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Estado</th>
+                <th>Mensaje</th>
+              </tr>
+            </thead>
+            <tbody>
+              {detalleResultados.slice(0, 15).map((item, i) => (
+                <tr key={i}>
+                  <td>{item.producto}</td>
+                  <td>{item.estado}</td>
+                  <td>{item.mensaje}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {detalleResultados.length > 15 && (
+            <p>⚠️ Mostrando solo los primeros 15 productos...</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ================== COMPONENTE PRINCIPAL ==================
 const CargaProductos = () => {
-  const [archivo, setArchivo] = useState(null);
-  const [resultados, setResultados] = useState([]);
-  const [errores, setErrores] = useState([]);
-  const [cargando, setCargando] = useState(false);
+  const [archivoExcel, setArchivoExcel] = useState(null);
+  const [resultadosExcel, setResultadosExcel] = useState(null);
+  const [cargandoExcel, setCargandoExcel] = useState(false);
 
-  // Estados para el formulario CSV
   const [archivoCSV, setArchivoCSV] = useState(null);
-  const [resultadosCSV, setResultadosCSV] = useState([]);
-  const [erroresCSV, setErroresCSV] = useState([]);
+  const [resultadosCSV, setResultadosCSV] = useState(null);
   const [cargandoCSV, setCargandoCSV] = useState(false);
 
-  // Estados para la carga de imágenes
-  const [resultadosImg, setResultadosImg] = useState([]);
+  const [resultadosImg, setResultadosImg] = useState(null);
   const [cargandoImg, setCargandoImg] = useState(false);
-  const [estadoImagenes, setEstadoImagenes] = useState(null);
 
-  const handleFileChange = (e) => {
-    setArchivo(e.target.files[0]);
+  const [resultadoBorrado, setResultadoBorrado] = useState(null);
+  const [cargandoBorrado, setCargandoBorrado] = useState(false);
+
+  // Handlers
+  const handleExcelFileChange = (e) => {
+    setArchivoExcel(e.target.files[0]);
+    setResultadosExcel(null);
   };
 
   const handleCSVFileChange = (e) => {
     setArchivoCSV(e.target.files[0]);
+    setResultadosCSV(null);
   };
 
-  const handleSubmit = async (e) => {
+  const handleBorrarProd = async (e) => {
     e.preventDefault();
-    if (!archivo) return;
+    setCargandoBorrado(true);
+    setResultadoBorrado(null);
 
-    const extension = archivo.name.split(".").pop().toLowerCase();
-    const formatosPermitidos = ["xlsx", "xls"];
+    try {
+      const response = await axios.post("http://localhost:3000/borrado");
+      setResultadoBorrado(response.data);
+    } catch (error) {
+      setResultadoBorrado({
+        success: false,
+        mensaje: "❌ Error al conectar con el servidor",
+      });
+    } finally {
+      setCargandoBorrado(false);
+    }
+  };
 
-    if (!formatosPermitidos.includes(extension)) {
-      alert("solo archivos de excel");
+  const handleExcelSubmit = async (e) => {
+    e.preventDefault();
+    if (!archivoExcel) return;
+
+    const extension = archivoExcel.name.split(".").pop().toLowerCase();
+    if (!["xlsx", "xls"].includes(extension)) {
+      alert("Solo se permiten archivos Excel (.xlsx, .xls)");
       return;
     }
-    const formData = new FormData();
-    formData.append("archivo_excel", archivo);
 
-    setCargando(true);
+    const formData = new FormData();
+    formData.append("archivo_excel", archivoExcel);
+
+    setCargandoExcel(true);
     try {
       const response = await axios.post(
         "http://localhost:3000/renovar-modex/cargar-articulos",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        formData
       );
-
-      setResultados(response.data.resultados || []);
-      setErrores(response.data.errores || []);
+      setResultadosExcel(response.data);
     } catch (error) {
-      console.error("Error:", error);
-      setErrores([{ error: "Error en la conexión con el servidor" }]);
+      setResultadosExcel({ error: "Error en la conexión con el servidor" });
     } finally {
-      setCargando(false);
+      setCargandoExcel(false);
     }
   };
 
@@ -68,9 +225,10 @@ const CargaProductos = () => {
 
     const extension = archivoCSV.name.split(".").pop().toLowerCase();
     if (extension !== "csv") {
-      alert("solo archivos CSV");
+      alert("Solo se permiten archivos CSV");
       return;
     }
+
     const formData = new FormData();
     formData.append("archivo_csv", archivoCSV);
 
@@ -78,454 +236,134 @@ const CargaProductos = () => {
     try {
       const response = await axios.post(
         "http://localhost:3000/renovar/cargar-productos",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        formData
       );
-
-      setResultadosCSV(response.data.resultados || []);
-      setErroresCSV(response.data.errores || []);
+      setResultadosCSV(response.data);
     } catch (error) {
-      console.error("Error:", error);
-      setErroresCSV([{ error: "Error en la conexión con el servidor" }]);
+      setResultadosCSV({ error: "Error en la conexión con el servidor" });
     } finally {
       setCargandoCSV(false);
     }
   };
 
-  // Función para cargar imágenes automáticamente
   const handleCargarImagenes = async () => {
     setCargandoImg(true);
-    setResultadosImg([]);
+    setResultadosImg(null);
 
     try {
-      console.log("Iniciando carga de imágenes...");
-
       const response = await axios.post(
         "http://localhost:3000/cargar/imagenes"
       );
-
-      console.log("Respuesta del servidor:", response.data);
-
-      setResultadosImg(response.data.resultados || []);
-
-      // Mostrar un resumen del proceso
-      if (response.data.message) {
-        alert(
-          `${response.data.message}\nExitosos: ${
-            response.data.exitosos || 0
-          }\nErrores: ${response.data.errores || 0}`
-        );
-      }
+      setResultadosImg(response.data);
     } catch (error) {
-      console.error("Error:", error);
-      setResultadosImg([
-        {
-          producto: "Error del sistema",
-          error: "Error al cargar imágenes desde el servidor",
-          estado: "error",
-        },
-      ]);
-      alert("Error al conectar con el servidor");
+      setResultadosImg({
+        success: false,
+        error: "Error al conectar con el servidor",
+      });
     } finally {
       setCargandoImg(false);
     }
   };
 
-  // Función para obtener estadísticas de imágenes
-  const handleVerEstadoImagenes = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:3000/cargar-imagenes/estado-imagenes"
-      );
-      setEstadoImagenes(response.data);
-    } catch (error) {
-      console.error("Error obteniendo estado:", error);
-      alert("Error al obtener estadísticas");
-    }
-  };
-
-  // Función para reintentar un producto específico
-  const handleReintentarProducto = async (idProducto) => {
-    if (!idProducto) return;
-
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/cargar-imagenes/reintentar-producto",
-        { idProducto: parseInt(idProducto) }
-      );
-
-      if (response.data.success) {
-        alert(`Imagen cargada exitosamente para: ${response.data.producto}`);
-        // Actualizar resultados
-        handleCargarImagenes();
-      } else {
-        alert(`Error: ${response.data.error}`);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Error al reintentar producto");
-    }
-  };
-
   return (
-    <div className="container">
-      <h1>Carga Masiva de Productos</h1>
+    <div className="contenedor-principal">
+      <h1 className="titulo-app">Sistema de Carga Masiva de Productos</h1>
 
-      {/* Formulario Excel */}
-      <form onSubmit={handleSubmit}>
-        <div className="file-input">
-          <label htmlFor="excel-file">Seleccionar archivo excel:</label>
+      {/* BorradoDeImagenes */}
+      <div className="card">
+        <h2 className="titulo-seccion">
+          Eliminado de productos y relacionados
+        </h2>
+        <form onSubmit={handleBorrarProd} className="formulario">
+          <button
+            type="submit"
+            className="btn btn-azul"
+            disabled={cargandoBorrado}
+          >
+            {cargandoBorrado ? "Eliminando..." : "Eliminar todo"}
+          </button>
+        </form>
+
+        {/* Mostrar resultado del borrado */}
+        {resultadoBorrado && (
+          <div
+            className={`mensaje-borrado ${
+              resultadoBorrado.success ? "ok" : "error"
+            }`}
+          >
+            <p>{resultadoBorrado.mensaje}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Excel */}
+      <div className="card">
+        <h2 className="titulo-seccion">Carga de Artículos Modex (Excel)</h2>
+        <form onSubmit={handleExcelSubmit} className="formulario">
           <input
             type="file"
-            id="excel-file"
-            accept=".xlsx, .xls"
-            onChange={handleFileChange}
-            disabled={cargando}
+            accept=".xlsx,.xls"
+            onChange={handleExcelFileChange}
+            disabled={cargandoExcel}
+            className="input-file"
           />
-        </div>
+          <button
+            type="submit"
+            disabled={!archivoExcel || cargandoExcel}
+            className="btn btn-azul"
+          >
+            {cargandoExcel ? "Procesando..." : "Cargar Artículos Modex"}
+          </button>
+        </form>
+        {resultadosExcel && (
+          <ResultadosGenericos
+            titulo="📊 Resultados Excel"
+            resultados={resultadosExcel}
+          />
+        )}
+      </div>
 
-        <button
-          type="submit"
-          disabled={!archivo || cargando}
-          className={cargando ? "loading" : ""}
-        >
-          {cargando ? "Procesando..." : "Cargar Productos"}
-        </button>
-      </form>
-
-      {resultados.length > 0 && <ResultadosSection resultados={resultados} />}
-      {errores.length > 0 && <ErroresSection errores={errores} />}
-
-      <hr />
-
-      <h1>Carga Masiva de Artículos (CSV)</h1>
-
-      {/* Formulario CSV */}
-      <form onSubmit={handleCSVSubmit}>
-        <div className="file-input">
-          <label htmlFor="csv-file">Seleccionar archivo CSV:</label>
+      {/* CSV */}
+      <div className="card">
+        <h2 className="titulo-seccion">Carga de Productos AIR (CSV)</h2>
+        <form onSubmit={handleCSVSubmit} className="formulario">
           <input
             type="file"
-            id="csv-file"
             accept=".csv"
             onChange={handleCSVFileChange}
             disabled={cargandoCSV}
+            className="input-file"
           />
-        </div>
-
-        <button
-          type="submit"
-          disabled={!archivoCSV || cargandoCSV}
-          className={cargandoCSV ? "loading" : ""}
-        >
-          {cargandoCSV ? "Procesando..." : "Cargar Artículos"}
-        </button>
-      </form>
-
-      {resultadosCSV.length > 0 && (
-        <ResultadosSection resultados={resultadosCSV} />
-      )}
-      {erroresCSV.length > 0 && <ErroresSection errores={erroresCSV} />}
-
-      <hr />
-
-      {/* Sección de Carga de Imágenes */}
-      <h1>Carga Automática de Imágenes</h1>
-
-      <div className="imagenes-section">
-        <div className="botones-imagenes">
           <button
-            onClick={handleCargarImagenes}
-            disabled={cargandoImg}
-            className="btn-primary"
+            type="submit"
+            disabled={!archivoCSV || cargandoCSV}
+            className="btn btn-verde"
           >
-            {cargandoImg
-              ? "🔄 Buscando imágenes..."
-              : "🖼️ Cargar Imágenes Automáticamente"}
+            {cargandoCSV ? "Procesando..." : "Cargar Productos AIR"}
           </button>
-
-          <button onClick={handleVerEstadoImagenes} className="btn-secondary">
-            📊 Ver Estado de Imágenes
-          </button>
-        </div>
-
-        {/* Mostrar estadísticas */}
-        {estadoImagenes && (
-          <div className="estado-imagenes">
-            <h3>📈 Estadísticas de Imágenes</h3>
-            <div className="stats-grid">
-              <div className="stat-item">
-                <span className="stat-label">Total productos:</span>
-                <span className="stat-value">
-                  {estadoImagenes.total_productos}
-                </span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Con imagen:</span>
-                <span className="stat-value success">
-                  {estadoImagenes.con_imagen}
-                </span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Sin imagen:</span>
-                <span className="stat-value error">
-                  {estadoImagenes.sin_imagen}
-                </span>
-              </div>
-            </div>
-          </div>
+        </form>
+        {resultadosCSV && (
+          <ResultadosGenericos
+            titulo="📊 Resultados CSV"
+            resultados={resultadosCSV}
+          />
         )}
-
-        {/* Mostrar resultados de la carga */}
-        {resultadosImg.length > 0 && (
-          <div className="resultados-imagenes">
-            <h3>🖼️ Resultados del Procesamiento</h3>
-            <div className="resultados-lista">
-              {resultadosImg.map((item, index) => (
-                <div
-                  key={index}
-                  className={`resultado-item ${
-                    item.estado === "exitoso" ? "success" : "error"
-                  }`}
-                >
-                  <div className="resultado-contenido">
-                    {item.estado === "exitoso" ? (
-                      <>
-                        <span className="icono">✅</span>
-                        <span className="producto">{item.producto}</span>
-                        <span className="url">{item.imagen}</span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="icono">❌</span>
-                        <span className="producto">{item.producto}</span>
-                        <span className="error-msg">{item.error}</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Sección para reintentar producto específico */}
-        <div className="reintentar-section">
-          <h3>🔄 Reintentar Producto Específico</h3>
-          <div className="reintentar-form">
-            <input
-              type="number"
-              placeholder="ID del producto"
-              id="reintentar-input"
-              className="reintentar-input"
-            />
-            <button
-              onClick={() => {
-                const id = document.getElementById("reintentar-input").value;
-                if (id) handleReintentarProducto(id);
-              }}
-              className="btn-retry"
-            >
-              🔄 Reintentar
-            </button>
-          </div>
-        </div>
       </div>
 
-      <style jsx>{`
-        .imagenes-section {
-          margin-top: 20px;
-          padding: 20px;
-          border: 1px solid #ddd;
-          border-radius: 8px;
-          background-color: #f9f9f9;
-        }
-
-        .botones-imagenes {
-          display: flex;
-          gap: 10px;
-          margin-bottom: 20px;
-        }
-
-        .btn-primary {
-          background-color: #007bff;
-          color: white;
-          border: none;
-          padding: 10px 20px;
-          border-radius: 5px;
-          cursor: pointer;
-          font-size: 16px;
-        }
-
-        .btn-primary:hover {
-          background-color: #0056b3;
-        }
-
-        .btn-primary:disabled {
-          background-color: #6c757d;
-          cursor: not-allowed;
-        }
-
-        .btn-secondary {
-          background-color: #6c757d;
-          color: white;
-          border: none;
-          padding: 10px 20px;
-          border-radius: 5px;
-          cursor: pointer;
-        }
-
-        .btn-retry {
-          background-color: #ffc107;
-          color: black;
-          border: none;
-          padding: 8px 15px;
-          border-radius: 3px;
-          cursor: pointer;
-        }
-
-        .estado-imagenes {
-          background-color: white;
-          padding: 15px;
-          border-radius: 5px;
-          margin: 15px 0;
-        }
-
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 15px;
-          margin-top: 10px;
-        }
-
-        .stat-item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 10px;
-          background-color: #f8f9fa;
-          border-radius: 5px;
-        }
-
-        .stat-label {
-          font-size: 14px;
-          color: #666;
-        }
-
-        .stat-value {
-          font-size: 24px;
-          font-weight: bold;
-        }
-
-        .stat-value.success {
-          color: #28a745;
-        }
-
-        .stat-value.error {
-          color: #dc3545;
-        }
-
-        .resultados-imagenes {
-          margin-top: 20px;
-        }
-
-        .resultados-lista {
-          max-height: 400px;
-          overflow-y: auto;
-          border: 1px solid #ddd;
-          border-radius: 5px;
-          background-color: white;
-        }
-
-        .resultado-item {
-          padding: 10px;
-          border-bottom: 1px solid #eee;
-        }
-
-        .resultado-item.success {
-          background-color: #d4edda;
-        }
-
-        .resultado-item.error {
-          background-color: #f8d7da;
-        }
-
-        .resultado-contenido {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .producto {
-          font-weight: bold;
-          min-width: 200px;
-        }
-
-        .url {
-          font-size: 12px;
-          color: #666;
-          word-break: break-all;
-        }
-
-        .error-msg {
-          color: #721c24;
-          font-style: italic;
-        }
-
-        .reintentar-section {
-          margin-top: 20px;
-          padding: 15px;
-          background-color: white;
-          border-radius: 5px;
-        }
-
-        .reintentar-form {
-          display: flex;
-          gap: 10px;
-          align-items: center;
-        }
-
-        .reintentar-input {
-          padding: 8px;
-          border: 1px solid #ddd;
-          border-radius: 3px;
-          width: 150px;
-        }
-      `}</style>
+      {/* Imágenes */}
+      <div className="card">
+        <h2 className="titulo-seccion">Gestión de Imágenes</h2>
+        <button
+          onClick={handleCargarImagenes}
+          disabled={cargandoImg}
+          className="btn btn-morado"
+        >
+          {cargandoImg ? "Procesando..." : "Cargar Imágenes Automáticamente"}
+        </button>
+        {resultadosImg && <ResultadosImagenes resultados={resultadosImg} />}
+      </div>
     </div>
   );
 };
-
-// Componente para mostrar resultados
-const ResultadosSection = ({ resultados }) => (
-  <div className="resultados">
-    <h2>Elementos Cargados Correctamente</h2>
-    <ul>
-      {resultados.map((item, index) => (
-        <li key={index} className="success">
-          ✓ {item.nombre}
-        </li>
-      ))}
-    </ul>
-  </div>
-);
-
-// Componente para mostrar errores
-const ErroresSection = ({ errores }) => (
-  <div className="errores">
-    <h2>Errores en la Carga</h2>
-    <ul>
-      {errores.map((error, index) => (
-        <li key={index} className="error">
-          {error.nombre ? `[${error.nombre}]: ${error.error}` : error.error}
-        </li>
-      ))}
-    </ul>
-  </div>
-);
 
 export default CargaProductos;

@@ -586,11 +586,6 @@ function calcularEstadisticasFinales(resultados, totalFilas) {
     ignoradas: ignoradas,
     totalProcesadas: procesadas + omitidas + errores + ignoradas,
     detallesAdicionales: {
-      productosDolares: resultados.exitosas.filter(
-        (r) => r.moneda === "dolares"
-      ).length,
-      productosPesos: resultados.exitosas.filter((r) => r.moneda === "pesos")
-        .length,
       categoriasUnicas: [
         ...new Set(resultados.exitosas.map((r) => r.categoria)),
       ],
@@ -612,10 +607,6 @@ function imprimirResumenProcesamiento(estadisticas) {
 ❌ Con errores: ${estadisticas.errores}
 ⏭️  Ignoradas (headers/vacías): ${estadisticas.ignoradas}
 📈 Total procesadas: ${estadisticas.totalProcesadas}
-
-💰 Productos por moneda:
-   - En dólares: ${estadisticas.detallesAdicionales.productosDolares}
-   - En pesos: ${estadisticas.detallesAdicionales.productosPesos}
 
 📦 Categorías procesadas: ${estadisticas.detallesAdicionales.categoriasUnicas.length}
 🏷️  Marcas procesadas: ${estadisticas.detallesAdicionales.marcasUnicas.length}

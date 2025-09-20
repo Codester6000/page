@@ -118,7 +118,6 @@ export default function ProductCard() {
       const response = await fetch(`${url}/productos?${query}`);
       if (response.ok) {
         const data = await response.json();
-        console.log(Array.isArray(data));
         setTotales(data.cantidadProductos || 0);
         setProductos(Array.isArray(data.productos) ? data.productos : []);
       } else {
