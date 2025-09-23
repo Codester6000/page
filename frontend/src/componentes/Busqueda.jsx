@@ -13,6 +13,7 @@ import Pagination from "@mui/material/Pagination";
 import { useAuth } from "../Auth";
 import { SearchContext } from "../searchContext";
 import { useNavigate } from "react-router-dom";
+
 export default function ProductCard() {
   const url = import.meta.env.VITE_URL_BACK;
   const { searchTerm } = useContext(SearchContext);
@@ -23,6 +24,7 @@ export default function ProductCard() {
   const [isMobile, setIsMobile] = useState(true);
   const navigate = useNavigate();
   const { sesion } = useAuth();
+
   const agregarCarrito = async (producto_id) => {
     try {
       const response = await fetch(`${url}/carrito`, {
@@ -41,8 +43,7 @@ export default function ProductCard() {
         console.log(producto_id);
       }
     } catch (error) {
-      console.log("aaaa");
-      console.log(error);
+      console.log("Error al agregar carrito:", error);
     }
   };
 
@@ -64,8 +65,7 @@ export default function ProductCard() {
         console.log(producto_id);
       }
     } catch (error) {
-      console.log("aaaa");
-      console.log(error);
+      console.log("Error al agregar favorito:", error);
     }
   };
 
@@ -82,14 +82,12 @@ export default function ProductCard() {
       const query = construirQuery();
       const response = await fetch(`${url}/productos${query}`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
 
       if (response.ok) {
         const data = await response.json();
-        setTotales(data.cantidadProductos);
+        setTotales(data.cantidadProductos || 0);
         if (data.productos && Array.isArray(data.productos)) {
           setProductos(data.productos);
         } else {
@@ -106,17 +104,16 @@ export default function ProductCard() {
   useEffect(() => {
     getProductos();
   }, [pagina, searchTerm]);
+
   useEffect(() => {
     setIsMobile(window.innerWidth < 800);
     const handleResize = () => {
       setIsMobile(window.innerWidth < 800);
     };
-
     window.addEventListener("resize", handleResize);
-
-    //cleanup of event listener
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
   return (
     <div
       style={{
@@ -156,21 +153,26 @@ export default function ProductCard() {
                   <AspectRatio ratio="1" sx={{ width: isMobile ? 300 : 150 }}>
                     <img
                       src={
-                        producto.url_imagenes[producto.url_imagenes.length - 1]
+                        producto.url_imagenes?.length > 0
+                          ? producto.url_imagenes[
+                              producto.url_imagenes.length - 1
+                            ]
+                          : "/no-image.png"
                       }
-                      alt={producto.nombre}
+                      alt={producto.nombre || "Producto sin nombre"}
                       loading="lazy"
                     />
                     <div className="badge">
-                      {producto.nombre_proveedor == "air" ? (
-                        <img src="/badges/24HS.png" alt="" />
-                      ) : producto.nombre_proveedor == "elit" ? (
-                        <img src="/badges/5_DIAS.png" alt="" />
+                      {producto.nombre_proveedor === "air" ? (
+                        <img src="/badges/24HS.png" alt="24HS" />
+                      ) : producto.nombre_proveedor === "elit" ? (
+                        <img src="/badges/5_DIAS.png" alt="5 días" />
                       ) : (
-                        <img src="/badges/LOCAL.png" alt="" />
-                      )}{" "}
+                        <img src="/badges/LOCAL.png" alt="Local" />
+                      )}
                     </div>
                   </AspectRatio>
+
                   <CardContent>
                     <Typography
                       level="h2"
@@ -185,21 +187,24 @@ export default function ProductCard() {
                       aria-describedby="card-description"
                       sx={{ mb: 1 }}
                     >
-                      {producto.categorias[0]},{producto.categorias[1]}
+                      {producto.categorias?.[0] || "Sin categoría"},
+                      {producto.categorias?.[1] || ""}
                     </Typography>
+
                     <Typography
                       level="body-m"
                       aria-describedby="card-description"
                       sx={{ mb: 1 }}
                     >
-                      {producto.codigo_fabricante}
+                      {producto.codigo_fabricante || ""}
                     </Typography>
+
                     <Typography
                       level="h2"
                       sx={{ fontWeight: "bold", mt: 0.8, color: "#FF7d21" }}
                     >
                       {Number(
-                        producto.precio_pesos_iva_ajustado
+                        producto.precio_pesos_iva_ajustado || 0
                       ).toLocaleString("es-ar", {
                         style: "currency",
                         currency: "ARS",
@@ -207,6 +212,7 @@ export default function ProductCard() {
                       })}
                     </Typography>
                   </CardContent>
+
                   <Grid>
                     <div
                       style={{
@@ -240,6 +246,7 @@ export default function ProductCard() {
                       >
                         <AddShoppingCartIcon />
                       </IconButton>
+
                       <IconButton
                         variant="contained"
                         size="large"
@@ -275,7 +282,7 @@ export default function ProductCard() {
 
         <Pagination
           count={Math.ceil(totales / itemPorPagina)}
-          pagina={pagina}
+          page={pagina} // ✅ corrección aquí
           onChange={(e, value) => setPagina(value)}
           color="primary"
           sx={{

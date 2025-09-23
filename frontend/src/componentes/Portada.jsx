@@ -119,14 +119,14 @@ export default function Portada() {
       >
         {[
           { img: "/iconos/nvidia.png", categoria: "nvidia" },
-          { img: "/iconos/radeon.png", categoria: "amdrx" },
+          { img: "/iconos/radeon.png", categoria: "amd radeon" },
           { img: "/iconos/intel.png", categoria: "intel" },
           { img: "/iconos/amd.png", categoria: "amd" },
         ].map((marca, idx) => (
           <div
             key={idx}
             className="marca"
-            onClick={() => navigate(`/productos?categoria=${marca.categoria}`)}
+            onClick={() => navigate(`/productos?nombre=${marca.categoria}`)}
           >
             <img
               src={marca.img}

@@ -72,9 +72,7 @@ const Carousel = () => {
             <a href={image.url || "#"}>
               <img
                 className="imgCR"
-                src={
-                  `/carousel/${image.src}`
-                }
+                src={`/carousel/${image.src}`}
                 alt={`Slide ${index + 1}`}
               />
             </a>

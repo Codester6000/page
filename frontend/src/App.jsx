@@ -31,9 +31,10 @@ import ProductosUsados from "./componentes/usado/ProductosUsados";
 import ProductosNuevos from "./componentes/nuevo/ProductosNuevos";
 import AltaEmpleado from "./componentes/empleados/AltaEmpleado";
 import PanelEmpleados from "./componentes/empleados/panelEmpleados";
-import CargarProducto from "./componentes/mantenimiento/cargaDeProducto"; 
+import CargarProducto from "./componentes/mantenimiento/cargaDeProducto";
 import VerMantenimiento from "./componentes/mantenimiento/VerMantenimiento";
 import TablaMantenimientos from "./componentes/mantenimiento/TablaMantenimientos";
+import CargaProductosPatri from "./componentes/CargaProductosPatri";
 
 function App() {
   const { sesion, logout } = useAuth();
@@ -57,8 +58,26 @@ function App() {
       </header>
       <Routes>
         {/* Empleados */}
-        <Route path="/empleados/alta" element={<AuthPage><AuthRol rol="2"><AltaEmpleado /></AuthRol></AuthPage>} />
-        <Route path="/empleados/panel" element={<AuthPage><AuthRol rol="2"><PanelEmpleados /></AuthRol></AuthPage>} />
+        <Route
+          path="/empleados/alta"
+          element={
+            <AuthPage>
+              <AuthRol rol="2">
+                <AltaEmpleado />
+              </AuthRol>
+            </AuthPage>
+          }
+        />
+        <Route
+          path="/empleados/panel"
+          element={
+            <AuthPage>
+              <AuthRol rol="2">
+                <PanelEmpleados />
+              </AuthRol>
+            </AuthPage>
+          }
+        />
 
         {/* Productos */}
         <Route path="/productos" element={<Inicio />} />
@@ -68,23 +87,89 @@ function App() {
         <Route path="/productos/nuevos" element={<ProductosNuevos />} />
 
         {/* Mantenimiento */}
-        <Route path="/mantenimiento/ingreso" element={<AuthPage><AuthRol rol="2">< CargarProducto /></AuthRol></AuthPage>} />
-        <Route path="/mantenimiento/ver" element={<VerMantenimiento/>} />
-        <Route path="/mantenimiento/tabla" element={ <AuthPage><AuthRol rol='2'><TablaMantenimientos/></AuthRol></AuthPage>} />
+        <Route
+          path="/mantenimiento/ingreso"
+          element={
+            <AuthPage>
+              <AuthRol rol="2">
+                <CargarProducto />
+              </AuthRol>
+            </AuthPage>
+          }
+        />
+        <Route path="/mantenimiento/ver" element={<VerMantenimiento />} />
+        <Route
+          path="/mantenimiento/tabla"
+          element={
+            <AuthPage>
+              <AuthRol rol="2">
+                <TablaMantenimientos />
+              </AuthRol>
+            </AuthPage>
+          }
+        />
 
         <Route path="/" element={<Portada />} />
         <Route path="/armador" element={<Armadorpc />} />
         <Route path="/faqs" element={<PreguntasFrecuentes />} />
-        <Route path="/metricas" element={<AuthPage><Metricas /></AuthPage>} />
+        <Route
+          path="/carga-productos-patri"
+          element={<CargaProductosPatri />}
+        />
+        <Route
+          path="/metricas"
+          element={
+            <AuthPage>
+              <Metricas />
+            </AuthPage>
+          }
+        />
         <Route path="/busqueda" element={<Busqueda />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/perfil" element={<AuthPage><Perfil /></AuthPage>} />
-        <Route path="/carrito" element={<AuthPage><Carrito /></AuthPage>} />
-        <Route path="/favorito" element={<AuthPage><Favorito /></AuthPage>} />
-        <Route path="/cargar-producto" element={<AuthPage><NuevoProducto /></AuthPage>} />
+        <Route
+          path="/perfil"
+          element={
+            <AuthPage>
+              <Perfil />
+            </AuthPage>
+          }
+        />
+        <Route
+          path="/carrito"
+          element={
+            <AuthPage>
+              <Carrito />
+            </AuthPage>
+          }
+        />
+        <Route
+          path="/favorito"
+          element={
+            <AuthPage>
+              <Favorito />
+            </AuthPage>
+          }
+        />
+        <Route
+          path="/cargar-producto"
+          element={
+            <AuthPage>
+              <NuevoProducto />
+            </AuthPage>
+          }
+        />
         <Route path="/checkout" element={<Checkout />} />
-        <Route path="/ventas" element={<AuthPage><AuthRol rol="2"><Ventas /></AuthRol></AuthPage>} />
+        <Route
+          path="/ventas"
+          element={
+            <AuthPage>
+              <AuthRol rol="2">
+                <Ventas />
+              </AuthRol>
+            </AuthPage>
+          }
+        />
         <Route path="/thank-you" element={<ThankYou />} />
         <Route path="/desarrollo" element={<DesarrolloWeb />} />
       </Routes>
