@@ -32,23 +32,31 @@ const CONFIG = {
 // Códigos de rubros para diferentes categorías de productos
 const RUBROS_PRODUCTOS = {
   procesadores: ["001-0056", "001-0330"],
-  almacenamiento: [
-    "001-0167",
-    "001-0155",
-    "001-0525",
-    "001-0524",
-    "001-0134",
-    "001-0133",
-    "001-0131",
-    "001-0137",
-    "002-0137",
-    "001-0527",
-    "001-0526",
-  ],
+  almacenamiento: ["001-0134", "002-0137"],
   computadoras: ["001-0014", "002-0015"],
+  fanes: ["001-0002", "001-03320"],
+  estabilizadores: ["001-0160"],
+  fuenteAlimentacion: ["001-0556"],
+  gabinete: ["001-0190"],
+  impresoras: [
+    "001-0607",
+    "001-0604",
+    "001-0605",
+    "001-0606",
+    "001-0600",
+    "001-0602",
+    "001-0603",
+    "001-900",
+  ],
+  memorias: ["002-0280"],
+  microprocesadores: ["001-0330"],
+  miniPc: ["002-1616", "001-1616"],
+  monitores: ["001-0320", "002-0320"],
+  motherboard: ["001-0331"],
+  notebooks: ["001-0360", "002-0361"],
+  placaVga: ["002-0553"],
+  sillas: ["001-0015"],
   // Aquí puedes agregar más rubros permitidos
-  // motherboards: ["001-0XXX", "001-0YYY"],
-  // graficas: ["001-0ZZZ"]
 };
 
 // Lista de todos los rubros permitidos (combinación de todas las categorías)
@@ -56,6 +64,19 @@ const RUBROS_PERMITIDOS = [
   ...RUBROS_PRODUCTOS.procesadores,
   ...RUBROS_PRODUCTOS.almacenamiento,
   ...RUBROS_PRODUCTOS.computadoras,
+  ...RUBROS_PRODUCTOS.fanes,
+  ...RUBROS_PRODUCTOS.estabilizadores,
+  ...RUBROS_PRODUCTOS.fuenteAlimentacion,
+  ...RUBROS_PRODUCTOS.gabinete,
+  ...RUBROS_PRODUCTOS.impresoras,
+  ...RUBROS_PRODUCTOS.memorias,
+  ...RUBROS_PRODUCTOS.microprocesadores,
+  ...RUBROS_PRODUCTOS.miniPc,
+  ...RUBROS_PRODUCTOS.monitores,
+  ...RUBROS_PRODUCTOS.motherboard,
+  ...RUBROS_PRODUCTOS.notebooks,
+  ...RUBROS_PRODUCTOS.placaVga,
+  ...RUBROS_PRODUCTOS.sillas,
 ];
 
 const VALORES_POR_DEFECTO = {

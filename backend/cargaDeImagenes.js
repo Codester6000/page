@@ -560,4 +560,198 @@ routerImagenes.get("/imagenes/debug", async (req, res) => {
   }
 });
 
+// ============================================================================
+// ENDPOINT - OBTENER TODOS LOS PRODUCTOS SIN IMAGEN
+// ============================================================================
+
+routerImagenes.get("/productos-sin-imagen", async (req, res) => {
+  try {
+    console.log("🔍 Obteniendo TODOS los productos sin imagen asignada...");
+
+    // 1. OBTENER TODOS LOS PRODUCTOS DEL SISTEMA
+    const todosLosProductos = await obtenerTodosLosProductos();
+
+    if (todosLosProductos.length === 0) {
+      return res.json({
+        success: true,
+        mensaje: "No hay productos cargados en el sistema.",
+        datos: {
+          totalProductos: 0,
+          productosSinImagen: [],
+          cantidadSinImagen: 0,
+        },
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // 2. OBTENER PRODUCTOS QUE YA TIENEN IMAGEN ASIGNADA
+    const productosConImagen = await obtenerProductosConImagenes();
+
+    // 3. FILTRAR Y OBTENER SOLO LOS QUE NO TIENEN IMAGEN
+    const filtrado = filtrarProductosSinImagen(
+      todosLosProductos,
+      productosConImagen
+    );
+
+    const { productosSinImagen, estadisticas } = filtrado;
+
+    console.log(`RESUMEN:`);
+    console.log(`Total productos en sistema: ${estadisticas.total}`);
+    console.log(`Ya tienen imagen: ${estadisticas.conImagen}`);
+    console.log(`SIN IMAGEN (faltan): ${estadisticas.sinImagen}`);
+
+    // 4. FORMATEAR LA LISTA DE PRODUCTOS SIN IMAGEN
+    const listaProductosSinImagen = productosSinImagen.map(
+      (producto, index) => ({
+        numero: index + 1,
+        id_producto: producto.id_producto,
+        nombre: producto.nombre,
+      })
+    );
+
+    /*
+    // 5. IMPRIMIR EN CONSOLA LOS PRODUCTOS QUE FALTAN (para debug)
+    if (estadisticas.sinImagen > 0) {
+      console.log(`\n PRODUCTOS QUE NECESITAN IMAGEN:`);
+      listaProductosSinImagen.forEach((producto) => {
+        console.log(
+          `   ${producto.numero}. ID: ${producto.id_producto} - "${producto.nombre}"`
+        );
+      });
+    }
+    */
+
+    return res.json({
+      success: true,
+      mensaje:
+        estadisticas.sinImagen > 0
+          ? `Se encontraron ${estadisticas.sinImagen} productos que NO tienen imagen asignada`
+          : "✅ Todos los productos ya tienen imagen asignada",
+      datos: {
+        resumen: {
+          totalProductos: estadisticas.total,
+          productosSinImagen: estadisticas.sinImagen,
+          porcentajeCompletado:
+            estadisticas.total > 0
+              ? ((estadisticas.conImagen / estadisticas.total) * 100).toFixed(1)
+              : "100.0",
+        },
+        productosSinImagen: listaProductosSinImagen,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("❌ Error al obtener productos sin imagen:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      error: "Error al obtener productos sin imagen",
+      mensaje: error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+routerImagenes.post("/imagen-manualmente", async (req, res) => {
+  try {
+    const { idProducto, urlImagen } = req.body;
+
+    // Validaciones básicas
+    if (!idProducto || !urlImagen) {
+      return res.status(400).json({
+        success: false,
+        error: "Datos incompletos",
+        mensaje: "Se requiere idProducto y urlImagen",
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // Validar que idProducto sea un número
+    const idProductoNum = parseInt(idProducto);
+    if (isNaN(idProductoNum)) {
+      return res.status(400).json({
+        success: false,
+        error: "ID de producto inválido",
+        mensaje: "El ID del producto debe ser un número válido",
+        timestamp: new Date().toISOString(),
+      });
+    }
+    // Validar formato básico de URL
+    if (!urlImagen.trim() || !urlImagen.startsWith("http")) {
+      return res.status(400).json({
+        success: false,
+        error: "URL inválida",
+        mensaje: "La URL debe comenzar con http:// o https://",
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    console.log(
+      `🔧 Agregando imagen manual para producto ID: ${idProductoNum}`
+    );
+    console.log(`🖼️  URL: ${urlImagen.substring(0, 80)}...`);
+
+    // Verificar que el producto existe
+    const [producto] = await db.query(
+      "SELECT id_producto, nombre FROM productos WHERE id_producto = ?",
+      [idProductoNum]
+    );
+
+    if (!producto || producto.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Producto no encontrado",
+        mensaje: `No se encontró un producto con ID: ${idProductoNum}`,
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    const datosProducto = producto[0];
+    console.log(`📦 Producto encontrado: "${datosProducto.nombre}"`);
+    console.log("💾 Guardando en base de datos...");
+    const resultado = await guardarImagenEnBaseDatos(urlImagen, idProductoNum);
+
+    if (resultado.estado === ESTADOS_PROCESAMIENTO.EXITOSO) {
+      console.log(
+        `✅ Imagen agregada exitosamente - ID imagen: ${resultado.idImagen}`
+      );
+
+      return res.json({
+        success: true,
+        mensaje: "Imagen agregada exitosamente",
+        datos: {
+          idProducto: idProductoNum,
+          nombreProducto: datosProducto.nombre,
+          urlImagen: urlImagen,
+          idImagen: resultado.idImagen,
+        },
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      // Error desde el stored procedure
+      return res.status(400).json({
+        success: false,
+        error: "Error al guardar imagen",
+        mensaje: resultado.mensaje,
+        datos: {
+          idProducto: idProductoNum,
+          nombreProducto: datosProducto.nombre,
+          urlImagen: urlImagen,
+          estadoProceso: resultado.estado,
+        },
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.error("💥 Error en endpoint agregar imagen manual:", error);
+
+    return res.status(500).json({
+      success: false,
+      error: "Error interno del servidor",
+      mensaje: error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 export default routerImagenes;
