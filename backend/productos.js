@@ -9,6 +9,31 @@ import {
 
 import passport from "passport";
 import { validarJwt, validarRol } from "./auth.js";
+
+const ESTADOS_PROCESAMIENTO = {
+  EXITOSO: "SUCCESS",
+  SIN_IMAGEN: "SIN_IMAGEN",
+  IMAGEN_INVALIDA: "IMAGEN_INVALIDA",
+  ERROR_BD: "ERROR_BD",
+  ERROR_GENERAL: "ERROR_GENERAL",
+};
+async function guardarImagenEnBaseDatos(urlImagen, idProducto) {
+  try {
+    const [resultado] = await db.query("CALL cargar_imagen_nueva(?, ?)", [
+      urlImagen,
+      idProducto,
+    ]);
+
+    return {
+      estado: resultado[0]?.estado || ESTADOS_PROCESAMIENTO.EXITOSO,
+      mensaje: resultado[0]?.mensaje || "Imagen cargada exitosamente",
+      idImagen: resultado[0]?.id_imagen,
+    };
+  } catch (error) {
+    throw new Error(`Error en stored procedure: ${error.message}`);
+  }
+}
+
 export const productosRouter = express.Router();
 
 productosRouter.get(
@@ -193,25 +218,116 @@ productosRouter.put(
   validarId,
   verificarValidaciones,
   async (req, res) => {
-    const id = req.params.id;
-    ("precio_pesos_iva");
-    const { nuevo_precio, producto_id, proveedor_id } = req.query;
+    const id_producto = req.params.id;
+    const body = req.body;
+
     try {
-      const sql =
-        "UPDATE precios SET precio_pesos_iva = ? WHERE (id_producto = ? AND id_proveedor = ?);";
-      const resultado = db.execute(sql, [
-        nuevo_precio,
-        producto_id,
-        proveedor_id,
-      ]);
-      if (resultado.affectedRows == 0) {
-        res
-          .status(400)
-          .send({ mensaje: "Id producto o id proveedor invalido" });
+      const [producto] = await db.query(
+        "SELECT id_producto, nombre FROM productos WHERE id_producto = ?",
+        [id_producto]
+      );
+
+      if (!producto || producto.length === 0) {
+        return res.status(404).json({
+          mensaje: "Producto no encontrado.",
+          success: false,
+        });
       }
-      res.status(200).send({ mensaje: "Precio actualizado" });
+
+      let updateFields = [];
+      let updateValues = [];
+
+      const fieldMapping = {
+        nombre: "nombre",
+        detalle: "detalle",
+        garantia_meses: "garantia_meses",
+        codigo_fabricante: "codigo_fabricante",
+      };
+
+      for (const [key, dbColumn] of Object.entries(fieldMapping)) {
+        if (body[key] !== undefined && body[key] !== "") {
+          updateFields.push(`${dbColumn} = ?`);
+          updateValues.push(body[key]);
+        }
+      }
+
+      if (updateFields.length > 0) {
+        updateValues.push(id_producto);
+        const sqlProductos = `UPDATE productos SET ${updateFields.join(
+          ", "
+        )} WHERE id_producto = ?;`;
+
+        await db.execute(sqlProductos, updateValues);
+        console.log(`Producto ${id_producto} actualizado en tabla productos`);
+      }
+
+      if (
+        body.precio_pesos_iva_ajustado !== undefined &&
+        body.precio_pesos_iva_ajustado !== ""
+      ) {
+        const id_proveedor = body.id_proveedor || 1;
+        const sqlPrecios = `UPDATE precios SET precio_pesos_iva = ? WHERE id_producto = ? AND id_proveedor = ?;`;
+
+        await db.execute(sqlPrecios, [
+          body.precio_pesos_iva_ajustado,
+          id_producto,
+          id_proveedor,
+        ]);
+        console.log(`Precio actualizado para producto ${id_producto}`);
+      }
+
+      if (body.url_imagen && body.url_imagen.trim() !== "") {
+        const urlImagen = body.url_imagen.trim();
+
+        if (!urlImagen.startsWith("http")) {
+          return res.status(400).json({
+            mensaje: "La URL de la imagen debe comenzar con http:// o https://",
+            success: false,
+          });
+        }
+
+        try {
+          console.log(
+            `Procesando imagen para producto ${id_producto}: ${urlImagen.substring(
+              0,
+              80
+            )}...`
+          );
+
+          const resultado = await guardarImagenEnBaseDatos(
+            urlImagen,
+            id_producto
+          );
+
+          if (resultado.estado !== ESTADOS_PROCESAMIENTO.EXITOSO) {
+            console.log(
+              `⚠️ Warning: No se pudo agregar la imagen: ${resultado.mensaje}`
+            );
+          } else {
+            console.log(
+              `Imagen agregada exitosamente - ID imagen: ${resultado.idImagen}`
+            );
+          }
+        } catch (imageError) {
+          console.error("Error al procesar imagen:", imageError);
+        }
+      }
+
+      res.status(200).json({
+        mensaje: "Producto actualizado con éxito.",
+        success: true,
+        data: {
+          id_producto: id_producto,
+          nombre: producto[0].nombre,
+        },
+      });
     } catch (error) {
-      res.status(500).send({ error: error });
+      console.error("Error al actualizar producto:", error);
+      return res.status(500).json({
+        mensaje: "Error interno del servidor al actualizar el producto.",
+        success: false,
+        error: error.message,
+      });
     }
   }
 );

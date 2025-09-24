@@ -183,35 +183,88 @@ export default function ProductCard() {
   }, []);
 
   const handleGuardarEdicion = async () => {
-    const nuevo_precio = formEdit.precio_pesos_iva;
     const producto_id = productoEditando.id_producto;
-    const proveedor_id = productoEditando.id_proveedor || 1;
+    const dataToSend = {};
+
+    if (
+      formEdit.nombre !== productoEditando.nombre &&
+      formEdit.nombre.trim() !== ""
+    ) {
+      dataToSend.nombre = formEdit.nombre.trim();
+    }
+
+    if (formEdit.stock !== productoEditando.stock) {
+      dataToSend.stock = Number(formEdit.stock);
+    }
+
+    if (formEdit.detalle !== productoEditando.detalle) {
+      dataToSend.detalle = formEdit.detalle;
+    }
+
+    if (formEdit.garantia_meses !== productoEditando.garantia_meses) {
+      dataToSend.garantia_meses = Number(formEdit.garantia_meses);
+    }
+
+    if (formEdit.codigo_fabricante !== productoEditando.codigo_fabricante) {
+      dataToSend.codigo_fabricante = formEdit.codigo_fabricante;
+    }
+
+    if (
+      formEdit.precio_pesos_iva_ajustado !==
+      productoEditando.precio_pesos_iva_ajustado
+    ) {
+      dataToSend.precio_pesos_iva_ajustado = Number(
+        formEdit.precio_pesos_iva_ajustado
+      );
+      dataToSend.id_proveedor = formEdit.id_proveedor || 1;
+    }
+
+    if (formEdit.url_imagen && formEdit.url_imagen.trim() !== "") {
+      dataToSend.url_imagen = formEdit.url_imagen.trim();
+    }
+
+    if (Object.keys(dataToSend).length === 0) {
+      Swal.fire({
+        icon: "info",
+        title: "Sin cambios",
+        text: "No se detectaron cambios en el producto.",
+        confirmButtonColor: "#3085d6",
+      });
+      setOpenEditar(false);
+      return;
+    }
 
     try {
-      const response = await fetch(
-        `${url}/productos/${producto_id}?nuevo_precio=${nuevo_precio}&producto_id=${producto_id}&proveedor_id=${proveedor_id}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${sesion.token}`,
-          },
-        }
-      );
+      const response = await fetch(`${url}/productos/${producto_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sesion.token}`,
+        },
+        body: JSON.stringify(dataToSend),
+      });
 
-      if (response.ok) {
+      const responseData = await response.json();
+
+      if (response.ok && responseData.success) {
         Swal.fire({
           icon: "success",
-          title: "Precio actualizado",
-          text: `El precio fue modificado correctamente.`,
+          title: "Producto actualizado",
+          text: `El producto "${
+            responseData.data?.nombre || "sin nombre"
+          }" fue modificado correctamente.`,
           confirmButtonColor: "#3085d6",
         });
-        getProductos();
+
+        await getProductos();
         setOpenEditar(false);
+        setProductoEditando(null);
+        setFormEdit({});
       } else {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "No se pudo actualizar el precio.",
+          text: responseData.mensaje || "No se pudo actualizar el producto.",
           confirmButtonColor: "#d33",
         });
       }
@@ -220,7 +273,7 @@ export default function ProductCard() {
       Swal.fire({
         icon: "error",
         title: "Error de red",
-        text: "No se pudo conectar con el servidor.",
+        text: "No se pudo conectar con el servidor. Verifica tu conexión.",
         confirmButtonColor: "#d33",
       });
     }
@@ -391,9 +444,13 @@ export default function ProductCard() {
                           setProductoEditando(producto);
                           setFormEdit({
                             nombre: producto.nombre || "",
+                            stock: producto.stock || 0,
                             detalle: producto.detalle || "",
-                            precio: producto.precio_pesos_iva_ajustado || "",
-                            stock: producto.stock || "",
+                            garantia_meses: producto.garantia_meses || 0,
+                            codigo_fabricante: producto.codigo_fabricante || "",
+                            precio_pesos_iva_ajustado:
+                              producto.precio_pesos_iva_ajustado || 0,
+                            id_proveedor: producto.id_proveedor || 1,
                           });
                           setOpenEditar(true);
                         }}
@@ -547,17 +604,74 @@ export default function ProductCard() {
                 </IconButton>
               </DialogTitle>
               <DialogContent dividers>
-                <Typography>{}</Typography>
+                <TextField
+                  fullWidth
+                  label="Nombre del Producto"
+                  margin="normal"
+                  value={formEdit.nombre || ""}
+                  onChange={(e) =>
+                    setFormEdit({ ...formEdit, nombre: e.target.value })
+                  }
+                />
+                <TextField
+                  fullWidth
+                  label="Detalle"
+                  multiline
+                  rows={4}
+                  margin="normal"
+                  value={formEdit.detalle || ""}
+                  onChange={(e) =>
+                    setFormEdit({ ...formEdit, detalle: e.target.value })
+                  }
+                />
+                <TextField
+                  fullWidth
+                  label="Garantía (meses)"
+                  type="number"
+                  margin="normal"
+                  value={formEdit.garantia_meses || 0}
+                  onChange={(e) =>
+                    setFormEdit({
+                      ...formEdit,
+                      garantia_meses: Number(e.target.value),
+                    })
+                  }
+                />
+                <TextField
+                  fullWidth
+                  label="Código de Fabricante"
+                  margin="normal"
+                  value={formEdit.codigo_fabricante || ""}
+                  onChange={(e) =>
+                    setFormEdit({
+                      ...formEdit,
+                      codigo_fabricante: e.target.value,
+                    })
+                  }
+                />
                 <TextField
                   fullWidth
                   label="Precio con IVA"
                   type="number"
                   margin="normal"
-                  value={formEdit.precio_pesos_iva || 0}
+                  value={formEdit.precio_pesos_iva_ajustado || 0}
                   onChange={(e) =>
                     setFormEdit({
                       ...formEdit,
-                      precio_pesos_iva: e.target.value,
+                      precio_pesos_iva_ajustado: e.target.value,
+                    })
+                  }
+                />
+
+                <TextField
+                  fullWidth
+                  label="Url imagen"
+                  margin="normal"
+                  value={formEdit.url_imagen || ""}
+                  onChange={(e) =>
+                    setFormEdit({
+                      ...formEdit,
+                      url_imagen: e.target.value,
                     })
                   }
                 />
