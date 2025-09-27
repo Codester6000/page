@@ -19,18 +19,19 @@ const ESTADOS_PROCESAMIENTO = {
 };
 async function guardarImagenEnBaseDatos(urlImagen, idProducto) {
   try {
-    const [resultado] = await db.query("CALL cargar_imagen_nueva(?, ?)", [
-      urlImagen,
+    const [resultado] = await db.query("CALL reemplazar_imagen_producto(?,?)", [
       idProducto,
+      urlImagen,
     ]);
 
+    const row = resultado[0];
     return {
-      estado: resultado[0]?.estado || ESTADOS_PROCESAMIENTO.EXITOSO,
-      mensaje: resultado[0]?.mensaje || "Imagen cargada exitosamente",
-      idImagen: resultado[0]?.id_imagen,
+      estado: row?.estado || ESTADOS_PROCESAMIENTO.EXITOSO,
+      mensaje: row?.mensaje || "Imagen cargada exitosamente",
+      idImagen: row?.id_imagen,
     };
   } catch (error) {
-    throw new Error(`Error en stored procedure: ${error.message}`);
+    throw new Error(`Error guardando imagen: ${error.message}`);
   }
 }
 
