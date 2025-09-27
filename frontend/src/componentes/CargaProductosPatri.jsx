@@ -712,33 +712,6 @@ const CargaProductos = () => {
     <div className="contenedor-principal">
       <h1 className="titulo-app">Sistema de Carga Masiva de Productos</h1>
 
-      {/* BorradoDeImagenes */}
-      <div className="card">
-        <h2 className="titulo-seccion">
-          Eliminado de productos y relacionados
-        </h2>
-        <form onSubmit={handleBorrarProd} className="formulario">
-          <button
-            type="submit"
-            className="btn btn-azul"
-            disabled={cargandoBorrado}
-          >
-            {cargandoBorrado ? "Eliminando..." : "Eliminar todo"}
-          </button>
-        </form>
-
-        {/* Mostrar resultado del borrado */}
-        {resultadoBorrado && (
-          <div
-            className={`mensaje-borrado ${
-              resultadoBorrado.success ? "ok" : "error"
-            }`}
-          >
-            <p>{resultadoBorrado.mensaje}</p>
-          </div>
-        )}
-      </div>
-
       {/* Excel */}
       <div className="card">
         <h2 className="titulo-seccion">Carga de Artículos Modex (Excel)</h2>
@@ -823,6 +796,33 @@ const CargaProductos = () => {
             datos={productosSinImagen}
             onActualizar={handleActualizarListaProductos}
           />
+        )}
+      </div>
+
+      {/* BorradoDeImagenes */}
+      <div className="card">
+        <h2 className="titulo-seccion">
+          Eliminado de productos y relacionados
+        </h2>
+        <form onSubmit={handleBorrarProd} className="formulario">
+          <button
+            type="submit"
+            className="btn btn-azul"
+            disabled={cargandoBorrado}
+          >
+            {cargandoBorrado ? "Eliminando..." : "Eliminar todo"}
+          </button>
+        </form>
+
+        {/* Mostrar resultado del borrado */}
+        {resultadoBorrado && (
+          <div
+            className={`mensaje-borrado ${
+              resultadoBorrado.success ? "ok" : "error"
+            }`}
+          >
+            <p>{resultadoBorrado.mensaje}</p>
+          </div>
         )}
       </div>
     </div>
