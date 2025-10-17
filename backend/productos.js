@@ -262,6 +262,8 @@ productosRouter.put(
         console.log(`Producto ${id_producto} actualizado en tabla productos`);
       }
 
+      let precioActualizado = null;
+
       if (
         body.precio_pesos_iva_ajustado !== undefined &&
         body.precio_pesos_iva_ajustado !== ""
@@ -269,12 +271,23 @@ productosRouter.put(
         const id_proveedor = body.id_proveedor || 1;
         const sqlPrecios = `UPDATE precios SET precio_pesos_iva = ? WHERE id_producto = ? AND id_proveedor = ?;`;
 
-        await db.execute(sqlPrecios, [
+        const result = await db.execute(sqlPrecios, [
           body.precio_pesos_iva_ajustado,
           id_producto,
           id_proveedor,
         ]);
+
         console.log(`Precio actualizado para producto ${id_producto}`);
+        console.log(`Filas afectadas: ${result.affectedRows}`);
+
+        // Si no se actualizó nada, probablemente no existe ese id_proveedor
+        if (result.affectedRows === 0) {
+          console.warn(
+            `⚠️ No se encontró registro de precio para producto ${id_producto} con proveedor ${id_proveedor}`
+          );
+        } else {
+          precioActualizado = body.precio_pesos_iva_ajustado;
+        }
       }
 
       if (body.url_imagen && body.url_imagen.trim() !== "") {
@@ -320,6 +333,7 @@ productosRouter.put(
         data: {
           id_producto: id_producto,
           nombre: producto[0].nombre,
+          precio_actualizado: precioActualizado,
         },
       });
     } catch (error) {
