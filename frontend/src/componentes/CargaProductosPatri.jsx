@@ -2,13 +2,13 @@
 import { useState } from "react";
 import axios from "axios";
 import "../styles/CargaProductos.css";
+const url = import.meta.env.VITE_URL_BACK; //aca deberia ir
 
 // ================== COMPONENTES DE RESULTADOS ==================
 const ResultadosGenericos = ({ titulo, resultados }) => {
   if (!resultados) return null;
 
   const { mensaje, estadisticas, detalles } = resultados;
-  const url = import.meta.env.VITE_URL_BACK;
 
   return (
     <div className="resultados">
