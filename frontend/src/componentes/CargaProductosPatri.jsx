@@ -8,6 +8,7 @@ const ResultadosGenericos = ({ titulo, resultados }) => {
   if (!resultados) return null;
 
   const { mensaje, estadisticas, detalles } = resultados;
+  const url = import.meta.env.VITE_URL_BACK;
 
   return (
     <div className="resultados">
@@ -170,13 +171,10 @@ const ModalAgregarImagen = ({
     setMensaje("");
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/cargar/imagen-manualmente",
-        {
-          idProducto: producto.id_producto,
-          urlImagen: urlImagen.trim(),
-        }
-      );
+      const response = await axios.post(`${url}/cargar/imagen-manualmente`, {
+        idProducto: producto.id_producto,
+        urlImagen: urlImagen.trim(),
+      });
 
       if (response.data.success) {
         setMensaje(`✅ ${response.data.mensaje}`);
@@ -552,7 +550,7 @@ const CargaProductos = () => {
     setResultadoBorrado(null);
 
     try {
-      const response = await axios.post("http://localhost:3000/borrado");
+      const response = await axios.post(`${url}/borrado`);
       setResultadoBorrado(response.data);
     } catch (error) {
       setResultadoBorrado({
@@ -580,7 +578,7 @@ const CargaProductos = () => {
     setCargandoExcel(true);
     try {
       const response = await axios.post(
-        "http://localhost:3000/renovar-modex/cargar-articulos",
+        `${url}/renovar-modex/cargar-articulos`,
         formData
       );
       setResultadosExcel(response.data);
@@ -607,7 +605,7 @@ const CargaProductos = () => {
     setCargandoCSV(true);
     try {
       const response = await axios.post(
-        "http://localhost:3000/renovar/cargar-productos",
+        `${url}/renovar/cargar-productos`,
         formData
       );
       setResultadosCSV(response.data);
@@ -623,9 +621,7 @@ const CargaProductos = () => {
     setResultadosImg(null);
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/cargar/imagenes"
-      );
+      const response = await axios.post(`${url}/cargar/imagenes`);
       setResultadosImg(response.data);
     } catch (error) {
       setResultadosImg({
@@ -643,9 +639,7 @@ const CargaProductos = () => {
     setProductosSinImagen(null);
 
     try {
-      const response = await axios.get(
-        "http://localhost:3000/cargar/productos-sin-imagen"
-      );
+      const response = await axios.get(`${url}/cargar/productos-sin-imagen`);
 
       // Adaptamos a la estructura de respuesta real de la API
       if (
