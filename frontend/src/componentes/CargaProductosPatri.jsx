@@ -2,19 +2,17 @@
 import { useState } from "react";
 import axios from "axios";
 import "../styles/CargaProductos.css";
+const url = import.meta.env.VITE_URL_BACK; //aca deberia ir
 
-// ================== COMPONENTES DE RESULTADOS ==================
 const ResultadosGenericos = ({ titulo, resultados }) => {
   if (!resultados) return null;
 
   const { mensaje, estadisticas, detalles } = resultados;
-  const url = import.meta.env.VITE_URL_BACK;
 
   return (
     <div className="resultados">
       <h3>{titulo}</h3>
 
-      {/* Caso CSV (formateado) */}
       {mensaje && (
         <>
           <p>
@@ -23,7 +21,7 @@ const ResultadosGenericos = ({ titulo, resultados }) => {
 
           {estadisticas && (
             <div className="estadisticas">
-              <h4>📌 Estadísticas</h4>
+              <h4>Estadísticas</h4>
               <ul>
                 <li>Total filas: {estadisticas.totalFilasCSV}</li>
                 <li>
@@ -36,7 +34,7 @@ const ResultadosGenericos = ({ titulo, resultados }) => {
 
               {estadisticas.detallesAdicionales && (
                 <>
-                  <h5>📂 Detalles adicionales</h5>
+                  <h5>Detalles adicionales</h5>
                   <p>
                     <strong>Procesadores:</strong>{" "}
                     {estadisticas.detallesAdicionales.procesadores ?? 0}
@@ -69,7 +67,6 @@ const ResultadosGenericos = ({ titulo, resultados }) => {
           )}
         </>
       )}
-      {/* Caso Excel u otros (fallback genérico) */}
       {!mensaje && <pre>{JSON.stringify(resultados, null, 2)}</pre>}
     </div>
   );
@@ -83,7 +80,7 @@ const ResultadosImagenes = ({ resultados }) => {
 
   return (
     <div className="resultados">
-      <h3>🖼️ Resultados Imágenes</h3>
+      <h3>Resultados Imágenes</h3>
       {mensaje && (
         <p>
           <strong>{mensaje}</strong>
@@ -92,15 +89,15 @@ const ResultadosImagenes = ({ resultados }) => {
 
       {estadisticas && (
         <>
-          <h4>📌 Estadísticas</h4>
+          <h4> Estadísticas</h4>
           <ul>
             <li>Total productos: {estadisticas.totalProductos}</li>
             <li>Procesados: {estadisticas.productosProcesados}</li>
             <li>Ya con imagen: {estadisticas.productosYaConImagen}</li>
-            <li>✔️ Exitosos: {estadisticas.resultados.exitosos}</li>
-            <li>⚠️ Sin imagen: {estadisticas.resultados.sinImagen}</li>
+            <li>Exitosos: {estadisticas.resultados.exitosos}</li>
+            <li>Sin imagen: {estadisticas.resultados.sinImagen}</li>
             <li>
-              ❌ Imágenes inválidas: {estadisticas.resultados.imagenesInvalidas}
+              Imágenes inválidas: {estadisticas.resultados.imagenesInvalidas}
             </li>
             <li>Errores: {estadisticas.resultados.errores}</li>
           </ul>
@@ -120,7 +117,7 @@ const ResultadosImagenes = ({ resultados }) => {
 
       {detalleResultados?.length > 0 && (
         <div className="detalle-productos">
-          <h4>📌 Detalle de productos (máx. 15 mostrados)</h4>
+          <h4> Detalle de productos (máx. 15 mostrados)</h4>
           <table className="tabla-resultados">
             <thead>
               <tr>
@@ -140,7 +137,7 @@ const ResultadosImagenes = ({ resultados }) => {
             </tbody>
           </table>
           {detalleResultados.length > 15 && (
-            <p>⚠️ Mostrando solo los primeros 15 productos...</p>
+            <p>Mostrando solo los primeros 15 productos...</p>
           )}
         </div>
       )}
@@ -148,7 +145,6 @@ const ResultadosImagenes = ({ resultados }) => {
   );
 };
 
-// ================== NUEVO COMPONENTE: MODAL PARA AGREGAR IMAGEN ==================
 const ModalAgregarImagen = ({
   producto,
   isOpen,
@@ -177,18 +173,18 @@ const ModalAgregarImagen = ({
       });
 
       if (response.data.success) {
-        setMensaje(`✅ ${response.data.mensaje}`);
+        setMensaje(` ${response.data.mensaje}`);
         setTimeout(() => {
           onImagenAgregada(producto.id_producto);
           onClose();
         }, 1500);
       } else {
-        setMensaje(`❌ ${response.data.mensaje || "Error al agregar imagen"}`);
+        setMensaje(` ${response.data.mensaje || "Error al agregar imagen"}`);
       }
     } catch (error) {
       const errorMsg =
         error.response?.data?.mensaje || "Error al conectar con el servidor";
-      setMensaje(`❌ ${errorMsg}`);
+      setMensaje(` ${errorMsg}`);
     } finally {
       setCargando(false);
     }
@@ -240,7 +236,7 @@ const ModalAgregarImagen = ({
             {mensaje && (
               <div
                 className={`mensaje-modal ${
-                  mensaje.startsWith("✅") ? "success" : "error"
+                  mensaje.startsWith("") ? "success" : "error"
                 }`}
               >
                 {mensaje}
@@ -555,7 +551,7 @@ const CargaProductos = () => {
     } catch (error) {
       setResultadoBorrado({
         success: false,
-        mensaje: "❌ Error al conectar con el servidor",
+        mensaje: " Error al conectar con el servidor",
       });
     } finally {
       setCargandoBorrado(false);
@@ -697,7 +693,7 @@ const CargaProductos = () => {
         mensaje:
           productosActualizados.length > 0
             ? `Se encontraron ${productosActualizados.length} productos que NO tienen imagen asignada`
-            : "✅ Todos los productos ya tienen imagen asignada",
+            : " Todos los productos ya tienen imagen asignada",
       });
     }
   };
