@@ -10,6 +10,14 @@ import {
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
+import {
+  esAdmin,
+  esSuperAdmin,
+  esSubAdmin,
+  esEmpleado,
+  esCliente,
+  tieneRol,
+} from "../utils/authHelpers";
 
 //  Crear contexto
 const AuthContext = createContext();
@@ -88,12 +96,47 @@ export const AuthRol = ({ rol, children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // Convertir ambos a string para que coincidan correctamente
-  if (String(sesion.rol).trim() !== String(rol).trim()) {
+  const rolesPermitidos = Array.isArray(rol) ? rol : [rol];
+
+  const tienePermiso = rolesPermitidos.some(
+    (r) => String(sesion.rol).trim() === String(r).trim()
+  );
+
+  if (!tienePermiso) {
     return null;
   }
 
   return children;
+};
+
+export const useIsAdmin = () => {
+  const { sesion } = useAuth();
+  return esAdmin(sesion);
+};
+
+export const useIsSuperAdmin = () => {
+  const { sesion } = useAuth();
+  return esSuperAdmin(sesion);
+};
+
+export const useIsSubAdmin = () => {
+  const { sesion } = useAuth();
+  return esSubAdmin(sesion);
+};
+
+export const useIsEmpleado = () => {
+  const { sesion } = useAuth();
+  return esEmpleado(sesion);
+};
+
+export const useIsCliente = () => {
+  const { sesion } = useAuth();
+  return esCliente(sesion);
+};
+
+export const useTieneRol = (roles) => {
+  const { sesion } = useAuth();
+  return tieneRol(sesion, roles);
 };
 
 // 👤 Estado de autenticación con menú desplegable
