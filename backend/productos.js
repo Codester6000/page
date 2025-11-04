@@ -93,7 +93,7 @@ productosRouter.get("/categorias", async (req, res) => {
 productosRouter.post(
   "/detalle/:id",
   validarJwt,
-  validarRol(2),
+  validarRol([2, 4]),
   validarId,
   verificarValidaciones,
   async (req, res) => {
@@ -131,7 +131,7 @@ productosRouter.get(
 productosRouter.post(
   "/",
   validarJwt,
-  validarRol(2),
+  validarRol([2, 4]),
   validarBodyProducto(),
   verificarValidaciones,
   async (req, res) => {
@@ -196,7 +196,7 @@ productosRouter.post(
 productosRouter.delete(
   "/:id",
   validarJwt,
-  validarRol(2),
+  validarRol([2, 4]),
   validarId,
   async (req, res) => {
     const id = req.params.id;
@@ -215,7 +215,7 @@ productosRouter.delete(
 productosRouter.put(
   "/:id",
   validarJwt,
-  validarRol(2),
+  validarRol([2, 4]),
   validarId,
   verificarValidaciones,
   async (req, res) => {
