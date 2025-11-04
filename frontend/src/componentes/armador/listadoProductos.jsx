@@ -255,15 +255,9 @@ export function ListadoProductos({
                     height: 35,
                   }}
                 >
-                  <Tooltip title={`Proveedor: ${producto.nombre_proveedor}`}>
+                  <Tooltip title="Entrega estimada: 5 días">
                     <img
-                      src={
-                        producto.nombre_proveedor === "air"
-                          ? "/badges/24HS.png"
-                          : producto.nombre_proveedor === "elit"
-                          ? "/badges/5_DIAS.png"
-                          : "/badges/LOCAL.png"
-                      }
+                      src="/badges/5_DIAS.png"
                       alt={producto.nombre_proveedor}
                       style={{
                         width: "100%",

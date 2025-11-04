@@ -105,6 +105,11 @@ export default function FormularioMantenimiento() {
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+
+    // Limpiar detalles si se cambia el tipo de producto
+    if (name === "nombre_producto") {
+      setDetalles({});
+    }
   };
 
   const handleDetallesChange = (e) => {
@@ -118,8 +123,8 @@ export default function FormularioMantenimiento() {
 
     const payload = {
       ...form,
-      username: form.username?.trim() || null,
-      empleado_asignado: form.empleado_asignado || null,
+      username: form.username?.trim() ? form.username.trim() : null,
+      empleado_asignado: form.empleado_asignado ? form.empleado_asignado : null,
       detalles,
     };
 
@@ -195,10 +200,13 @@ export default function FormularioMantenimiento() {
             <Autocomplete
               freeSolo
               options={usuarios.map((u) => u.username)}
-              value={form.username}
-              onInputChange={(e, newValue) =>
-                setForm((prev) => ({ ...prev, username: newValue }))
-              }
+              value={form.username || ""}
+              onChange={(event, newValue) => {
+                setForm((prev) => ({ ...prev, username: newValue || "" }));
+              }}
+              onInputChange={(event, newInputValue) => {
+                setForm((prev) => ({ ...prev, username: newInputValue || "" }));
+              }}
               renderInput={(params) => (
                 <TextField {...params} label="Usuario (opcional)" fullWidth />
               )}
@@ -206,12 +214,12 @@ export default function FormularioMantenimiento() {
           </Grid>
 
           {[
-            ["DNI Propietario", "dni_propietario"],
+            ["DNI Propietario", "dni_propietario", "number"],
             ["Responsable de Retiro", "responsable_de_retiro"],
             ["Teléfono", "telefono"],
             ["Dirección", "direccion_propietario"],
             ["Email", "mail"],
-            ["Descripción", "descripcion_producto"],
+            ["Descripción (Falla)", "descripcion_producto", "text", true],
             ["Observaciones", "observaciones"],
           ].map(([label, name]) => (
             <Grid item xs={12} sm={6} key={name}>
@@ -221,6 +229,8 @@ export default function FormularioMantenimiento() {
                 value={form[name] || ""}
                 onChange={handleFormChange}
                 fullWidth
+                multiline={name === "descripcion_producto"}
+                rows={name === "descripcion_producto" ? 2 : 1}
                 required
               />
             </Grid>

@@ -70,52 +70,31 @@ class ArmadorService {
    * Calcula el consumo estimado basado en el nombre del procesador
    */
   static calcularConsumoEstimado(nombre) {
-    const nombreUpper = nombre.toUpperCase();
+    if (!nombre) return 65; // TDP base por defecto
+    const upperName = nombre.toUpperCase();
 
-    // Ryzen 3 o Intel I3
-    if (
-      (nombreUpper.includes("RYZEN") && nombreUpper.includes("3")) ||
-      nombreUpper.includes("I3")
-    ) {
-      return 65;
-    }
+    // Patrones para Intel (más específicos primero)
+    if (upperName.includes("I9-13900") || upperName.includes("I9-14900"))
+      return 253;
+    if (upperName.includes("I7-13700") || upperName.includes("I7-14700"))
+      return 253;
+    if (upperName.includes("I9")) return 150;
+    if (upperName.includes("I7")) return 125;
+    if (upperName.includes("I5-13600") || upperName.includes("I5-14600"))
+      return 181;
+    if (upperName.includes("I5")) return 125;
+    if (upperName.includes("I3")) return 89;
 
-    // Ryzen 5 o Intel I5
-    if (
-      (nombreUpper.includes("RYZEN") && nombreUpper.includes("5")) ||
-      nombreUpper.includes("I5")
-    ) {
-      return 90;
-    }
+    // Patrones para AMD (más específicos primero)
+    if (upperName.includes("RYZEN 9") && upperName.includes("X")) return 170;
+    if (upperName.includes("RYZEN 9")) return 120;
+    if (upperName.includes("RYZEN 7") && upperName.includes("X")) return 105;
+    if (upperName.includes("RYZEN 7")) return 65;
+    if (upperName.includes("RYZEN 5") && upperName.includes("X")) return 95;
+    if (upperName.includes("RYZEN 5")) return 65;
+    if (upperName.includes("RYZEN 3")) return 65;
 
-    // Ryzen 7 o Intel I7
-    if (
-      (nombreUpper.includes("RYZEN") && nombreUpper.includes("7")) ||
-      nombreUpper.includes("I7")
-    ) {
-      if (
-        nombreUpper.includes("7950X") ||
-        nombreUpper.includes("7900X") ||
-        nombreUpper.includes("I7-13700") ||
-        nombreUpper.includes("I7-12700")
-      ) {
-        return 180;
-      }
-      return 140;
-    }
-
-    // Ryzen 9 o Intel I9
-    if (
-      (nombreUpper.includes("RYZEN") && nombreUpper.includes("9")) ||
-      nombreUpper.includes("I9")
-    ) {
-      if (nombreUpper.includes("I9-13900") || nombreUpper.includes("9950X")) {
-        return 240;
-      }
-      return 180;
-    }
-
-    return 65;
+    return 65; // TDP base por defecto si no coincide nada
   }
 
   /**
@@ -126,7 +105,7 @@ class ArmadorService {
 
     let socketRequerido = null;
     let ramRequerida = null;
-    let consumoTotal = 0;
+    let consumoTotal = 50; // Consumo base para Motherboard, RAM, SSD
 
     // Analizar procesador seleccionado
     if (procesador_id) {
@@ -203,7 +182,7 @@ class ArmadorService {
       socketRequerido,
       ramRequerida,
       consumoTotal,
-      fuenteMinima: Math.ceil(consumoTotal * 1.85),
+      fuenteMinima: Math.ceil(consumoTotal * 1.5), // Margen de 50%
     };
   }
 
@@ -555,9 +534,7 @@ armadorRouter.get(
       // Agregar consumo adicional si se especifica
       if (consumoW && !isNaN(consumoW)) {
         restricciones.consumoTotal += Number(consumoW);
-        restricciones.fuenteMinima = Math.ceil(
-          restricciones.consumoTotal * 1.85
-        );
+        restricciones.fuenteMinima = Math.ceil(restricciones.consumoTotal * 1.5);
       }
 
       console.log("Restricciones calculadas:", restricciones);
