@@ -8,7 +8,7 @@ import deli from "/iconos/deli.png";
 import local from "/iconos/local.png";
 import editSvg from "../assets/edit.svg";
 import EditIcon from "@mui/icons-material/Edit";
-import { useAuth } from "../Auth";
+import { useAuth, useIsAdmin } from "../Auth";
 import { useNavigate } from "react-router-dom";
 import {
   Snackbar,
@@ -42,7 +42,7 @@ export default function Producto() {
   // Estados para edición (nuevos)
   const [openEditar, setOpenEditar] = useState(false);
   const [formEdit, setFormEdit] = useState({});
-  const esAdmin = sesion && (sesion.rol === "admin" || sesion.rol === 2);
+  const esAdmin = useIsAdmin();
 
   const disponible = (producto) => {
     producto?.stock == 0

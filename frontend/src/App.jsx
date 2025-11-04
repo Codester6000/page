@@ -35,6 +35,7 @@ import CargarProducto from "./componentes/mantenimiento/cargaDeProducto";
 import VerMantenimiento from "./componentes/mantenimiento/VerMantenimiento";
 import TablaMantenimientos from "./componentes/mantenimiento/TablaMantenimientos";
 import CargaProductosPatri from "./componentes/CargaProductosPatri";
+import GestionUsuarios from "./componentes/Usuarios";
 
 function App() {
   const { sesion, logout } = useAuth();
@@ -62,7 +63,7 @@ function App() {
           path="/empleados/alta"
           element={
             <AuthPage>
-              <AuthRol rol="2">
+              <AuthRol rol={[2, 4]}>
                 <AltaEmpleado />
               </AuthRol>
             </AuthPage>
@@ -72,7 +73,7 @@ function App() {
           path="/empleados/panel"
           element={
             <AuthPage>
-              <AuthRol rol="2">
+              <AuthRol rol={[2, 4]}>
                 <PanelEmpleados />
               </AuthRol>
             </AuthPage>
@@ -91,7 +92,7 @@ function App() {
           path="/mantenimiento/ingreso"
           element={
             <AuthPage>
-              <AuthRol rol="2">
+              <AuthRol rol={[2, 4]}>
                 <CargarProducto />
               </AuthRol>
             </AuthPage>
@@ -102,8 +103,19 @@ function App() {
           path="/mantenimiento/tabla"
           element={
             <AuthPage>
-              <AuthRol rol="2">
+              <AuthRol rol={[2, 4]}>
                 <TablaMantenimientos />
+              </AuthRol>
+            </AuthPage>
+          }
+        />
+
+        <Route
+          path="/usuarios"
+          element={
+            <AuthPage>
+              <AuthRol rol="2">
+                <GestionUsuarios />
               </AuthRol>
             </AuthPage>
           }
@@ -114,8 +126,15 @@ function App() {
         <Route path="/faqs" element={<PreguntasFrecuentes />} />
         <Route
           path="/carga-productos-patri"
-          element={<CargaProductosPatri />}
+          element={
+            <AuthPage>
+              <AuthRol rol={[2, 4]}>
+                <CargaProductosPatri />
+              </AuthRol>
+            </AuthPage>
+          }
         />
+
         <Route
           path="/metricas"
           element={
@@ -164,7 +183,7 @@ function App() {
           path="/ventas"
           element={
             <AuthPage>
-              <AuthRol rol="2">
+              <AuthRol rol={[2, 4]}>
                 <Ventas />
               </AuthRol>
             </AuthPage>

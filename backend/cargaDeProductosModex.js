@@ -17,12 +17,12 @@ const upload = multer({ dest: "uploads" });
 // ============================================================================
 
 const CONFIG = {
-  PRECIO_MINIMO_GENERAL: 30000, // Precio mínimo en pesos para cualquier producto
-  PRECIO_MINIMO_USADO: 300000, // Precio mínimo específico para productos usados
-  PRECIO_MINIMO_PROCESADOR: 64999, // Precio mínimo para productos que contengan "procesador"
-  IVA_POR_DEFECTO: 21, // IVA por defecto en porcentaje
-  GARANTIA_MESES_DEFECTO: 6, // Garantía por defecto en meses
-  COTIZACION_DOLAR_DEFECTO: 1, // Cotización por defecto si falla la API
+  PRECIO_MINIMO_GENERAL: 30000,
+  PRECIO_MINIMO_USADO: 300000,
+  PRECIO_MINIMO_PROCESADOR: 64999,
+  IVA_POR_DEFECTO: 21,
+  GARANTIA_MESES_DEFECTO: 6,
+  COTIZACION_DOLAR_DEFECTO: 1,
   IMAGEN_POR_DEFECTO: "https://i.imgur.com/0wbrCkz.png",
 };
 
@@ -47,69 +47,35 @@ const VALORES_POR_DEFECTO = {
 // FUNCIONES UTILITARIAS
 // ============================================================================
 
-/**
- * Convierte un valor a número, manejando comas como separador decimal
- * @param {any} valor - Valor a convertir
- * @returns {number} - Número parseado o 0 si no es válido
- */
 function convertirANumero(valor) {
   if (!valor && valor !== 0) return 0;
-
   const valorLimpio = valor.toString().replace(",", ".");
   const numeroParsado = parseFloat(valorLimpio);
-
   return isNaN(numeroParsado) ? 0 : numeroParsado;
 }
 
-/**
- * Normaliza el texto de moneda a un formato estándar
- * @param {string} textoMoneda - Texto que representa la moneda
- * @returns {string} - "dolares" o "pesos"
- */
 function normalizarTipoMoneda(textoMoneda) {
   if (!textoMoneda) return "pesos";
-
   const textoLimpio = textoMoneda.toString().toLowerCase().trim();
-
   const esDolar =
     textoLimpio.includes("ólar") ||
     textoLimpio.includes("dolar") ||
     textoLimpio.includes("usd");
-
   return esDolar ? "dolares" : "pesos";
 }
 
-/**
- * Valida y formatea el código de fabricante
- * @param {string} codigo - Código a validar
- * @returns {string|null} - Código formateado o null si es inválido
- */
 function validarYFormatearCodigoFabricante(codigo) {
   if (!codigo || codigo.toString().trim().length <= 2) {
     return null;
   }
-
   return codigo.toString().trim().toUpperCase();
 }
 
-/**
- * Genera un código de fabricante temporal único
- * @param {number} numeroFila - Número de fila para hacer único el código
- * @returns {string} - Código temporal generado
- */
 function generarCodigoTemporal(numeroFila) {
   const timestamp = Date.now();
   return `MODEX-${timestamp}-${numeroFila}`;
 }
 
-/**
- * Determina el código de fabricante con prioridad: codInt > codBarras > id
- * @param {string} codInt - Código interno
- * @param {string} codBarras - Código de barras
- * @param {string} id - ID del producto
- * @param {number} numeroFila - Número de fila para código temporal
- * @returns {string} - Código de fabricante válido
- */
 function determinarCodigoFabricante(codInt, codBarras, id, numeroFila) {
   const codigoValido =
     validarYFormatearCodigoFabricante(codInt) ||
@@ -126,33 +92,16 @@ function determinarCodigoFabricante(codInt, codBarras, id, numeroFila) {
   return codigoValido;
 }
 
-/**
- * Verifica si un producto es usado basándose en su nombre
- * @param {string} nombreProducto - Nombre del producto
- * @returns {boolean} - true si es un producto usado
- */
 function esProductoUsado(nombreProducto) {
   return PRODUCTOS_USADOS.some((indicador) =>
     nombreProducto.toUpperCase().includes(indicador)
   );
 }
 
-/**
- * Verifica si un producto es un procesador basándose en su nombre
- * @param {string} nombreProducto - Nombre del producto
- * @returns {boolean} - true si es un procesador
- */
 function esProcesador(nombreProducto) {
   return nombreProducto.toLowerCase().includes("procesador");
 }
 
-/**
- * Valida si un precio es válido según las reglas de negocio
- * @param {number} precio - Precio a validar
- * @param {boolean} esUsado - Si el producto es usado
- * @param {boolean} esProcesadorProducto - Si el producto es un procesador
- * @returns {Object} - Objeto con esValido y motivo
- */
 function validarPrecio(precio, esUsado, esProcesadorProducto) {
   if (precio <= 0) {
     return { esValido: false, motivo: "Precio inválido o cero" };
@@ -165,7 +114,6 @@ function validarPrecio(precio, esUsado, esProcesadorProducto) {
     };
   }
 
-  // Validación específica para procesadores
   if (esProcesadorProducto && precio <= CONFIG.PRECIO_MINIMO_PROCESADOR) {
     return {
       esValido: false,
@@ -173,7 +121,6 @@ function validarPrecio(precio, esUsado, esProcesadorProducto) {
     };
   }
 
-  // Validación específica para productos usados
   if (esUsado && precio < CONFIG.PRECIO_MINIMO_USADO) {
     return {
       esValido: false,
@@ -184,11 +131,6 @@ function validarPrecio(precio, esUsado, esProcesadorProducto) {
   return { esValido: true, motivo: null };
 }
 
-/**
- * Valida el porcentaje de IVA
- * @param {number} iva - Porcentaje de IVA
- * @returns {number} - IVA validado
- */
 function validarIVA(iva) {
   if (iva < 0 || iva > 100 || isNaN(iva)) {
     console.warn(
@@ -199,14 +141,6 @@ function validarIVA(iva) {
   return iva;
 }
 
-/**
- * Calcula precios en ambas monedas
- * @param {number} costoOriginal - Costo original del producto
- * @param {string} tipoMoneda - "dolares" o "pesos"
- * @param {number} cotizacionDolar - Cotización del dólar
- * @param {number} ivaValidado - Porcentaje de IVA validado
- * @returns {Object} - Objeto con todos los precios calculados
- */
 function calcularPrecios(
   costoOriginal,
   tipoMoneda,
@@ -247,16 +181,11 @@ function calcularPrecios(
   return precios;
 }
 
-/**
- * Obtiene la cotización del dólar desde la API
- * @returns {Promise<number>} - Cotización del dólar o valor por defecto
- */
 async function obtenerCotizacionDolar() {
   try {
     const response = await axios.get("https://dolarapi.com/v1/dolares/oficial");
     const cotizacion =
       parseFloat(response.data.venta) || CONFIG.COTIZACION_DOLAR_DEFECTO;
-
     console.log("💵 Cotización dólar oficial obtenida:", cotizacion);
     return cotizacion;
   } catch (error) {
@@ -269,32 +198,59 @@ async function obtenerCotizacionDolar() {
 }
 
 // ============================================================================
-// PROCESAMIENTO DE DATOS DEL EXCEL
+// PROCESAMIENTO DE DATOS DEL EXCEL - NUEVO FORMATO
 // ============================================================================
 
 /**
- * Extrae y valida los datos básicos de una fila del Excel
- * @param {Object} fila - Fila del Excel
- * @param {number} numeroFila - Número de la fila
- * @returns {Object} - Datos extraídos y validados
+ * Extrae y valida los datos básicos de una fila del Excel (NUEVO FORMATO)
+ * Mapeo correcto de columnas:
+ * 1: Marca
+ * 2: Categoría
+ * 3: Id Producto
+ * 4: Producto
+ * 5: Codigo Interno
+ * 6: Codigo Interno Prov
+ * 7: Codigo Barras
+ * 8: Minimo
+ * 9: Critico
+ * 10: Stock al 01/01/00
+ * 11: Ingresos
+ * 12: Egresos
+ * 13: Stock al 29/10/25
+ * 14: Reservas
+ * 15: Disponible
+ * 16: Reponer
+ * 17: Por Recibir
+ * 18: Moneda
+ * 19: Valor (Costo)
+ * 20: Total
+ * 21: Ubicación
+ * 22: Temporada
+ * 23: Alicuota (IVA)
+ * 24: Proveedor
  */
 function extraerDatosBasicosFila(fila, numeroFila) {
+  // Extraer valores según el nuevo formato del Excel
   const datosRaw = {
-    id: fila.getCell(1).value?.toString().trim() || "",
-    codigoInterno: fila.getCell(2).value?.toString().trim() || "",
-    codigoBarras: fila.getCell(3).value?.toString().trim() || "",
-    nombre: fila.getCell(4).value?.toString().trim() || "",
     marca:
-      fila.getCell(6).value?.toString().trim() || VALORES_POR_DEFECTO.marca,
+      fila.getCell(1).value?.toString().trim() || VALORES_POR_DEFECTO.marca,
     categoria:
-      fila.getCell(7).value?.toString().trim() || VALORES_POR_DEFECTO.categoria,
-    iva: convertirANumero(fila.getCell(8).value),
-    tipoMoneda: fila.getCell(9).value?.toString().trim() || "",
-    costo: convertirANumero(fila.getCell(10).value),
+      fila.getCell(2).value?.toString().trim() || VALORES_POR_DEFECTO.categoria,
+    id: fila.getCell(3).value?.toString().trim() || "",
+    nombre: fila.getCell(4).value?.toString().trim() || "",
+    codigoInterno: fila.getCell(5).value?.toString().trim() || "",
+    codigoBarras: fila.getCell(7).value?.toString().trim() || "",
+    tipoMoneda: fila.getCell(18).value?.toString().trim() || "",
+    costo: convertirANumero(fila.getCell(19).value),
+    iva: convertirANumero(fila.getCell(23).value),
   };
 
   // Validaciones tempranas
-  if (!datosRaw.nombre || datosRaw.nombre.toLowerCase() === "producto") {
+  if (
+    !datosRaw.nombre ||
+    datosRaw.nombre.toLowerCase() === "producto" ||
+    datosRaw.nombre.toLowerCase().includes("id producto")
+  ) {
     return { esValido: false, motivo: "Fila de encabezado o nombre vacío" };
   }
 
@@ -315,16 +271,8 @@ function extraerDatosBasicosFila(fila, numeroFila) {
   return { esValido: true, datos: datosValidados };
 }
 
-/**
- * Procesa una fila completa del Excel
- * @param {Object} fila - Fila del Excel
- * @param {number} numeroFila - Número de la fila
- * @param {number} cotizacionDolar - Cotización actual del dólar
- * @returns {Object} - Resultado del procesamiento
- */
 async function procesarFilaExcel(fila, numeroFila, cotizacionDolar) {
   try {
-    // Extraer datos básicos
     const extraccion = extraerDatosBasicosFila(fila, numeroFila);
 
     if (!extraccion.esValido) {
@@ -337,7 +285,6 @@ async function procesarFilaExcel(fila, numeroFila, cotizacionDolar) {
 
     const datosProducto = extraccion.datos;
 
-    // Calcular precios
     const precios = calcularPrecios(
       datosProducto.costo,
       datosProducto.tipoMonedaNormalizado,
@@ -345,7 +292,6 @@ async function procesarFilaExcel(fila, numeroFila, cotizacionDolar) {
       datosProducto.ivaValidado
     );
 
-    // Validar precio final
     const validacionPrecio = validarPrecio(
       precios.precioPesosConIVA,
       datosProducto.esUsado,
@@ -366,10 +312,7 @@ async function procesarFilaExcel(fila, numeroFila, cotizacionDolar) {
       };
     }
 
-    // Preparar datos para la base de datos
     const datosParaBD = prepararDatosParaBaseDatos(datosProducto, precios);
-
-    // Insertar en base de datos
     const resultadoBD = await insertarProductoEnBD(datosParaBD);
 
     console.log(`✅ Fila ${numeroFila} procesada correctamente:`, {
@@ -405,12 +348,6 @@ async function procesarFilaExcel(fila, numeroFila, cotizacionDolar) {
   }
 }
 
-/**
- * Prepara los datos del producto para insertar en la base de datos
- * @param {Object} datosProducto - Datos del producto validados
- * @param {Object} precios - Precios calculados
- * @returns {Array} - Array de parámetros para el stored procedure
- */
 function prepararDatosParaBaseDatos(datosProducto, precios) {
   const detalle = `Producto Modex - Marca: ${datosProducto.marca}`;
 
@@ -438,18 +375,12 @@ function prepararDatosParaBaseDatos(datosProducto, precios) {
   ];
 }
 
-/**
- * Inserta el producto en la base de datos
- * @param {Array} parametros - Parámetros para el stored procedure
- * @returns {Object} - Resultado de la inserción
- */
 async function insertarProductoEnBD(parametros) {
   try {
     const [resultado] = await db.query(
       "CALL cargarDatosProducto(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
       parametros
     );
-
     return resultado[0];
   } catch (error) {
     throw new Error(`Error en base de datos: ${error.message}`);
@@ -474,10 +405,8 @@ routerCargaProductoModexExcel.post(
 
     console.log("📁 Iniciando procesamiento de archivo Excel:", rutaArchivo);
 
-    // Obtener cotización del dólar
     const cotizacionDolar = await obtenerCotizacionDolar();
 
-    // Contadores y arrays para resultados
     const resultados = {
       exitosas: [],
       omitidas: [],
@@ -486,7 +415,6 @@ routerCargaProductoModexExcel.post(
     };
 
     try {
-      // Leer archivo Excel
       const libroExcel = new ExcelJS.Workbook();
       await libroExcel.xlsx.readFile(rutaArchivo);
       const hojaExcel = libroExcel.worksheets[0];
@@ -500,7 +428,6 @@ routerCargaProductoModexExcel.post(
         `📑 Procesando hoja: "${hojaExcel.name}" - Total de filas: ${totalFilas}`
       );
 
-      // Procesar cada fila (comenzando desde la fila 2, asumiendo headers en fila 1)
       for (let numeroFila = 2; numeroFila <= totalFilas; numeroFila++) {
         const fila = hojaExcel.getRow(numeroFila);
         const resultadoFila = await procesarFilaExcel(
@@ -509,7 +436,6 @@ routerCargaProductoModexExcel.post(
           cotizacionDolar
         );
 
-        // Clasificar resultado
         switch (resultadoFila.tipo) {
           case "exitosa":
             resultados.exitosas.push(resultadoFila);
@@ -529,13 +455,9 @@ routerCargaProductoModexExcel.post(
         }
       }
 
-      // Calcular estadísticas finales
       const estadisticas = calcularEstadisticasFinales(resultados, totalFilas);
-
-      // Log del resumen
       imprimirResumenProcesamiento(estadisticas);
 
-      // Respuesta exitosa
       res.json({
         mensaje: "Procesamiento completado",
         estadisticas,
@@ -555,7 +477,6 @@ routerCargaProductoModexExcel.post(
         detalle: error.message,
       });
     } finally {
-      // Limpiar archivo temporal
       await limpiarArchivoTemporal(rutaArchivo);
     }
   }
@@ -565,14 +486,8 @@ routerCargaProductoModexExcel.post(
 // FUNCIONES AUXILIARES PARA ESTADÍSTICAS Y LIMPIEZA
 // ============================================================================
 
-/**
- * Calcula las estadísticas finales del procesamiento
- * @param {Object} resultados - Resultados clasificados
- * @param {number} totalFilas - Total de filas en el Excel
- * @returns {Object} - Estadísticas completas
- */
 function calcularEstadisticasFinales(resultados, totalFilas) {
-  const filasConDatos = totalFilas - 1; // Excluir header
+  const filasConDatos = totalFilas - 1;
   const procesadas = resultados.exitosas.length;
   const omitidas = resultados.omitidas.length;
   const errores = resultados.errores.length;
@@ -594,10 +509,6 @@ function calcularEstadisticasFinales(resultados, totalFilas) {
   };
 }
 
-/**
- * Imprime un resumen detallado del procesamiento en consola
- * @param {Object} estadisticas - Estadísticas del procesamiento
- */
 function imprimirResumenProcesamiento(estadisticas) {
   console.log(`
 📊 ============== RESUMEN DEL PROCESAMIENTO ==============
@@ -614,10 +525,6 @@ function imprimirResumenProcesamiento(estadisticas) {
   `);
 }
 
-/**
- * Elimina el archivo temporal subido
- * @param {string} rutaArchivo - Ruta del archivo a eliminar
- */
 async function limpiarArchivoTemporal(rutaArchivo) {
   if (rutaArchivo && fs.existsSync(rutaArchivo)) {
     try {

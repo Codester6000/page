@@ -25,7 +25,7 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
 import editSvg from "../assets/edit.svg";
-import { useAuth } from "../Auth";
+import { useAuth, useIsAdmin } from "../Auth";
 import { useSearchParams } from "react-router-dom";
 
 import "../producto.css";
@@ -55,7 +55,7 @@ export default function ProductCard() {
   const [alerta, setAlerta] = useState(false);
   const [alertaFav, setAlertaFav] = useState(false);
   const [orden, setOrden] = useState(searchParams.get("order") || "");
-  const esAdmin = sesion && (sesion.rol === "admin" || sesion.rol === 2);
+  const esAdmin = useIsAdmin();
   const [openEditar, setOpenEditar] = useState(false);
   const [productoEditando, setProductoEditando] = useState(null);
   const [formEdit, setFormEdit] = useState({});

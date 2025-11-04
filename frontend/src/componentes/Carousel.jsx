@@ -3,7 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/swiper-bundle.css";
 import "./Carousel.css";
-import { useAuth } from "../Auth"; // importa el hook personalizado
+import { useAuth, useIsAdmin } from "../Auth";
 
 const Carousel = () => {
   const { sesion } = useAuth(); // obtenemos la sesión actual
@@ -51,7 +51,7 @@ const Carousel = () => {
     reader.readAsDataURL(file);
   };
 
-  const isAdmin = sesion?.rol === 2;
+  const isAdmin = useIsAdmin();
 
   return (
     <div>

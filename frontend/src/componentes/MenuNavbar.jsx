@@ -298,7 +298,7 @@ export default function MenuNavbar() {
 
         <Divider sx={{ my: 2, borderColor: "#fff" }} />
 
-        <AuthRol rol="2">
+        <AuthRol rol={[2, 4]}>
           <ListItem nested>
             <ListItemButton
               onClick={handleOpenVentas}
@@ -398,6 +398,22 @@ export default function MenuNavbar() {
               onClick={() => navigate(`/Mantenimiento/tabla`)}
             >
               Tabla de mantenimiento
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem sx={{ mt: 1 }}>
+            <ListItemButton
+              sx={{
+                backgroundColor: "#e66c1d",
+                color: "#fff",
+                borderRadius: "10px",
+                "&:hover": {
+                  backgroundColor: "#ff832b",
+                },
+              }}
+              onClick={() => navigate(`/usuarios`)}
+            >
+              Gestion de usuarios
             </ListItemButton>
           </ListItem>
         </AuthRol>

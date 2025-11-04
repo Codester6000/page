@@ -1,12 +1,17 @@
-import express from "express"
-import { db } from "./database/connectionMySQL.js"
-import { validarJwt, validarRol } from "./auth.js"
-import { validarBodyCarrito,validarId,verificarValidaciones,validarBodyPutCarrito} from "./middleware/validaciones.js"
-const carritoRouter = express.Router()
+import express from "express";
+import { db } from "./database/connectionMySQL.js";
+import { validarJwt, validarRol } from "./auth.js";
+import {
+  validarBodyCarrito,
+  validarId,
+  verificarValidaciones,
+  validarBodyPutCarrito,
+} from "./middleware/validaciones.js";
+const carritoRouter = express.Router();
 
-carritoRouter.get('/',validarJwt,async (req,res) =>{
-    const id = req.user.userId
-    const sql = `SELECT ca.id_carrito,pr.id_producto,pr.nombre,cd.cantidad,
+carritoRouter.get("/", validarJwt, async (req, res) => {
+  const id = req.user.userId;
+  const sql = `SELECT ca.id_carrito,pr.id_producto,pr.nombre,cd.cantidad,
     (SELECT JSON_ARRAYAGG(nombre_categoria)
         FROM (
             SELECT DISTINCT c.nombre_categoria
@@ -59,72 +64,98 @@ WHERE
         FROM precios 
         WHERE id_producto = pr.id_producto
         ) AND ca.id_usuario = ? AND ca.estado = "activo"
-group by pr.id_producto,ca.id_carrito,cd.cantidad,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pro.nombre_proveedor;`
-    const [resultado,fields] = await db.execute(sql,[id])
+group by pr.id_producto,ca.id_carrito,cd.cantidad,p.precio_dolar, p.precio_dolar_iva,p.iva,p.precio_pesos, p.precio_pesos_iva,pro.nombre_proveedor;`;
+  const [resultado, fields] = await db.execute(sql, [id]);
 
-    res.status(200).send({carrito:resultado})
-})
+  res.status(200).send({ carrito: resultado });
+});
 
-carritoRouter.post('/',validarJwt,validarBodyCarrito(),verificarValidaciones, async (req,res) =>{
-    const {id_producto,cantidad } = req.body;
+carritoRouter.post(
+  "/",
+  validarJwt,
+  validarBodyCarrito(),
+  verificarValidaciones,
+  async (req, res) => {
+    const { id_producto, cantidad } = req.body;
     try {
-        const parametros = [req.user.userId,id_producto,cantidad];
-    const sql = 'call schemamodex.cargar_carrito(?, ?, ?);'
-    const [resul, fields] = await db.execute(sql,parametros)
-    return res.status(201).send({resultado:resul})
+      const parametros = [req.user.userId, id_producto, cantidad];
+      const sql = "call schemamodex.cargar_carrito(?, ?, ?);";
+      const [resul, fields] = await db.execute(sql, parametros);
+      return res.status(201).send({ resultado: resul });
     } catch (error) {
-        if (error.code === 'ER_SIGNAL_EXCEPTION' && error.sqlState === '45000') {
-            return res.status(400).send({ mensaje: error.sqlMessage });
-        }
-        
-        return res.status(500).send({mensaje: "Se produjo un error en el servidor"});
+      if (error.code === "ER_SIGNAL_EXCEPTION" && error.sqlState === "45000") {
+        return res.status(400).send({ mensaje: error.sqlMessage });
+      }
+
+      return res
+        .status(500)
+        .send({ mensaje: "Se produjo un error en el servidor" });
     }
-    
-})
+  }
+);
 
-carritoRouter.post('/armador',validarJwt,async (req,res) =>{
-
-})
-carritoRouter.put('/',validarJwt,validarBodyPutCarrito(),async (req,res)=>{
-    const {id_producto,cantidad} = req.body;
+carritoRouter.post("/armador", validarJwt, async (req, res) => {});
+carritoRouter.put(
+  "/",
+  validarJwt,
+  validarBodyPutCarrito(),
+  async (req, res) => {
+    const { id_producto, cantidad } = req.body;
     try {
-        const parametros = [id_producto,cantidad,req.user.userId]
-        const sql = "call schemamodex.alterar_carrito(?, ?, ?);"
-        const resultado = await db.execute(sql,parametros)
-        if(resultado.affectedRows == 0){
-            return res.status(400).send({mensaje:"Id producto o id usuario invalido"})
-        }
-        return res.status(200).send({mensaje:"cantidad Actualizada"})
-
-    }catch(error){
-        if (error.code == 'ER_SIGNAL_EXCEPTION' && 
-            error.sqlState == '45000') {
-          
-          // Return a user-friendly error message with a 400 status (Bad Request)
-          return res.status(400).send({ mensaje: "La cantidad solicitada excede el stock disponible." });
-        }
-        return res.status(500).send({mensaje:"Se produjo un error en el servidor"})
+      const parametros = [id_producto, cantidad, req.user.userId];
+      const sql = "call schemamodex.alterar_carrito(?, ?, ?);";
+      const resultado = await db.execute(sql, parametros);
+      if (resultado.affectedRows == 0) {
+        return res
+          .status(400)
+          .send({ mensaje: "Id producto o id usuario invalido" });
+      }
+      return res.status(200).send({ mensaje: "cantidad Actualizada" });
+    } catch (error) {
+      if (error.code == "ER_SIGNAL_EXCEPTION" && error.sqlState == "45000") {
+        // Return a user-friendly error message with a 400 status (Bad Request)
+        return res
+          .status(400)
+          .send({
+            mensaje: "La cantidad solicitada excede el stock disponible.",
+          });
+      }
+      return res
+        .status(500)
+        .send({ mensaje: "Se produjo un error en el servidor" });
     }
-})
-carritoRouter.delete('/',validarJwt,validarBodyCarrito(),async (req, res) => {
-    const {id_producto } = req.body;
+  }
+);
+carritoRouter.delete(
+  "/",
+  validarJwt,
+  validarBodyCarrito(),
+  async (req, res) => {
+    const { id_producto } = req.body;
     try {
-        const parametros = [id_producto,req.user.userId];
-        const sql = 'call schemamodex.borrar_producto_carrito(?, ?);';
-        const [resultado, fields] = await db.execute(sql,parametros);
-        if(resultado.affectedRows == 0) {
-            return res.status(404).send({mensaje:"Producto no encontrado en el carrito"})
-        }
-        res.status(200).send({mensaje:"Producto eliminado del carrito"})
-    } catch(error){
-        console.log(error)
-        res.status(500).send({error:"Error al eliminar el producto"})
+      const parametros = [id_producto, req.user.userId];
+      const sql = "call schemamodex.borrar_producto_carrito(?, ?);";
+      const [resultado, fields] = await db.execute(sql, parametros);
+      if (resultado.affectedRows == 0) {
+        return res
+          .status(404)
+          .send({ mensaje: "Producto no encontrado en el carrito" });
+      }
+      res.status(200).send({ mensaje: "Producto eliminado del carrito" });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ error: "Error al eliminar el producto" });
     }
-})
+  }
+);
 
-carritoRouter.get("/ventas",validarJwt,validarRol(2), async(req ,res) =>{
+carritoRouter.get(
+  "/ventas",
+  validarJwt,
+  validarRol([2, 4]),
+  async (req, res) => {
     try {
-        const sql =`SELECT 
+      const sql = `SELECT 
     c.id_carrito AS id, 
     u.username, 
     c.fecha_finalizada, 
@@ -138,27 +169,29 @@ carritoRouter.get("/ventas",validarJwt,validarRol(2), async(req ,res) =>{
     ) AS productos
 FROM carrito c
 INNER JOIN usuarios u ON u.id_usuario = c.id_usuario
-WHERE c.estado = 'completado' OR c.estado = 'pendiente';`
+WHERE c.estado = 'completado' OR c.estado = 'pendiente';`;
 
-    const [resultado] = await db.execute(sql)
+      const [resultado] = await db.execute(sql);
 
-    res.status(200).send(resultado)
-    } catch (error) {
-        
-    }
-})
+      res.status(200).send(resultado);
+    } catch (error) {}
+  }
+);
 
-carritoRouter.get('/stats',validarJwt,validarRol(2),async(req,res)=>{
+carritoRouter.get(
+  "/stats",
+  validarJwt,
+  validarRol([2, 4]),
+  async (req, res) => {
     try {
-        const sql = `SELECT sum(c.total_a_pagar) AS total_vendido,
+      const sql = `SELECT sum(c.total_a_pagar) AS total_vendido,
 count(c.id_carrito) AS pedidos,
 count(distinct c.id_usuario) AS clientes
 FROM carrito c 
-WHERE c.estado = 'completado' OR c.estado = 'pendiente';`
-        const [resultado] = await db.execute(sql)
-        res.status(200).send(resultado)
-    } catch (error) {
-        
-    }
-})
+WHERE c.estado = 'completado' OR c.estado = 'pendiente';`;
+      const [resultado] = await db.execute(sql);
+      res.status(200).send(resultado);
+    } catch (error) {}
+  }
+);
 export default carritoRouter;
