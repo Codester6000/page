@@ -47,7 +47,8 @@ const inicializarServidor = async () => {
           "https://modex.com.ar",
           "https://www.modex.com.ar",
           "http://localhost:5173", 
-          "http://66.97.43.219",
+          "http://66.97.43.219", // Para acceso directo a la IP
+          "http://66.97.43.219:5173", // Para el frontend en modo desarrollo en el VPS
         ];
         if (allowedOrigins.includes(origin) || !origin) {
           callback(null, true);
