@@ -9,7 +9,13 @@ import {
   Alert,
   Chip,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
 } from "@mui/material";
+import BuildIcon from "@mui/icons-material/Build";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -20,7 +26,7 @@ import {
   selectPart,
   removePart,
   clearBuild,
-  setCompatibilidad, // Nueva acción para guardar info de compatibilidad
+  setCompatibilidad,
 } from "../redux/slices/buildSlice";
 import { useAuth } from "../Auth";
 import { useNavigate, Navigate } from "react-router-dom";
@@ -37,7 +43,7 @@ const categoryMap = {
   memorias: "ram",
   gpus: "gpu",
   almacenamiento: "storage",
-  fuentes: "psu", // Cambiado de "fuentes" a "psu" para coincidir con tu Redux
+  fuentes: "psu",
   gabinetes: "case",
   coolers: "cooler",
   monitores: "monitor",
@@ -60,7 +66,7 @@ function ArmadorPc({ category }) {
 
   const selectedParts = useSelector((state) => state.build.selectedParts);
   const productos = useSelector((state) => state.build.productos);
-  const compatibilidad = useSelector((state) => state.build.compatibilidad); // Nueva info de compatibilidad
+  const compatibilidad = useSelector((state) => state.build.compatibilidad);
   const total = useSelector((state) => state.build.total);
   const watts = useSelector((state) => state.build.watts);
   const order = useSelector((state) => state.build.order);
@@ -68,6 +74,9 @@ function ArmadorPc({ category }) {
   const [tipoIndex, setTipoIndex] = useState(0);
   const [validacionErrors, setValidacionErrors] = useState([]);
   const [isValidating, setIsValidating] = useState(false);
+  // Estado para controlar el modal de mantenimiento
+  const [openMantenimiento, setOpenMantenimiento] = useState(false);
+
   const tipo = secuenciaCategorias[tipoIndex];
 
   const crearIndice = useCallback((productosRaw) => {
@@ -98,24 +107,21 @@ function ArmadorPc({ category }) {
     Object.entries(selectedParts).forEach(([categoria, ids]) => {
       const lista = Array.isArray(ids) ? ids : [ids];
       lista.forEach((id) => {
-        if (!id) return; // Skip null/undefined values
+        if (!id) return;
 
         const producto = buscarPorId(id);
         if (producto) {
           total += Number(producto.precio_pesos_iva_ajustado || 0);
 
-          // Cálculo correcto de watts - NO incluir fuentes en el consumo
           if (categoria !== "psu" && producto.consumo) {
             let consumoProducto = Number(producto.consumo || 0);
 
-            // Para procesadores, usar cálculo inteligente si consumo es 0 o muy bajo
             if (
               categoria === "cpu" &&
               (consumoProducto === 0 || consumoProducto < 50)
             ) {
               const nombreUpper = producto.nombre?.toUpperCase() || "";
 
-              // Aplicar las reglas de consumo correctas
               if (
                 (nombreUpper.includes("RYZEN") && nombreUpper.includes("3")) ||
                 nombreUpper.includes("I3")
@@ -130,7 +136,6 @@ function ArmadorPc({ category }) {
                 (nombreUpper.includes("RYZEN") && nombreUpper.includes("7")) ||
                 nombreUpper.includes("I7")
               ) {
-                // Casos específicos de alto consumo
                 if (
                   nombreUpper.includes("7950X") ||
                   nombreUpper.includes("7900X") ||
@@ -145,7 +150,6 @@ function ArmadorPc({ category }) {
                 (nombreUpper.includes("RYZEN") && nombreUpper.includes("9")) ||
                 nombreUpper.includes("I9")
               ) {
-                // Casos específicos de muy alto consumo
                 if (
                   nombreUpper.includes("I9-13900") ||
                   nombreUpper.includes("9950X")
@@ -155,7 +159,7 @@ function ArmadorPc({ category }) {
                   consumoProducto = 180;
                 }
               } else {
-                consumoProducto = 65; // Default
+                consumoProducto = 65;
               }
             }
 
@@ -165,13 +169,12 @@ function ArmadorPc({ category }) {
       });
     });
 
-    console.log("Cálculo de watts:", { selectedParts, watts, total }); // Debug
+    console.log("Cálculo de watts:", { selectedParts, watts, total });
 
     dispatch(setTotal(total));
     dispatch(setWatts(watts));
   }, [selectedParts, buscarPorId, dispatch]);
 
-  // Nueva función para validar compatibilidad (sin useCallback para evitar bucles)
   const validarCompatibilidad = async (partsToValidate) => {
     if (
       !partsToValidate ||
@@ -192,7 +195,7 @@ function ArmadorPc({ category }) {
       motherboard_id: partsToValidate.motherboard || null,
       memoria_id: partsToValidate.ram?.[0] || null,
       gpu_id: partsToValidate.gpu || null,
-      fuente_id: partsToValidate.psu || null, // Cambiado de fuentes a psu
+      fuente_id: partsToValidate.psu || null,
     };
 
     try {
@@ -210,7 +213,6 @@ function ArmadorPc({ category }) {
         const { validaciones, restricciones } = res.data;
         setValidacionErrors(validaciones.errores || []);
 
-        // Guardar info de compatibilidad en el estado global (solo si cambió)
         const newCompatibilidad = {
           socket_requerido: restricciones.socketRequerido,
           ram_requerida: restricciones.ramRequerida,
@@ -218,7 +220,6 @@ function ArmadorPc({ category }) {
           fuente_minima: restricciones.fuenteMinima,
         };
 
-        // Solo actualizar si los valores son diferentes
         const currentCompatibilidad = compatibilidad;
         if (
           JSON.stringify(currentCompatibilidad) !==
@@ -234,16 +235,14 @@ function ArmadorPc({ category }) {
     }
   };
 
-  // Separar los useEffect para evitar bucles
   useEffect(() => {
     calcularTotalesYWatts();
   }, [selectedParts, calcularTotalesYWatts]);
 
-  // useEffect separado para validación, solo cuando cambian las partes seleccionadas
   useEffect(() => {
     const timer = setTimeout(() => {
       validarCompatibilidad(selectedParts);
-    }, 500); // Debounce de 500ms para evitar muchas llamadas
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [
@@ -261,7 +260,7 @@ function ArmadorPc({ category }) {
       query.push(`motherboard_id=${selectedParts.motherboard}`);
     if (selectedParts.ram?.length)
       query.push(`memoria_id=${selectedParts.ram[0]}`);
-    if (selectedParts.gpu) query.push(`gpu_id=${selectedParts.gpu}`); // Agregado GPU
+    if (selectedParts.gpu) query.push(`gpu_id=${selectedParts.gpu}`);
     if (order) query.push(`order=${order}`);
     if (watts) query.push(`consumoW=${watts}`);
 
@@ -277,12 +276,10 @@ function ArmadorPc({ category }) {
       if (res.status === 200) {
         dispatch(setProductos(res.data));
 
-        // Guardar info de compatibilidad desde la respuesta del armador (solo si existe)
         if (res.data.compatibilidad) {
           const newCompatibilidad = res.data.compatibilidad;
           const currentCompatibilidad = compatibilidad;
 
-          // Solo actualizar si cambió
           if (
             JSON.stringify(currentCompatibilidad) !==
             JSON.stringify(newCompatibilidad)
@@ -316,7 +313,6 @@ function ArmadorPc({ category }) {
     } else {
       dispatch(selectPart({ category: reduxKey, part: id }));
 
-      // Avanzar automáticamente a la siguiente categoría si es un componente crítico
       if (["procesadores", "motherboards", "gpus"].includes(tipo)) {
         setTimeout(() => {
           setTipoIndex((prev) =>
@@ -342,7 +338,13 @@ function ArmadorPc({ category }) {
 
   const cambiarOrden = (orden) => dispatch(setOrder(orden));
 
+  // Función modificada para mostrar el modal en lugar de agregar al carrito
   const handleAgregarCarrito = async () => {
+    // Mostrar el modal de mantenimiento
+    setOpenMantenimiento(true);
+
+    // Código original comentado para cuando quieras reactivarlo:
+    /*
     // Verificar que no haya errores de compatibilidad críticos
     if (validacionErrors.length > 0) {
       const hasSocketError = validacionErrors.some(
@@ -391,6 +393,12 @@ function ArmadorPc({ category }) {
     } catch (error) {
       console.error("Error al agregar productos al carrito:", error);
     }
+    */
+  };
+
+  // Función para cerrar el modal
+  const handleCloseModal = () => {
+    setOpenMantenimiento(false);
   };
 
   useEffect(() => {
@@ -539,6 +547,82 @@ function ArmadorPc({ category }) {
           />
         </Grid>
       </Grid>
+
+      {/* Modal de Mantenimiento */}
+      <Dialog
+        open={openMantenimiento}
+        onClose={handleCloseModal}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            textAlign: "center",
+          },
+        }}
+      >
+        <DialogTitle>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+              pt: 2,
+            }}
+          >
+            <Box
+              sx={{
+                backgroundColor: "warning.light",
+                borderRadius: "50%",
+                p: 2,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <BuildIcon sx={{ fontSize: 48, color: "warning.dark" }} />
+            </Box>
+            <Typography variant="h5" fontWeight="bold">
+              Funcionalidad en Mantenimiento
+            </Typography>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+            Estamos trabajando para mejorar tu experiencia de compra.
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            El proceso de agregar componentes al carrito se encuentra
+            temporalmente deshabilitado mientras realizamos mejoras en el
+            sistema.
+          </Typography>
+          <Box
+            sx={{
+              mt: 3,
+              p: 2,
+              backgroundColor: "info.lighter",
+              borderRadius: 1,
+              border: "1px solid",
+              borderColor: "info.light",
+            }}
+          >
+            <Typography variant="body2" fontWeight="medium">
+              💡 Puedes seguir armando tu PC y exportar el presupuesto en PDF
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
+          <Button
+            onClick={handleCloseModal}
+            variant="contained"
+            color="primary"
+            size="large"
+          >
+            Entendido
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }
