@@ -13,8 +13,14 @@ import {
   Divider,
   Pagination,
   useMediaQuery,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import BuildIcon from "@mui/icons-material/Build";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { useAuth } from "../Auth";
 import { useNavigate } from "react-router-dom";
 
@@ -26,6 +32,9 @@ export default function Carrito() {
   const itemPorPagina = 30;
   const [totales, setTotales] = useState(0);
   const isMobile = useMediaQuery("(max-width:800px)");
+
+  // Estado para controlar el modal de mantenimiento
+  const [openMantenimiento, setOpenMantenimiento] = useState(false);
 
   const { sesion } = useAuth();
 
@@ -85,6 +94,18 @@ export default function Carrito() {
     } catch (error) {
       console.error("Error en la solicitud de actualización:", error);
     }
+  };
+
+  // Función para manejar el intento de checkout
+  const handleFinalizarCompra = () => {
+    setOpenMantenimiento(true);
+    // Descomentar la siguiente línea cuando quieras reactivar el checkout:
+    // navigate("/checkout");
+  };
+
+  // Función para cerrar el modal
+  const handleCloseModal = () => {
+    setOpenMantenimiento(false);
   };
 
   useEffect(() => {
@@ -200,7 +221,7 @@ export default function Carrito() {
           color="primary"
           size="large"
           sx={{ mt: 2 }}
-          onClick={() => navigate("/checkout")}
+          onClick={handleFinalizarCompra}
         >
           Finalizar Compra
         </Button>
@@ -213,6 +234,81 @@ export default function Carrito() {
         color="primary"
         sx={{ display: "flex", justifyContent: "center" }}
       />
+
+      {/* Modal de Mantenimiento */}
+      <Dialog
+        open={openMantenimiento}
+        onClose={handleCloseModal}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            textAlign: "center",
+          },
+        }}
+      >
+        <DialogTitle>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+              pt: 2,
+            }}
+          >
+            <Box
+              sx={{
+                backgroundColor: "warning.light",
+                borderRadius: "50%",
+                p: 2,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <BuildIcon sx={{ fontSize: 48, color: "warning.dark" }} />
+            </Box>
+            <Typography variant="h5" fontWeight="bold">
+              Funcionalidad en Mantenimiento
+            </Typography>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+            Estamos trabajando para mejorar tu experiencia de compra.
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            El proceso de finalización de compra se encuentra temporalmente
+            deshabilitado mientras realizamos mejoras en el sistema.
+          </Typography>
+          <Box
+            sx={{
+              mt: 3,
+              p: 2,
+              backgroundColor: "info.lighter",
+              borderRadius: 1,
+              border: "1px solid",
+              borderColor: "info.light",
+            }}
+          >
+            <Typography variant="body2" fontWeight="medium">
+              💡 Mientras tanto, puedes seguir agregando productos a tu carrito
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
+          <Button
+            onClick={handleCloseModal}
+            variant="contained"
+            color="primary"
+            size="large"
+          >
+            Entendido
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }
