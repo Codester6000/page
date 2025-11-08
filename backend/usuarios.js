@@ -420,7 +420,7 @@ usuarioRouter.put(
 );
 
 // Actualizar contraseña de un usuario
-usuarioRouter.patch(
+usuarioRouter.put(
   "/gestion/:id/password",
   validarJwt,
   validarRol([2, 4]),
