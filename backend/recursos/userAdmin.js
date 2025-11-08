@@ -117,7 +117,7 @@ const Usuario = {
   },
 
   inicializarRoles: async () => {
-    const roles = ["empleado", "admin", "cliente"];
+    const roles = ["empleado", "admin", "cliente", "subAdmin"];
     const rolesCreados = [];
 
     for (const rol of roles) {
