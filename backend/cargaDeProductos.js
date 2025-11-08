@@ -7,7 +7,12 @@ import { db } from "./database/connectionMySQL.js";
 import { categorias_final_air } from "./recursos/categorias.js";
 
 const routerCargaProducto = express.Router();
-const upload = multer({ dest: "uploads/" });
+
+// IMPORTANTE: Configuración de multer mejorada para evitar conflictos
+const upload = multer({
+  dest: "uploads/",
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB límite
+});
 
 const CONFIG = {
   PRECIO_MINIMO_GENERAL: 30000,
@@ -69,13 +74,25 @@ function detectarSeparadorCSV(primeraLinea) {
     tabs: (primeraLinea.match(/\t/g) || []).length,
     puntosComa: (primeraLinea.match(/;/g) || []).length,
   };
+
+  let separador = ",";
   if (
     contadores.tabs >= contadores.comas &&
     contadores.tabs >= contadores.puntosComa
-  )
-    return "\t";
-  if (contadores.puntosComa >= contadores.comas) return ";";
-  return ",";
+  ) {
+    separador = "\t";
+  } else if (contadores.puntosComa >= contadores.comas) {
+    separador = ";";
+  }
+
+  console.log(
+    `📋 Separador detectado: "${
+      separador === "\t" ? "TAB" : separador
+    }" (comas: ${contadores.comas}, tabs: ${contadores.tabs}, puntos y coma: ${
+      contadores.puntosComa
+    })`
+  );
+  return separador;
 }
 
 function convertirANumero(valor) {
@@ -85,10 +102,21 @@ function convertirANumero(valor) {
 
 async function obtenerCotizacionDolarYConfigurar() {
   try {
+    console.log("💵 Deshabilitando productos AIR anteriores...");
     await db.query("CALL deshabilitar_air()");
+    console.log("✅ Productos AIR anteriores deshabilitados correctamente");
+
+    console.log("💵 Obteniendo cotización del dólar oficial...");
     const response = await axios.get("https://dolarapi.com/v1/dolares/oficial");
-    return Number(response.data?.venta) || CONFIG.COTIZACION_DOLAR_DEFECTO;
+    const cotizacion =
+      Number(response.data?.venta) || CONFIG.COTIZACION_DOLAR_DEFECTO;
+    console.log(`✅ Cotización obtenida: $${cotizacion} ARS`);
+    return cotizacion;
   } catch (error) {
+    console.error("❌ Error obteniendo dólar oficial:", error.message);
+    console.log(
+      `⚠️ Usando cotización por defecto: $${CONFIG.COTIZACION_DOLAR_DEFECTO}`
+    );
     throw new Error(`Error obteniendo dólar oficial: ${error.message}`);
   }
 }
@@ -165,6 +193,16 @@ function validarNombreProducto(nombre) {
   return { esValido: true, motivo: null };
 }
 
+function validarStockDepositosObligatorios(stockCBA, stockLUG) {
+  if (stockCBA === 0 && stockLUG === 0) {
+    return {
+      esValido: false,
+      motivo: "Sin stock en depósitos obligatorios (CBA y LUG en 0)",
+    };
+  }
+  return { esValido: true, motivo: null };
+}
+
 function extraerDatosBasicosFilaCSV(fila) {
   const nombre = (fila["Descripcion"] || "").trim();
   let codigoFabricante = (fila["Part Number"] || fila['"Part Number"'] || "")
@@ -181,6 +219,11 @@ function extraerDatosBasicosFilaCSV(fila) {
     (total, stock) => total + stock,
     0
   );
+
+  // Extraer stocks específicos de depósitos obligatorios
+  const stockCBA = parseInt(fila["CBA"]) || 0;
+  const stockLUG = parseInt(fila["LUG"]) || 0;
+
   let depositoPrincipal = VALORES_POR_DEFECTO.deposito;
   for (const deposito of DEPOSITOS_DISPONIBLES) {
     if (parseInt(fila[deposito]) > 0) {
@@ -196,6 +239,8 @@ function extraerDatosBasicosFilaCSV(fila) {
     codigoRubro,
     detalle,
     stockTotal,
+    stockCBA,
+    stockLUG,
     depositoPrincipal,
     precioDolaresSinIVA,
     porcentajeIVA,
@@ -240,11 +285,13 @@ function calcularPreciosCompletos(
   return precios;
 }
 
-async function procesarFilaCSV(fila, cotizacionDolar) {
+async function procesarFilaCSV(fila, cotizacionDolar, numeroFila) {
   try {
     const datosBasicos = extraerDatosBasicosFilaCSV(fila);
+
     const validacionNombre = validarNombreProducto(datosBasicos.nombre);
-    if (!validacionNombre.esValido)
+    if (!validacionNombre.esValido) {
+      console.log(`⏭️ Fila ${numeroFila}: ${validacionNombre.motivo}`);
       return {
         tipo: "omitida",
         datos: {
@@ -254,10 +301,37 @@ async function procesarFilaCSV(fila, cotizacionDolar) {
         },
         motivo: validacionNombre.motivo,
       };
+    }
+
+    // VALIDACIÓN CRÍTICA: Verificar stock en depósitos obligatorios CBA y LUG
+    const validacionStock = validarStockDepositosObligatorios(
+      datosBasicos.stockCBA,
+      datosBasicos.stockLUG
+    );
+    if (!validacionStock.esValido) {
+      console.log(
+        `⏭️ Fila ${numeroFila}: ${validacionStock.motivo} - ${datosBasicos.nombre} (CBA: ${datosBasicos.stockCBA}, LUG: ${datosBasicos.stockLUG})`
+      );
+      return {
+        tipo: "omitida",
+        datos: {
+          nombre: datosBasicos.nombre,
+          codigo: datosBasicos.codigoFabricante,
+          categoria: mapearCategoria(datosBasicos.codigoRubro),
+          stockCBA: datosBasicos.stockCBA,
+          stockLUG: datosBasicos.stockLUG,
+        },
+        motivo: validacionStock.motivo,
+      };
+    }
+
     const validacionCodigo = validarCodigoFabricante(
       datosBasicos.codigoFabricante
     );
-    if (!validacionCodigo.esValido)
+    if (!validacionCodigo.esValido) {
+      console.log(
+        `⏭️ Fila ${numeroFila}: ${validacionCodigo.motivo} - ${datosBasicos.nombre}`
+      );
       return {
         tipo: "omitida",
         datos: {
@@ -267,8 +341,13 @@ async function procesarFilaCSV(fila, cotizacionDolar) {
         },
         motivo: validacionCodigo.motivo,
       };
+    }
+
     const validacionRubro = validarRubroPermitido(datosBasicos.codigoRubro);
-    if (!validacionRubro.esValido)
+    if (!validacionRubro.esValido) {
+      console.log(
+        `⏭️ Fila ${numeroFila}: ${validacionRubro.motivo} - ${datosBasicos.nombre} (Rubro: ${datosBasicos.codigoRubro})`
+      );
       return {
         tipo: "omitida",
         datos: {
@@ -278,7 +357,12 @@ async function procesarFilaCSV(fila, cotizacionDolar) {
         },
         motivo: validacionRubro.motivo,
       };
-    if (datosBasicos.precioDolaresSinIVA <= 0)
+    }
+
+    if (datosBasicos.precioDolaresSinIVA <= 0) {
+      console.log(
+        `⏭️ Fila ${numeroFila}: Precio base inválido - ${datosBasicos.nombre}`
+      );
       return {
         tipo: "omitida",
         datos: {
@@ -288,6 +372,8 @@ async function procesarFilaCSV(fila, cotizacionDolar) {
         },
         motivo: `Precio base inválido: $${datosBasicos.precioDolaresSinIVA} USD`,
       };
+    }
+
     const esProcesador = perteneceACategoria(
       datosBasicos.codigoRubro,
       "procesadores"
@@ -300,6 +386,7 @@ async function procesarFilaCSV(fila, cotizacionDolar) {
       datosBasicos.codigoRubro,
       "placaVideo"
     );
+
     const precios = calcularPreciosCompletos(
       datosBasicos.precioDolaresSinIVA,
       datosBasicos.porcentajeIVA,
@@ -307,12 +394,16 @@ async function procesarFilaCSV(fila, cotizacionDolar) {
       esProcesador,
       esPlacaVideo
     );
+
     const validacionPrecio = validarPrecioProducto(
       precios.precioFinalConMargen,
       validacionRubro.categoriaDetectada,
       esAlmacenamiento
     );
-    if (!validacionPrecio.esValido)
+    if (!validacionPrecio.esValido) {
+      console.log(
+        `⚠️ Fila ${numeroFila}: ${validacionPrecio.motivo} - ${datosBasicos.nombre}`
+      );
       return {
         tipo: "omitida",
         datos: {
@@ -322,13 +413,28 @@ async function procesarFilaCSV(fila, cotizacionDolar) {
         },
         motivo: validacionPrecio.motivo,
       };
+    }
+
     const categoria = mapearCategoria(datosBasicos.codigoRubro);
     const datosParaBD = prepararDatosParaBaseDatos(
       datosBasicos,
       precios,
       categoria
     );
+
     const resultadoBD = await insertarProductoEnBaseDatos(datosParaBD);
+
+    console.log(`✅ Fila ${numeroFila} procesada:`, {
+      codigo: datosBasicos.codigoFabricante,
+      nombre: datosBasicos.nombre.substring(0, 50),
+      categoria,
+      stock: datosBasicos.stockTotal,
+      stockCBA: datosBasicos.stockCBA,
+      stockLUG: datosBasicos.stockLUG,
+      precioFinal: `${precios.precioFinalConMargen}`,
+      margen: precios.porcentajeGanancia,
+    });
+
     return {
       tipo: "exitosa",
       datos: {
@@ -347,6 +453,7 @@ async function procesarFilaCSV(fila, cotizacionDolar) {
       resultadoBD,
     };
   } catch (error) {
+    console.error(`❌ Error en fila ${numeroFila}:`, error.message);
     return {
       tipo: "error",
       datos: {
@@ -401,23 +508,54 @@ routerCargaProducto.post(
   upload.single("archivo_csv"),
   async (req, res) => {
     const rutaArchivo = req.file?.path;
-    if (!rutaArchivo)
+
+    if (!rutaArchivo) {
+      console.error("❌ No se recibió archivo CSV");
       return res
         .status(400)
         .json({ error: "No se envió ningún archivo CSV válido." });
+    }
+
+    console.log("\n" + "=".repeat(60));
+    console.log("📁 INICIANDO PROCESAMIENTO DE CSV");
+    console.log("=".repeat(60));
+    console.log(`📂 Archivo recibido: ${req.file.originalname}`);
+    console.log(`📂 Ruta temporal: ${rutaArchivo}`);
+    console.log(`📏 Tamaño: ${(req.file.size / 1024).toFixed(2)} KB`);
+    console.log("=".repeat(60) + "\n");
+
     try {
       const cotizacionDolar = await obtenerCotizacionDolarYConfigurar();
+
+      console.log("📖 Leyendo contenido del archivo CSV...");
       const contenidoArchivo = fs.readFileSync(rutaArchivo, "utf8");
       const primeraLinea = contenidoArchivo.split("\n")[0];
       const separador = detectarSeparadorCSV(primeraLinea);
+
+      console.log("🔍 Parseando CSV con PapaParse...");
       const { data: filasCSV } = Papa.parse(contenidoArchivo, {
         header: true,
         delimiter: separador,
         skipEmptyLines: true,
       });
+
+      console.log(`📊 Total de filas encontradas en CSV: ${filasCSV.length}`);
+      console.log(
+        `📋 Columnas detectadas: ${Object.keys(filasCSV[0] || {}).join(", ")}`
+      );
+      console.log("\n🔄 Iniciando procesamiento de filas...\n");
+
       const resultados = { exitosas: [], omitidas: [], errores: [] };
-      for (const fila of filasCSV) {
-        const resultado = await procesarFilaCSV(fila, cotizacionDolar);
+
+      for (let i = 0; i < filasCSV.length; i++) {
+        const fila = filasCSV[i];
+        const numeroFila = i + 2; // +2 porque la fila 1 es el header
+        const resultado = await procesarFilaCSV(
+          fila,
+          cotizacionDolar,
+          numeroFila
+        );
+
         resultados[
           resultado.tipo === "exitosa"
             ? "exitosas"
@@ -426,10 +564,14 @@ routerCargaProducto.post(
             : "errores"
         ].push(resultado);
       }
+
       const estadisticas = calcularEstadisticasFinalesCSV(
         resultados,
         filasCSV.length
       );
+
+      imprimirResumenProcesamiento(estadisticas);
+
       res.json({
         mensaje: "Procesamiento CSV completado",
         estadisticas,
@@ -440,6 +582,8 @@ routerCargaProducto.post(
         },
       });
     } catch (error) {
+      console.error("❌ ERROR GENERAL:", error.message);
+      console.error(error.stack);
       res
         .status(500)
         .json({ error: "Error interno del servidor", detalle: error.message });
@@ -453,10 +597,17 @@ function calcularEstadisticasFinalesCSV(resultados, totalFilas) {
   const procesadas = resultados.exitosas.length;
   const omitidas = resultados.omitidas.length;
   const errores = resultados.errores.length;
+
+  // Contar productos omitidos por falta de stock en CBA y LUG
+  const omitidasPorStock = resultados.omitidas.filter(
+    (r) => r.motivo && r.motivo.includes("depósitos obligatorios")
+  ).length;
+
   return {
     totalFilasCSV: totalFilas,
     procesadasExitosamente: procesadas,
     omitidas,
+    omitidasPorStockCBAyLUG: omitidasPorStock,
     errores,
     totalProcesadas: procesadas + omitidas + errores,
     detallesAdicionales: {
@@ -477,13 +628,46 @@ function calcularEstadisticasFinalesCSV(resultados, totalFilas) {
   };
 }
 
+function imprimirResumenProcesamiento(estadisticas) {
+  console.log("\n" + "=".repeat(60));
+  console.log("📊 RESUMEN DEL PROCESAMIENTO");
+  console.log("=".repeat(60));
+  console.log(`📋 Total de filas en CSV: ${estadisticas.totalFilasCSV}`);
+  console.log(
+    `✅ Procesadas exitosamente: ${estadisticas.procesadasExitosamente}`
+  );
+  console.log(`⚠️  Omitidas por validación: ${estadisticas.omitidas}`);
+  console.log(
+    `   └─ 📦 Sin stock CBA y LUG: ${estadisticas.omitidasPorStockCBAyLUG}`
+  );
+  console.log(`❌ Con errores: ${estadisticas.errores}`);
+  console.log(`📈 Total procesadas: ${estadisticas.totalProcesadas}`);
+  console.log(
+    `\n📦 Procesadores: ${estadisticas.detallesAdicionales.procesadores}`
+  );
+  console.log(
+    `🎮 Placas de video: ${estadisticas.detallesAdicionales.placasVideo}`
+  );
+  console.log(
+    `💾 Almacenamiento: ${estadisticas.detallesAdicionales.almacenamiento}`
+  );
+  console.log(
+    `\n🏷️  Categorías únicas: ${estadisticas.detallesAdicionales.categoriasUnicas.length}`
+  );
+  console.log(
+    `📑 Rubros únicos: ${estadisticas.detallesAdicionales.rubrosUnicos.length}`
+  );
+  console.log("=".repeat(60) + "\n");
+}
+
 async function limpiarArchivoTemporal(rutaArchivo) {
   if (rutaArchivo && fs.existsSync(rutaArchivo)) {
     try {
       fs.unlinkSync(rutaArchivo);
+      console.log("🗑️ Archivo temporal eliminado correctamente");
     } catch (error) {
       console.error(
-        "No se pudo eliminar el archivo CSV temporal:",
+        "⚠️ No se pudo eliminar el archivo CSV temporal:",
         error.message
       );
     }
