@@ -310,7 +310,7 @@ const GestionUsuarios = () => {
       const response = await fetch(
         `${url}/usuarios/gestion/${usuarioSeleccionado.id_usuario}/password`,
         {
-          method: "PATCH",
+          method: "PUT",
           headers: getHeaders(),
           body: JSON.stringify({ password: formData.password }),
         }
