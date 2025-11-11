@@ -155,11 +155,12 @@ productosRouter.post(
       precio_pesos,
       precio_pesos_iva,
       url_imagen,
+      deposito,
     } = req.body;
 
     try {
       const resultado = await db.execute(
-        `CALL cargarDatosProducto(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `CALL cargarDatosProducto(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           nombre,
           stock,
@@ -180,6 +181,7 @@ productosRouter.post(
           precio_pesos,
           precio_pesos_iva,
           url_imagen,
+          deposito,
         ]
       );
 
