@@ -51,7 +51,7 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch(`${url}/usuarios`, {
+      const response = await fetch(`${url}/usuarios/registro`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datos),
