@@ -125,45 +125,7 @@ export default function Navbar() {
             </div>
 
             <div className="linkPc">
-              <Button
-                onClick={handleClickProductos}
-                sx={{
-                  color: "white",
-                  fontWeight: "bold",
-                  fontSize: "1.3rem",
-                  fontFamily: "Roboto Condensed",
-                }}
-              >
-                PRODUCTOS
-              </Button>
-              <Menu
-                anchorEl={anchorElProductos}
-                open={openProductos}
-                onClose={handleCloseProductos}
-                MenuListProps={{ "aria-labelledby": "productos-button" }}
-              >
-                <MenuItem
-                  component="a"
-                  href="/productos"
-                  onClick={handleCloseProductos}
-                >
-                  Todos los productos
-                </MenuItem>
-                <MenuItem
-                  component="a"
-                  href="/productos/usados"
-                  onClick={handleCloseProductos}
-                >
-                  Usados
-                </MenuItem>
-                <MenuItem
-                  component="a"
-                  href="/productos/nuevos"
-                  onClick={handleCloseProductos}
-                >
-                  Nuevos
-                </MenuItem>
-              </Menu>
+              <a href="/productos">PRODUCTOS</a>
             </div>
 
             <div className="linkPc">
