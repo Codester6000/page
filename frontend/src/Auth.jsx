@@ -88,12 +88,14 @@ export const AuthPage = ({ children }) => {
   return children;
 };
 
-//  Protección por rol (ajustada a rol numérico)
-export const AuthRol = ({ rol, children }) => {
+//  Protección por rol (ajustada para NO redirigir, solo ocultar contenido)
+export const AuthRol = ({ rol, children, redirect = false }) => {
   const { sesion } = useAuth();
 
+  // Si no hay sesión y redirect es true, redirige al login
+  // Si no hay sesión y redirect es false, simplemente no muestra nada
   if (!sesion) {
-    return <Navigate to="/login" replace />;
+    return redirect ? <Navigate to="/login" replace /> : null;
   }
 
   const rolesPermitidos = Array.isArray(rol) ? rol : [rol];
