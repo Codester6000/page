@@ -25,6 +25,7 @@ import routerCargaProducto from "./cargaDeProductos.js";
 import routerCargaProductoModex from "./cargaDeProductosModex.js";
 import routerimagenes from "./cargaDeImagenes.js";
 import routerBorradoAutomatico from "./borradoDeProductos.js";
+import carouselRouter from "./carousel.js";
 
 const app = express();
 const PORT = 3000;
@@ -76,6 +77,7 @@ const inicializarServidor = async () => {
     app.use("/api/empleados", empleadosRoutes);
 
     // Rutas de frontend (sin prefijo /api)
+    app.use("/carousel", carouselRouter);
     app.use("/productos", productosRouter);
     app.use("/armador", armadorRouter);
     app.use("/usuarios", usuarioRouter);
