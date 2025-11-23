@@ -9,6 +9,7 @@ import {
   useTheme,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Toolbar from "@mui/material/Toolbar";
 import CustomizedInputBase from "./CustomizedInputBase";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -20,23 +21,36 @@ import { AuthStatus, useAuth } from "../Auth.jsx";
 
 export default function Navbar() {
   const [abierto, setAbierto] = useState(false);
-  const [anchorElProductos, setAnchorElProductos] = useState(null);
-  const [anchorElMantenimientos, setAnchorElMantenimientos] = useState(null);
-
-  const openProductos = Boolean(anchorElProductos);
-  const openMantenimientos = Boolean(anchorElMantenimientos);
+  const [anchorElCategorias, setAnchorElCategorias] = useState(null);
+  const [anchorElComponentes, setAnchorElComponentes] = useState(null);
+  const [anchorElRefrigeracion, setAnchorElRefrigeracion] = useState(null);
+  const [anchorElNotebooks, setAnchorElNotebooks] = useState(null);
+  const [anchorElComputadoras, setAnchorElComputadoras] = useState(null);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const { sesion } = useAuth();
 
-  const handleClickProductos = (event) =>
-    setAnchorElProductos(event.currentTarget);
-  const handleClickMantenimientos = (event) =>
-    setAnchorElMantenimientos(event.currentTarget);
-  const handleCloseProductos = () => setAnchorElProductos(null);
-  const handleCloseMantenimientos = () => setAnchorElMantenimientos(null);
+  const handleClickCategorias = (event) =>
+    setAnchorElCategorias(event.currentTarget);
+  const handleCloseCategorias = () => setAnchorElCategorias(null);
+
+  const handleClickComponentes = (event) =>
+    setAnchorElComponentes(event.currentTarget);
+  const handleCloseComponentes = () => setAnchorElComponentes(null);
+
+  const handleClickRefrigeracion = (event) =>
+    setAnchorElRefrigeracion(event.currentTarget);
+  const handleCloseRefrigeracion = () => setAnchorElRefrigeracion(null);
+
+  const handleClickNotebooks = (event) =>
+    setAnchorElNotebooks(event.currentTarget);
+  const handleCloseNotebooks = () => setAnchorElNotebooks(null);
+
+  const handleClickComputadoras = (event) =>
+    setAnchorElComputadoras(event.currentTarget);
+  const handleCloseComputadoras = () => setAnchorElComputadoras(null);
 
   return (
     <>
@@ -120,20 +134,140 @@ export default function Navbar() {
 
         {!isMobile && (
           <div className="navLinksPc">
+            {/* CATEGORÍAS Dropdown */}
             <div className="linkPc">
-              <a href="/">INICIO</a>
+              <Button
+                aria-controls="categorias-menu"
+                aria-haspopup="true"
+                onClick={handleClickCategorias}
+                sx={{ color: "white", fontWeight: "normal" }}
+                endIcon={<KeyboardArrowDownIcon />}
+              >
+                CATEGORÍAS
+              </Button>
+              <Menu
+                id="categorias-menu"
+                anchorEl={anchorElCategorias}
+                open={Boolean(anchorElCategorias)}
+                onClose={handleCloseCategorias}
+              >
+                <MenuItem component="a" href="/productos/nuevos">Nuevos</MenuItem>
+                <MenuItem component="a" href="/productos/usados">Usados</MenuItem>
+                <MenuItem component="a" href="/productos/ofertas">Ofertas</MenuItem>
+                <MenuItem component="a" href="/productos/mas-vendidos">Más Vendidos</MenuItem>
+              </Menu>
+            </div>
+
+            {/* COMPONENTES Dropdown */}
+            <div className="linkPc">
+              <Button
+                aria-controls="componentes-menu"
+                aria-haspopup="true"
+                onClick={handleClickComponentes}
+                sx={{ color: "white", fontWeight: "normal" }}
+                endIcon={<KeyboardArrowDownIcon />}
+              >
+                COMPONENTES
+              </Button>
+              <Menu
+                id="componentes-menu"
+                anchorEl={anchorElComponentes}
+                open={Boolean(anchorElComponentes)}
+                onClose={handleCloseComponentes}
+              >
+                <MenuItem component="a" href="/componentes/procesadores">Procesadores</MenuItem>
+                <MenuItem component="a" href="/componentes/placas-madre">Placas Madre</MenuItem>
+                <MenuItem component="a" href="/componentes/placas-de-video">Placas de Video</MenuItem>
+                <MenuItem component="a" href="/componentes/memorias-ram">Memorias RAM</MenuItem>
+                <MenuItem component="a" href="/componentes/almacenamiento">Almacenamiento</MenuItem>
+                <MenuItem component="a" href="/componentes/fuentes-de-poder">Fuentes de Poder</MenuItem>
+              </Menu>
+            </div>
+
+            {/* REFRIGERACIÓN Dropdown */}
+            <div className="linkPc">
+              <Button
+                aria-controls="refrigeracion-menu"
+                aria-haspopup="true"
+                onClick={handleClickRefrigeracion}
+                sx={{ color: "white", fontWeight: "normal" }}
+                endIcon={<KeyboardArrowDownIcon />}
+              >
+                REFRIGERACIÓN
+              </Button>
+              <Menu
+                id="refrigeracion-menu"
+                anchorEl={anchorElRefrigeracion}
+                open={Boolean(anchorElRefrigeracion)}
+                onClose={handleCloseRefrigeracion}
+              >
+                <MenuItem component="a" href="/refrigeracion/coolers-cpu">Coolers para CPU</MenuItem>
+                <MenuItem component="a" href="/refrigeracion/water-cooling">Water Cooling</MenuItem>
+                <MenuItem component="a" href="/refrigeracion/ventiladores-gabinete">Ventiladores de Gabinete</MenuItem>
+              </Menu>
+            </div>
+
+            {/* NOTEBOOKS Dropdown */}
+            <div className="linkPc">
+              <Button
+                aria-controls="notebooks-menu"
+                aria-haspopup="true"
+                onClick={handleClickNotebooks}
+                sx={{ color: "white", fontWeight: "normal" }}
+                endIcon={<KeyboardArrowDownIcon />}
+              >
+                NOTEBOOKS
+              </Button>
+              <Menu
+                id="notebooks-menu"
+                anchorEl={anchorElNotebooks}
+                open={Boolean(anchorElNotebooks)}
+                onClose={handleCloseNotebooks}
+              >
+                <MenuItem component="a" href="/notebooks/gamer">Notebooks Gamer</MenuItem>
+                <MenuItem component="a" href="/notebooks/oficina">Notebooks de Oficina</MenuItem>
+                <MenuItem component="a" href="/notebooks/diseno">Notebooks para Diseño</MenuItem>
+              </Menu>
+            </div>
+
+            {/* COMPUTADORAS Dropdown */}
+            <div className="linkPc">
+              <Button
+                onClick={handleClickComputadoras}
+                sx={{ color: "white", fontWeight: "normal" }}
+                endIcon={<KeyboardArrowDownIcon />}
+              >
+                COMPUTADORAS
+              </Button>
+              <Menu
+                anchorEl={anchorElComputadoras}
+                open={Boolean(anchorElComputadoras)}
+                onClose={handleCloseComputadoras}
+              >
+                <MenuItem component="a" href="/computadoras/pc-gamer">PC Gamer</MenuItem>
+                <MenuItem component="a" href="/computadoras/pc-oficina">PC de Oficina</MenuItem>
+                <MenuItem component="a" href="/computadoras/workstations">Workstations</MenuItem>
+              </Menu>
             </div>
 
             <div className="linkPc">
-              <a href="/productos">PRODUCTOS</a>
+              <Button
+                component="a"
+                href="/monitores"
+                sx={{ color: "white", fontWeight: "normal" }}
+              >
+                MONITORES
+              </Button>
             </div>
 
             <div className="linkPc">
-              <a href="/armador">ARMA TU PC</a>
-            </div>
-
-            <div className="linkPc">
-              <a href="/desarrollo">DESARROLLO WEB</a>
+              <Button
+                component="a"
+                href="/armador"
+                sx={{ color: "white", fontWeight: "normal" }}
+              >
+                ARMADOR PC
+              </Button>
             </div>
           </div>
         )}
